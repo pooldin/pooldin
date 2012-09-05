@@ -1,5 +1,5 @@
 # Magical make incantations...
-.PHONY := all assets clean db deps env init lint reset run shell \
+.PHONY := all assets clean db deps env init lint npm reset run shell \
 		  sql sql-create sql-drop tests
 
 .DEFAULT_GOAL := deps
@@ -54,6 +54,7 @@ db:
 
 deps:
 	@$(MAKE) ENV=$(ENV) env
+	@$(MAKE) npm
 
 env: $(ENV_ARGS) $(ENV_PROC) $(ENV_REQS)
 	@if [ "$(ENV)" == "prod" ]; then \
@@ -65,7 +66,9 @@ env: $(ENV_ARGS) $(ENV_PROC) $(ENV_REQS)
 	@rm -rf build
 
 init:
-	@echo "Setting up environments..."
+	@echo "Setting up npm packages..."
+	@$(MAKE) npm 1>/dev/null 2>/dev/null
+	@echo "Setting up pip packages..."
 	@$(MAKE) ENV=dev env 1>/dev/null
 	@$(MAKE) ENV=test env 1>/dev/null
 	@$(MAKE) ENV=prod env 1>/dev/null
@@ -76,6 +79,9 @@ init:
 lint:
 	@pep8 .
 	@echo "Clean as a whistle"
+
+npm:
+	@npm install uglify-js less coffee-script
 
 reset:
 	@$(MANAGE) resetdb || true
