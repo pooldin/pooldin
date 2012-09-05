@@ -2,97 +2,105 @@
 # folder 'static/media', as required by flask-assets.
 
 
-css-bootstrap:
+bootstrap-css-min:
     output: style/bootstrap.css
-    contents:
-        - ../../assets/style/bootstrap-2.1.0.css
-        - ../../assets/style/bootstrap-responsive-2.1.0.css
-
-css-bootstrap-min:
-    output: style/bootstrap.css
+    debug: False
     filters: yui_css
     contents:
+        - bootstrap-css
+
+bootstrap-css:
+    output: style/bootstrap.css
+    contents:
         - ../../assets/style/bootstrap-2.1.0.css
         - ../../assets/style/bootstrap-responsive-2.1.0.css
 
-js-bootstrap:
+bootstrap-js-min:
+    output: script/bootstrap.min.js
+    filters: uglifyjs
+    debug: False
+    contents:
+        - ../../assets/script/bootstrap-2.1.0.js
+
+bootstrap-js:
     output: script/bootstrap.js
     contents:
         - ../../assets/script/bootstrap-2.1.0.js
 
-js-bootstrap-min:
-    output: script/bootstrap.min.js
+jquery-min:
+    output: script/jquery.min.js
     filters: uglifyjs
+    debug: False
     contents:
-        - script/bootstrap.js
+        - jquery
 
-js-jquery:
+jquery:
     output: script/jquery.js
     contents:
         - ../../assets/script/jquery-1.8.0.js
 
-js-jquery-min:
-    output: script/jquery.min.js
+modernizr-min:
+    output: script/modernizr.min.js
     filters: uglifyjs
+    debug: False
     contents:
-        - script/jquery.js
+        - modernizr
 
-js-modernizr:
+modernizr:
     output: script/modernizr.js
     contents:
         - ../../assets/script/modernizr-2.6.1.js
 
-js-modernizr-min:
-    output: script/modernizr.min.js
+d3-min:
+    output: script/d3.min.js
     filters: uglifyjs
+    debug: False
     contents:
-        - script/modernizr.js
+        - d3
 
-js-raphael:
-    output: script/raphael.js
+d3:
+    output: script/d3.js
     contents:
-        - ../../assets/script/raphael-2.1.0.js
+        - ../../assets/script/d3-2.0.0.js
 
-js-raphael-min:
-    output: script/raphael.min.js
+knockout-min:
+    output: script/knockout.min.js
     filters: uglifyjs
+    debug: False
     contents:
-        - script/raphael.js
+        - knockout
 
-js-knockout:
+knockout:
     output: script/knockout.js
     contents:
         - ../../assets/script/knockout-2.1.0.js
 
-js-knockout-min:
-    output: script/knockout.min.js
-    filters: uglifyjs
+pooldin-css-min:
+    output: style/pooldin.min.css
+    filters: yui_css
+    debug: False
     contents:
-        - script/knockout.js
+        - pooldin-css
 
-css-pooldin:
+pooldin-css:
     output: style/pooldin.css
     contents:
         - ../../assets/style/pooldin/index.css
 
-css-pooldin-min:
-    output: style/pooldin.min.css
-    filters: yui_css
+pooldin-js-min:
+    output: script/pooldin.min.js
+    filters: uglifyjs
+    debug: False
     contents:
-        - style/pooldin.css
+        - pooldin-js
 
-js-pooldin:
+pooldin-js:
     output: script/pooldin.js
     filters: coffeescript
+    debug: False
     contents:
         - ../../assets/script/pooldin/index.coffee
         - ../../assets/script/pooldin/page.coffee
         - ../../assets/script/pooldin/campaign/create.coffee
         - ../../assets/script/pooldin/campaign/details.coffee
         - ../../assets/script/pooldin/campaign/dispurse.coffee
-
-js-pooldin-min:
-    output: script/pooldin.min.js
-    filters: uglifyjs
-    contents:
-        - script/pooldin.js

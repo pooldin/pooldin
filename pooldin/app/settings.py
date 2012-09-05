@@ -6,6 +6,7 @@ class base(object):
 class dev(base):
     DEBUG = True
     TESTING = True
+    ASSETS_DEBUG = "merge"
 
 
 class test(base):

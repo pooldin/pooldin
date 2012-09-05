@@ -91,6 +91,11 @@ citizens and check our own belly buttons for lint.
 
     make lint
 
+### Known Issues
+
+- The `webassets` dependency is on a development version (0.8.dev) to
+  make use of correct build and watch functionality.
+
 
 ## Optional Tools
 

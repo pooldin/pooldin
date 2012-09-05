@@ -54,7 +54,6 @@ db:
 
 deps:
 	@$(MAKE) ENV=$(ENV) env
-	@$(MAKE) npm
 
 env: $(ENV_ARGS) $(ENV_PROC) $(ENV_REQS)
 	@if [ "$(ENV)" == "prod" ]; then \
