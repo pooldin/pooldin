@@ -630,16 +630,6 @@ section.complete .save a {
     background-color: #739b9e;
 }
 
-#stepper {
-    position: fixed;
-    left: 10px;
-    top: 180px;
-}
-
-#stepper .step {
-    margin: 20px 0px;
-}
-
 #no-1 {
     padding-top: 50px;
 }
