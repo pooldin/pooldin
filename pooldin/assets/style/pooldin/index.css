@@ -160,6 +160,8 @@ header .logo {
 
 header .logo h2 {
     font-size: 3em;
+    font-family: Arial;
+    font-style: italic;
 }
 
 header nav {

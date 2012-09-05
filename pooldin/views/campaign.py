@@ -13,7 +13,7 @@ class ViewCampaignCreate(BaseView):
         app.add_post_rule('/campaign/new', view_func=view)
 
     def get(self):
-        return render_template('campaign/new.html')
+        return render_template('campaign/create.html')
 
     @supports('application/json')
     def post(self):
@@ -21,7 +21,7 @@ class ViewCampaignCreate(BaseView):
 
 
 class ViewCampaignDetails(BaseView):
-    name = 'campaign_index'
+    name = 'campaign_details'
 
     @classmethod
     def add_routes(cls, app, view):

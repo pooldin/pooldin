@@ -2,32 +2,7 @@
 {% extends "layout.html" %}
 
 {% block header %}
-<div class="global">
-  <div class="container">
-    <div class="row">
-      <div class="span2 logo">
-        <h2>poold.in</h1>
-      </div>
-      <nav class="span7">
-        <a href="javascript:void(0)">Home</a>
-        <span class="sep">|</span>
-        <a href="javascript:void(0)">Create a Campaign</a>
-        <span class="sep">|</span>
-        <a href="javascript:void(0)">How it works</a>
-        <span class="sep">|</span>
-        <a href="javascript:void(0)">Example Campaigns</a>
-      </nav>
-      <div class="span2 avatar">
-        <div class="wrapper rounded-top">
-          <img class="rounded-top" alt="racoon" src="{{ url_for('static', filename='img/profile.png') }}" />
-        </div>
-      </div>
-      <div class="span1 welcome">
-        <div>Welcome Back, Racoon!</div>
-      </div>
-    </div>
-  </div>
-</div>
+{% include "snippets/header.html" %}
 <div class="page">
   <div class="container">
     <div class="row">
