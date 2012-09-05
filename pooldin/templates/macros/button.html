@@ -1,0 +1,17 @@
+{% macro button(text, id=None, class=None, inset_class=None, type="button") -%}
+  <span class="theme-button theme-button-submit{% if class %} {{ class }}{% endif %}">
+    <span class="theme-button-inset{% if inset_class %} {{ inset_class }}{% endif %}"></span>
+    <input {% if id %}id="{{ id }}"{% endif %}type="{{ type }}"{% if text %} value="{{ text }}"{% endif %} />
+  </span>
+{%- endmacro %}
+
+{% macro button_submit(text, id=None, class=None, inset_class=None) -%}
+  {{ button(text, id=id, class=class, inset_class=inset_class, type="submit") }}
+{%- endmacro %}
+
+{% macro button_anchor(href, id=None, class=None, inset_class=None) -%}
+  <span class="theme-button theme-button-a{% if class %} {{ class }}{% endif %}">
+    <span class="theme-button-inset{% if inset_class %} {{ inset_class }}{% endif %}"></span>
+    <a {% if id %}id="{{ id }}" {% endif %}href="{{ href }}">{{ caller() }}</a>
+  </span>
+{%- endmacro %}

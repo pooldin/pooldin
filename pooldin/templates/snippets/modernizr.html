@@ -1,0 +1,5 @@
+{%- if config.DEBUG -%}
+<script src="{{ url_for('static', filename='script/modernizr.js') }}"></script>
+{% else %}
+<script src="{{ url_for('static', filename='script/modernizr.min.js') }}"></script>
+{% endif %}

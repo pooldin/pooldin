@@ -1,0 +1,7 @@
+{% if config.DEBUG -%}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/bootstrap.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style/pooldin.css') }}" />
+{% else %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/bootstrap.min.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style/pooldin.min.css') }}" />
+{% endif -%}

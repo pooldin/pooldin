@@ -1,0 +1,435 @@
+{% from 'macros/button.html' import button, button_submit %}
+{% extends "layout.html" %}
+
+{% block header %}
+<div class="global">
+  <div class="container">
+    <div class="row">
+      <div class="span2 logo">
+        <h2>poold.in</h1>
+      </div>
+      <nav class="span7">
+        <a href="javascript:void(0)">Home</a>
+        <span class="sep">|</span>
+        <a href="javascript:void(0)">Create a Campaign</a>
+        <span class="sep">|</span>
+        <a href="javascript:void(0)">How it works</a>
+        <span class="sep">|</span>
+        <a href="javascript:void(0)">Example Campaigns</a>
+      </nav>
+      <div class="span2 avatar">
+        <div class="wrapper rounded-top">
+          <img class="rounded-top" alt="racoon" src="{{ url_for('static', filename='img/profile.png') }}" />
+        </div>
+      </div>
+      <div class="span1 welcome">
+        <div>Welcome Back, Racoon!</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="container">
+    <div class="row">
+      <h1>Create Your Campaign</h1>
+      <h2>(in just 3 easy steps)</h2>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body %}
+<form method="POST" action="">
+  <section id="no-1">
+    <div class="container">
+      <div class="row">
+        <div class="header">
+          <div class="divider"></div>
+          <div class="circle circle-30 theme-background-green">
+            <h1 class="content">No. 1</h1>
+          </div>
+          <h2>The Basics</h2>
+        </div>
+        <div class="body">
+          <div class="row">
+            <div class="span6">
+              <label class="block">
+                <span class="h3">Campaign Name</span>
+                <input type="text" class="block" />
+              </label>
+            </div>
+            <div class="span6">
+              <label class="block">
+                <span class="h3">Campaign Description</span>
+                <input type="text" class="block" />
+              </label>
+            </div>
+          </div>
+          <hr />
+          <div class="row description">
+            <div class="span12">
+              <h3>Length of Campaign</h3>
+              <p>
+                Select a specific date that you want the campaign to end or choose
+                a number of days ahead.
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span6">
+              <label>
+                <input type="radio" name="campaign_end" />
+                <span class="h4">End Campaign On</span>
+              </label>
+              <input type="date" class="block input-indent" />
+            </div>
+            <div class="span6">
+              <label>
+                <input type="radio" name="campaign_end" />
+                <span class="h4">End Campaign <span class="">(Days from Launch)</span></span>
+              </label>
+              <input type="number" min="1" class="block input-indent" />
+            </div>
+          </div>
+          <hr />
+          <div class="row">
+            <div class="span12">
+              <h3>Type of Campaign <span class="info">(choose one)</span></h3>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span6 cell">
+              <label>
+                <input type="radio" name="campaign_type" value="pool" />
+                <span class="h4">Pooling Money</span>
+              </label>
+              <p class="input-indent">
+                (example: co-workers pooling funds foantasy football and are
+                requiring a single or multiple disbursement)
+              </p>
+            </div>
+            <div class="span6 cell">
+              <label>
+                <input type="radio" name="campaign_type" value="gift" />
+                <span class="h4">Group Gift Purchase</span>
+              </label>
+              <p class="input-indent">
+                (example: many students chipping in for a single gift for
+                their teacher)
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span6 cell">
+              <label>
+                <input type="radio" name="campaign_type" value="co-own" />
+                <span class="h4">Group Purchase For Co-Ownership</span>
+              </label>
+              <p class="input-indent">
+                (example: multiple people chipping in for co-ownership
+                of a boat)
+              </p>
+            </div>
+            <div class="span6 cell">
+              <label>
+                <input type="radio" name="campaign_type" value="fund" />
+                <span class="h4">General Fundraising</span>
+              </label>
+              <p class="input-indent">
+                (example: a couple raises funds for their honeymoon and allows
+                anyone to donate)
+              </p>
+            </div>
+          </div>
+          <hr />
+          <div class="row">
+            <div class="span6">
+              <label>
+                <input type="checkbox" name="campaign_legal checkbox" />
+                <span class="h4">Include contract</span>
+              </label>
+              <p class="input-indent">
+                Each person who pays receives a contract to certify their
+                partial owenership at the end of the campaign
+              </p>
+            </div>
+          </div>
+          <hr />
+          <div class="row description">
+            <div class="span12">
+              <h3>Enter Item  From Amazon</h3>
+              <p>
+                If the item you are planning to purchase is available at
+                Amazon.com, please cut and paste the link to the product’s
+                detail page. We’ll put the image and description, directly
+                from Amazon!
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <input type="text" class="block" />
+            </div>
+          </div>
+          <div class="row product light-text">
+            <div class="span2">
+              <img alt="placeholder" src="http://placehold.it/120x120" />
+            </div>
+            <div class="span6">
+              <h4>
+                KINDLE TOUCH 3G, FREE 3G + WI-FI, 6” E INK DISPLAY - INCLUDES
+                SPECIAL...
+              </h4>
+              <p>
+                Top-of-the-line e-reader, with touch and free 3G wireless
+                Free 3G wireless, no annual contracts or monthly fees -
+                Download books anywhere, no hunting...
+                <a href="javascript:void(0)">Read More</a>
+              </p>
+            </div>
+          </div>
+          <div class="row light-text">
+            <div class="span12">
+              <p>Not the correct item? Just enter a new link.</p>
+            </div>
+          </div>
+          <hr />
+          <div class="row no-next">
+            <div class="span12">
+              <h2><a href="#no-2">Take me to Step No. 2!</a></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="no-2" class="alternate">
+    <div class="container">
+      <div class="row">
+        <div class="header">
+          <div class="divider"></div>
+          <div class="circle circle-30 theme-background-red">
+            <h1 class="content">No. 2</h1>
+          </div>
+          <h2>Customize It!</h2>
+        </div>
+        <div class="body">
+          <div class="row description">
+            <div class="span12">
+              <h3>Campaign Preferences</h3>
+            </div>
+          </div>
+          <div class="row description">
+            <div class="span12">
+              <h4>Add Cover Photo <span>(must be 1024x169)</span></h4>
+            </div>
+          </div>
+          <div class="row description">
+            <div class="span12">
+              <div class="campaign-background">
+                <h4>+ Add Cover Photo</h4>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="row">
+            <div class="span5 offset1">
+              <h4>
+                Add Images or Videos
+                <span class="help"></span>
+              </h4>
+              <div class="row">
+                <div class="span2">
+                  <div class="campaign-media">
+                    <h4>+ Add</h4>
+                  </div>
+                </div>
+                <div class="span2">
+                  <div class="campaign-media">
+                    <h4>+ Add</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="span2">
+                  <div class="campaign-media">
+                    <h4>+ Add</h4>
+                  </div>
+                </div>
+                <div class="span2">
+                  <div class="campaign-media">
+                    <h4>+ Add</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="span2">
+                  <div class="campaign-media">
+                    <h4>+ Add</h4>
+                  </div>
+                </div>
+                <div class="span2">
+                  <div class="campaign-media">
+                    <h4>+ Add</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="span6">
+              <h4>
+                Choose a button style to appear on your campaign page
+                <span class="help"></span>
+              </h4>
+              <label>
+                <input type="radio" name="button_type" value="pay" />
+                {{ button("Pay") }}
+              </label>
+              <br />
+              <label>
+                <input type="radio" name="button_type" value="give" />
+                {{ button("Give") }}
+              </label>
+              <br />
+              <label>
+                <input type="radio" name="button_type" value="pool" />
+                {{ button("Pool") }}
+              </label>
+              <br />
+              <label>
+                <input type="radio" name="button_type" value="custom" />
+                {{ button("Custom") }}
+              </label>
+              <input type="text"
+                     name="button_type_custom"
+                     style="width: 100px;"
+                     maxlength="15"
+                     placeholder="Custom" />
+              <span class="info">(max 15 characters)</span>
+            </div>
+          </div>
+          <hr />
+          <div class="row no-next">
+            <div class="span12">
+              <h2><a href="#no-3">Take me to Step No. 3!</a></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="no-3">
+    <div class="container">
+      <div class="row">
+        <div class="header">
+          <div class="divider"></div>
+          <div class="circle circle-30 theme-background-teal">
+            <h1 class="content">No. 3</h1>
+          </div>
+          <h2>Let's Talk Business</h2>
+        </div>
+        <div class="body">
+          <div class="row">
+            <div class="span6">
+              <h4>1. Do you have a specific goal you're trying to meet?</h4>
+              <label>
+                <input type="radio" name="goal" value="amount" />
+                <span>A certain dollar amount</span>
+              </label>
+              <label>
+                <input type="radio" name="goal" value="participants" />
+                <span>A certain number of participants</span>
+              </label>
+              <label>
+                <input type="radio" name="goal" />
+                <span>I am not a goal oriented person</span>
+              </label>
+              <hr />
+              <h3>Enter Dollar Amount</h3>
+              <div class="input-prepend">
+                <label>
+                  <span class="add-on">$</span>
+                  <input type="number" min="1" />
+                </label>
+              </div>
+            </div>
+            <div class="span6">
+              <h4>
+                2. CHOOSE A SPECIFIC AMOUNT OR LET ? PEOPLE PAY WHAT
+                THEY WISH:
+              </h4>
+              <label class="radio inline">
+                <input type="radio" name="payment" value="specific" />
+                <span>Specific amount</span>
+              </label>
+              <label class="radio inline">
+                <input type="radio" name="payment" value="any" />
+                <span>Any amount</span>
+              </label>
+              <hr />
+              <h3>Enter Required Amount</h3>
+              <div class="input-prepend">
+                <label>
+                  <span class="add-on">$</span>
+                  <input type="number" min="1" />
+                </label>
+              </div>
+              <hr />
+              <h4>
+                3. IF YOUR CAMPAIGN SUCCESSFULLY HITS YOUR TARGET
+                GOAL, THEN:
+              </h4>
+              <label>
+                <input type="radio" name="campaign-success" value="continue" />
+                <span>
+                  Keep collecting over the goal, until the campaign ends
+                </span>
+              </label>
+              <label>
+                <input type="radio" name="campaign-success" value="end" />
+                <span>End the campaign early if the goal is met</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="complete">
+    <div class="container">
+      <div class="row">
+        <hr />
+        <h1>You're Done!</h1>
+        <p>
+          Check over your selections and launch your campaign when you are ready.
+          You will not be able to edit the campaign once it is live. After you
+          launch the campaign, you will get a link to your Campaign Page and tools
+          to help you promote it.
+        </p>
+        <div class="private">
+          <label>
+            <input type="checkbox" name="private" />
+            <span>Make my campaign private</span>
+          </label>
+        </div>
+        <div class="actions">
+          {{ button_submit("Launch My Campaign", class="theme-button-xlarge") }}
+        </div>
+        <div class="save">
+          <a href="javascript:void(0)">Save for later</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</form>
+<div id="stepper">
+  <div class="step circle circle-22 theme-background-green">
+    <a href="javascript:void(0)" class="content">No. 1</a>
+  </div>
+  <div class="step circle circle-22 theme-background-grey">
+    <a href="javascript:void(0)" class="content">No. 2</a>
+  </div>
+  <div class="step circle circle-22 theme-background-grey">
+    <a href="javascript:void(0)" class="content">No. 3</a>
+  </div>
+</div>
+{% endblock %}

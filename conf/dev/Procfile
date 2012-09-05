@@ -1,0 +1,2 @@
+web: python manage.py runserver
+watch: python manage.py assets watch
