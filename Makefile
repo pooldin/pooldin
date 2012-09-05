@@ -74,6 +74,8 @@ init:
 	@$(MAKE) ENV=prod env 1>/dev/null
 	@echo "Setting up database..."
 	@$(MAKE) db
+	@echo "Setting up static resources..."
+	@$(MAKE) assets 1>/dev/null 2>/dev/null
 	@echo "Done."
 
 lint:

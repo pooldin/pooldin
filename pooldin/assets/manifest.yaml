@@ -2,17 +2,6 @@
 # folder 'static/media', as required by flask-assets.
 
 
-js-bootstrap:
-    output: script/bootstrap.js
-    contents:
-        - ../../assets/script/bootstrap-2.1.0.js
-
-js-bootstrap-min:
-    output: script/bootstrap.min.js
-    filters: uglifyjs
-    contents:
-        - ../../assets/script/bootstrap-2.1.0.js
-
 css-bootstrap:
     output: style/bootstrap.css
     contents:
@@ -26,6 +15,17 @@ css-bootstrap-min:
         - ../../assets/style/bootstrap-2.1.0.css
         - ../../assets/style/bootstrap-responsive-2.1.0.css
 
+js-bootstrap:
+    output: script/bootstrap.js
+    contents:
+        - ../../assets/script/bootstrap-2.1.0.js
+
+js-bootstrap-min:
+    output: script/bootstrap.min.js
+    filters: uglifyjs
+    contents:
+        - script/bootstrap.js
+
 js-jquery:
     output: script/jquery.js
     contents:
@@ -35,7 +35,7 @@ js-jquery-min:
     output: script/jquery.min.js
     filters: uglifyjs
     contents:
-        - ../../assets/script/jquery-1.8.0.js
+        - script/jquery.js
 
 js-modernizr:
     output: script/modernizr.js
@@ -46,7 +46,7 @@ js-modernizr-min:
     output: script/modernizr.min.js
     filters: uglifyjs
     contents:
-        - ../../assets/script/modernizr-2.6.1.js
+        - script/modernizr.js
 
 js-raphael:
     output: script/raphael.js
@@ -57,15 +57,42 @@ js-raphael-min:
     output: script/raphael.min.js
     filters: uglifyjs
     contents:
-        - ../../assets/script/raphael-2.1.0.js
+        - script/raphael.js
+
+js-knockout:
+    output: script/knockout.js
+    contents:
+        - ../../assets/script/knockout-2.1.0.js
+
+js-knockout-min:
+    output: script/knockout.min.js
+    filters: uglifyjs
+    contents:
+        - script/knockout.js
 
 css-pooldin:
     output: style/pooldin.css
     contents:
-        - ../../assets/pooldin/style.css
+        - ../../assets/style/pooldin/index.css
 
 css-pooldin-min:
     output: style/pooldin.min.css
     filters: yui_css
     contents:
-        - ../../assets/pooldin/style.css
+        - style/pooldin.css
+
+js-pooldin:
+    output: script/pooldin.js
+    filters: coffeescript
+    contents:
+        - ../../assets/script/pooldin/index.coffee
+        - ../../assets/script/pooldin/page.coffee
+        - ../../assets/script/pooldin/campaign/create.coffee
+        - ../../assets/script/pooldin/campaign/details.coffee
+        - ../../assets/script/pooldin/campaign/dispurse.coffee
+
+js-pooldin-min:
+    output: script/pooldin.min.js
+    filters: uglifyjs
+    contents:
+        - script/pooldin.js
