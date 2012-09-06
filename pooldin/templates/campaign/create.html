@@ -1,6 +1,8 @@
 {% from 'macros/button.html' import button, button_submit %}
 {% extends "layout.html" %}
 
+{% block id %}campaign-create{% endblock %}
+
 {% block header %}
 {% include "snippets/header.html" %}
 <div class="page">
@@ -20,7 +22,7 @@
       <div class="row">
         <div class="header">
           <div class="divider"></div>
-          <div class="circle circle-30 theme-background-green">
+          <div class="circle circle-30 green-background">
             <h1 class="content">No. 1</h1>
           </div>
           <h2>The Basics</h2>
@@ -178,12 +180,12 @@
       </div>
     </div>
   </section>
-  <section id="no-2" class="alternate">
+  <section id="no-2" class="theme-background-darker">
     <div class="container">
       <div class="row">
         <div class="header">
           <div class="divider"></div>
-          <div class="circle circle-30 theme-background-red">
+          <div class="circle circle-30 red-background">
             <h1 class="content">No. 2</h1>
           </div>
           <h2>Customize It!</h2>
@@ -297,7 +299,7 @@
       <div class="row">
         <div class="header">
           <div class="divider"></div>
-          <div class="circle circle-30 theme-background-teal">
+          <div class="circle circle-30 teal-background">
             <h1 class="content">No. 3</h1>
           </div>
           <h2>Let's Talk Business</h2>

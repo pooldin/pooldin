@@ -1,5 +1,59 @@
 {% from 'macros/button.html' import button, button_submit %}
 {% extends "layout.html" %}
 
+{% block id %}campaign-details{% endblock %}
+
+{% block header %}
+{% include "snippets/header.html" %}
+<div class="actions">
+  <div class="container">
+    <div class="row">
+      <div class="span12">
+        <a href="javascript:void(0)">Manage your campaign</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
 {% block body %}
+<section id="campaign-header">
+  <div class="container">
+    <div class="row">
+      <div class="span5">
+        <div class="campaign-name">
+          <h1 class="upper">Kevin Berger's Fantasy Futbol 2012</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="campaign-meta">
+  <div class="container">
+    <div class="row">
+      <div class="span12"></div>
+    </div>
+  </div>
+</section>
+<section id="campaign-status">
+  <div class="container">
+    <div class="row">
+      <div class="span12"></div>
+    </div>
+  </div>
+</section>
+<section id="campaign-description">
+  <div class="container">
+    <div class="row">
+      <div class="span12"></div>
+    </div>
+  </div>
+</section>
+<section id="campaign-social">
+  <div class="container">
+    <div class="row">
+      <div class="span12"></div>
+    </div>
+  </div>
+</section>
 {% endblock %}

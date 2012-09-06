@@ -14,7 +14,7 @@
     {% block styles -%}{% include "snippets/styles.html" %}{% endblock -%}
     {% block modernizer -%}{% include "snippets/modernizr.html" %}{% endblock -%}
   </head>
-  <body>
+  <body class="{% block id %}{% endblock %}">
     {% block ie -%}{% include "snippets/ie.html" %}{% endblock -%}
     <header>
     {% block header -%}{% include "snippets/header.html" %}{% endblock -%}

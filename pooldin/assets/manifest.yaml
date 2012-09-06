@@ -96,8 +96,17 @@ pooldin-css-min:
 
 pooldin-css:
     output: style/pooldin.css
+    filters: less
+    debug: False
     contents:
-        - ../../assets/style/pooldin/index.css
+        - ../../assets/style/pooldin/index.less
+        - ../../assets/style/pooldin/base.less
+        - ../../assets/style/pooldin/forms.less
+        - ../../assets/style/pooldin/shapes.less
+        - ../../assets/style/pooldin/header.less
+        - ../../assets/style/pooldin/campaign/create.less
+        - ../../assets/style/pooldin/campaign/details.less
+        - ../../assets/style/pooldin/theme.less
 
 pooldin-js-min:
     output: script/pooldin.min.js

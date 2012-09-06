@@ -1,0 +1,134 @@
+@import "variables.less";
+@import "mixins.less";
+
+.theme-color {
+  color: @color;
+}
+
+.theme-color-invert {
+  color: @background;
+}
+
+.theme-background {
+  background-color: @background;
+}
+
+.theme-background-invert {
+  background-color: @color;
+}
+
+.theme-background-darker {
+  background-color: @background-darker;
+}
+
+.gray {
+    color: @gray;
+}
+
+.gray-background {
+    background-color: @gray;
+}
+
+.green {
+    color: @green;
+}
+
+.green-background {
+    background-color: @green;
+}
+
+.red {
+    color: @red;
+}
+
+.red-background {
+    background-color: @red;
+}
+
+.teal {
+    color: @teal;
+}
+
+.teal-background {
+    background-color: @teal;
+}
+
+.theme-button {
+    margin: 4px 10px;
+    text-align: center;
+    font-family: Knockout;
+    position: relative;
+    display: inline-block;
+    *display: inline;
+    vertical-align: middle;
+    background-color: @white;
+    color: @black;
+    width: 150px;
+    height: 40px;
+    .border-radius(20px);
+    -webkit-box-shadow: -2px 2px 4px @gray;
+       -moz-box-shadow: -2px 2px 4px @gray;
+            box-shadow: -2px 2px 4px @gray;
+}
+
+.theme-button a,
+.theme-button input,
+.theme-button button {
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    font-style: normal;
+    font-weight: normal;
+    font-family: Knockout;
+    font-size: 1.7em;
+    line-height: 1.6em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 0;
+    background: transparent;
+    padding: 0px;
+    margin: 0px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+.theme-button a:hover,
+.theme-button input:hover,
+.theme-button button:hover {
+    text-decoration: none;
+}
+
+.theme-button-xlarge {
+    width: 380px;
+    height: 80px;
+    .border-radius(35px);
+}
+
+.theme-button.theme-button-xlarge a,
+.theme-button.theme-button-xlarge input,
+.theme-button.theme-button-xlarge button {
+    font-size: 3.2em;
+    line-height: 1.9em;
+}
+
+.theme-button-inset {
+    background-color: #c75045;
+    color: #fff;
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 142px;
+    height: 32px;
+    .border-radius(16px);
+}
+
+.theme-button-xlarge .theme-button-inset {
+    left: 4px;
+    top: 4px;
+    width: 372px;
+    height: 72px;
+    .border-radius(33px);
+}
