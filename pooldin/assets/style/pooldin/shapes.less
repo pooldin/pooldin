@@ -1,54 +1,65 @@
 .circle {
-    font-family: Knockout;
-    font-size: 1.8em;
-}
+  font-family: Knockout;
+  font-size: 1.8em;
+  position: relative;
+  text-align: center;
+  color: @white;
+  background-color: @black;
 
-.circle .content {
+  .content {
     position: absolute;
     left: 0px;
     top: 0px;
     width: 100%;
     height: 100%;
-}
+  }
 
-.circle a.content {
+  a.content {
     color: #fff;
     text-decoration: none;
-}
 
-.circle a.content:hover {
-    text-decoration: none;
-}
+    &:hover {
+      text-decoration: none;
+    }
+  }
 
-.circle-22 {
-    position: relative;
+  &.circle-20 {
+    height: 20px;
+    width: 20px;
+    padding: 10px;
+    .border-radius(20px);
+  }
+
+  &.circle-18 {
+    height: 18px;
+    width: 18px;
+    padding: 9px;
+    .border-radius(18px);
+  }
+
+  &.circle-16 {
+    height: 16px;
+    width: 16px;
+    padding: 8px;
+    .border-radius(16px);
+  }
+
+  &.circle-22 {
     height: 22px;
     width: 22px;
     padding: 11px;
-    text-align: center;
-    color: #fff;
-    background-color: #ccc;
+    .border-radius(22px);
 
-    -webkit-border-radius: 22px;
-       -moz-border-radius: 22px;
-            border-radius: 22px;
-}
+    .content {
+      font-size: 1.2em;
+      line-height: 1.6em;
+    }
+  }
 
-.circle-22 .content {
-    font-size: 1.2em;
-    line-height: 1.6em;
-}
-
-.circle-30 {
-    position: relative;
+  &.circle-30 {
     height: 30px;
     width: 30px;
     padding: 15px;
-    text-align: center;
-    color: #fff;
-    background-color: #000;
-
-    -webkit-border-radius: 30px;
-       -moz-border-radius: 30px;
-            border-radius: 30px;
+    .border-radius(30px);
+  }
 }

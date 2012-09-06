@@ -11,8 +11,9 @@ dependencies:
 - [Postgresapp][postgresapp] ([docs][postgresapp-docs])
 - `[sudo] brew install git node`
 - `[sudo] easy_install pip`
-- `[sudo] gem install foreman` (See Environment below for details)
 - `[sudo] pip install virtualenvwrapper`
+- `[sudo] gem install foreman` (See Environment below for details)
+- `[sudo] gem install watchr`
 
 You will be working with python virtual environments quite often when
 testing different dependencies and working with others. Make sure to configure
@@ -80,6 +81,21 @@ Make sure to change this uri to your local database uri.
 - `make db`
 - `make reset`
 
+### Assets
+
+When `make init` is run, the last action it takes is to build the assets
+to the static directory with the `make assets` command. Assets are
+managed via the flask-assets plugin and are specified in
+`pooldin/assets/manifest.yaml`. The built in watch command doesn't watch
+less properly so we use `watchr` to watch for file changes during
+development. See `conf/dev/Watchr` for details.
+
+** Commands**
+
+- `make assets`
+- `make css`
+- `make js`
+
 ### Lint
 
 In a perfect world, a release will not go out without a series of
@@ -94,7 +110,7 @@ citizens and check our own belly buttons for lint.
 ### Known Issues
 
 - The `webassets` dependency is on a development version (0.8.dev) to
-  make use of correct build and watch functionality.
+  make use of correct build and functionality.
 
 
 ## Optional Tools

@@ -9,7 +9,7 @@
   <div class="container">
     <div class="row">
       <div class="span12">
-        <a href="javascript:void(0)">Manage your campaign</a>
+        <a class="cog" href="javascript:void(0)">Manage your campaign</a>
       </div>
     </div>
   </div>
@@ -19,6 +19,7 @@
 {% block body %}
 <section id="campaign-header">
   <div class="container">
+    <div class="img"></div>
     <div class="row">
       <div class="span5">
         <div class="campaign-name">
@@ -31,7 +32,23 @@
 <section id="campaign-meta">
   <div class="container">
     <div class="row">
-      <div class="span12"></div>
+      <div class="span12">
+        <div class="social">
+          <a href="javascript:void(0)"
+             class="circle circle-16 twitter-white-16 inline-block"></a>
+          <a href="javascript:void(0)"
+             class="circle circle-16 facebook-white-16 inline-block"></a>
+        </div>
+        <div class="organizer">
+            <div>Organized by</div>
+            <div class="upper bold">
+              <span class="teal">Kevin Berger</span>
+              <span class="sep">|</span>
+              <span>Member since</span>
+              <span class="date">05.06.2012</span>
+            </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -45,14 +62,70 @@
 <section id="campaign-description">
   <div class="container">
     <div class="row">
-      <div class="span12"></div>
+      <div class="span8">
+        <div class="bold upper">Description</div>
+        <hr class="heading" />
+        <div>
+          <span class="bold">Start Date:</span>
+          <span class="date">08/09/2012</span>
+          <span class="sep"></span>
+          <span class="bold">End Date:</span>
+          <span class="date">08/20/2012</span>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+          ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+          culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+      </div>
+      <div class="span4">
+        <div class="bold upper">Amazon.com Product Details</div>
+        <hr class="heading" />
+        <div class="bold">Xbox 360 Kinect Bundle</div>
+        <div class="dark-gray">from <span class="bold">$385</span></div>
+        <br />
+        <div class="">
+          <a href="javascript:void(0)">Check out the details at Amazon.com</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 <section id="campaign-social">
   <div class="container">
     <div class="row">
-      <div class="span12"></div>
+      <div class="span12">
+      <ul class="nav nav-tabs upper bold">
+        <li class="active">
+          <a href="#campaign-invitees" data-toggle="tab">Invitees</a>
+        </li>
+        <li>
+          <a href="#campaign-messages" data-toggle="tab">Message Board</a>
+        </li>
+      </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="campaign-invitees" class="active">
+  <div class="container">
+    <div class="row">
+      <div class="span12">
+        Invitees
+      </div>
+    </div>
+  </div>
+</section>
+<section id="campaign-messages">
+  <div class="container">
+    <div class="row">
+      <div class="span12">
+        Messages
+      </div>
     </div>
   </div>
 </section>

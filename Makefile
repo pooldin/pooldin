@@ -1,5 +1,5 @@
 # Magical make incantations...
-.PHONY := all assets clean db deps env init lint npm reset run shell \
+.PHONY := all assets clean css db deps env init js lint npm reset run shell \
 		  sql sql-create sql-drop tests
 
 .DEFAULT_GOAL := deps
@@ -43,11 +43,14 @@ $(ENV_PROC):
 	@echo 'web: python manage.py runserver' >> $@
 
 assets:
-	@$(MANAGE) assets build
+	@$(MANAGE) assets build --no-cache
 
 clean:
 	@find . -name "*.py[co]" -exec rm -rf {} \;
 	@$(MANAGE) assets clean
+
+css:
+	@$(MANAGE) assets build --no-cache pooldin-css pooldin-css-min
 
 db:
 	@$(MANAGE) createdb || true
@@ -76,6 +79,9 @@ init:
 	@echo "Setting up static resources..."
 	@$(MAKE) assets 1>/dev/null 2>/dev/null
 	@echo "Done."
+
+js:
+	@$(MANAGE) assets build --no-cache pooldin-js pooldin-js-min
 
 lint:
 	@pep8 .
