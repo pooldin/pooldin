@@ -1,9 +1,9 @@
 # vim: ft=ruby
 
 watch('pooldin/assets/style/pooldin/.*\.less$') { |md|
-    system("make css")
+    system("make css-debug")
 }
 
 watch('pooldin/assets/script/pooldin/.*\.coffee$') { |md|
-    system("make js")
+    system("make js-debug")
 }

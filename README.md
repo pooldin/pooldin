@@ -94,7 +94,9 @@ development. See `conf/dev/Watchr` for details.
 
 - `make assets`
 - `make css`
+- `make css-debug`
 - `make js`
+- `make js-debug`
 
 ### Lint
 
@@ -106,6 +108,17 @@ Until we have the infrastructure in place, we'll have to be good
 citizens and check our own belly buttons for lint.
 
     make lint
+
+### Gotchas
+
+The watch command that runs with `make run` only compiles unminified
+static files. This means that development will go a little faster since
+you don't have to wait for the minified files as well. However, since we
+are committing static files for Heroku, there is potential that the
+minified files that are used on Heroku, will not be compiled when you
+commit.
+
+Make sure to run `make css js` before you commit asset changes.
 
 ### Known Issues
 

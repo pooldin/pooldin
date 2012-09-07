@@ -52,6 +52,9 @@ clean:
 css:
 	@$(MANAGE) assets build --no-cache pooldin-css pooldin-css-min
 
+css-debug:
+	@$(MANAGE) assets build --no-cache pooldin-css
+
 db:
 	@$(MANAGE) createdb || true
 
@@ -82,6 +85,9 @@ init:
 
 js:
 	@$(MANAGE) assets build --no-cache pooldin-js pooldin-js-min
+
+js-debug:
+	@$(MANAGE) assets build --no-cache pooldin-js
 
 lint:
 	@pep8 .
