@@ -101,7 +101,12 @@
           </div>
           <div class="span2 call-to-action">
             <div class="pie">
-              <div id="pie-chart"></div>
+              <div id="pie-chart" class="relative">
+                <div class="layer">
+                  <h3><span data-bind="text: total"></span>%</h3>
+                  <h4 class="upper">Complete</h4>
+                </div>
+              </div>
             </div>
             {{ button("Cough it up", inset_class="green-background") }}
           </div>
@@ -226,6 +231,10 @@
 {% endblock %}
 
 {% block init %}
-<script src="{{ url_for('static', filename='script/g.raphael.min.js') }}"></script>
-<script>PI.page = PI.CampaignDetails.render();</script>
+<script src="{{ url_for('static', filename='script/graph.js') }}"></script>
+<script>
+  PI.page = PI.CampaignDetails.render({
+    total: 60
+  });
+</script>
 {% endblock %}

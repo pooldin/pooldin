@@ -1,100 +1,34 @@
 # All file paths are relative to the application static
 # folder 'static/media', as required by flask-assets.
 
-
-bootstrap-css-min:
-    output: style/bootstrap.min.css
-    debug: False
-    filters: yui_css
-    contents:
-        - bootstrap-css
-
-bootstrap-css:
-    output: style/bootstrap.css
-    contents:
-        - ../../assets/style/bootstrap-2.1.0.css
-        - ../../assets/style/bootstrap-responsive-2.1.0.css
-
-bootstrap-js-min:
-    output: script/bootstrap.min.js
-    filters: uglifyjs
-    debug: False
-    contents:
-        - ../../assets/script/bootstrap-2.1.0.js
-
-bootstrap-js:
-    output: script/bootstrap.js
-    contents:
-        - ../../assets/script/bootstrap-2.1.0.js
-
-jquery-min:
-    output: script/jquery.min.js
-    filters: uglifyjs
-    debug: False
-    contents:
-        - jquery
-
-jquery:
-    output: script/jquery.js
+lib-js:
+    output: script/lib.js
     contents:
         - ../../assets/script/jquery-1.8.0.js
+        - ../../assets/script/bootstrap-2.1.0.js
+        - ../../assets/script/knockout-2.1.0.js
 
-modernizr-min:
-    output: script/modernizr.min.js
+lib-min-js:
+    output: script/lib.min.js
     filters: uglifyjs
     debug: False
     contents:
-        - modernizr
+        - lib-js
 
-modernizr:
-    output: script/modernizr.js
-    contents:
-        - ../../assets/script/modernizr-2.6.1.js
-
-d3-min:
-    output: script/d3.min.js
-    filters: uglifyjs
-    debug: False
-    contents:
-        - d3
-
-d3:
-    output: script/d3.js
+graph-js:
+    output: script/graph.js
     contents:
         - ../../assets/script/d3-2.0.0.js
-
-raphael-min:
-    output: script/raphael.min.js
-    filters: uglifyjs
-    debug: False
-    contents:
-        - raphael
-
-raphael:
-    output: script/raphael.js
-    contents:
         - ../../assets/script/raphael-2.1.0.js
-
-raphael-g:
-    output: script/g.raphael.min.js
-    contents:
         - ../../assets/script/g.raphael-0.51.min.js
-        - ../../assets/script/g.raphael.bar-0.51.min.js
-        - ../../assets/script/g.raphael.dot-0.51.min.js
-        - ../../assets/script/g.raphael.line-0.51.min.js
         - ../../assets/script/g.raphael.pie-0.51.min.js
 
-knockout-min:
-    output: script/knockout.min.js
+graph-min-js:
+    output: script/graph.min.js
     filters: uglifyjs
     debug: False
     contents:
-        - knockout
-
-knockout:
-    output: script/knockout.js
-    contents:
-        - ../../assets/script/knockout-2.1.0.js
+        - graph-js
 
 pooldin-css-min:
     output: style/pooldin.min.css
@@ -108,7 +42,12 @@ pooldin-css:
     filters: less
     debug: False
     contents:
-        - ../../assets/style/pooldin/index.less
+        - ../../assets/style/bootstrap-2.1.0.css
+        - ../../assets/style/bootstrap-responsive-2.1.0.css
+        - filters: less
+          debug: false
+          contents:
+            - ../../assets/style/pooldin/index.less
 
 pooldin-js-min:
     output: script/pooldin.min.js

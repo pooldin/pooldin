@@ -4,34 +4,25 @@ PI = window.PI = window.PI || {};
 
 PI.CampaignDetails = (function() {
 
-  function CampaignDetails() {}
-
-  CampaignDetails.render = function() {
+  CampaignDetails.render = function(opts) {
     var page;
-    page = new this();
+    page = new this(opts);
     page.render();
+    ko.applyBindings(page);
     return page;
   };
 
-  CampaignDetails.prototype.render = function() {
-    var chart, pie, total;
-    this.el = jQuery('#pie-chart');
-    this.graph = Raphael("pie-chart", 200, 200);
-    total = 88;
-    pie = this.pieData(total);
-    chart = this.graph.piechart(100, 100, 100, pie.data, {
-      init: 0.1,
-      colors: pie.colors
-    });
-    if (pie.rotation) {
-      chart.rotate(pie.rotation);
+  function CampaignDetails(opts) {
+    if (opts == null) {
+      opts = {};
     }
-    return this;
-  };
+    this.total = ko.observable(opts.total);
+    this.total.subscribe(this.render_pie, this);
+  }
 
   CampaignDetails.prototype.pieData = function(total) {
     var colors, data, remaining, rotation;
-    if (total < 0) {
+    if (!(total && total > 0)) {
       total = 0;
     }
     if (total > 100) {
@@ -67,6 +58,60 @@ PI.CampaignDetails = (function() {
       data: data,
       colors: colors
     };
+  };
+
+  CampaignDetails.prototype.render = function(opts) {
+    var el, total;
+    if (opts == null) {
+      opts = {};
+    }
+    el = opts.el || jQuery('#pie-chart');
+    total = opts.total || this.total();
+    if (!(el && el.length > 0)) {
+      return;
+    }
+    this.el = el;
+    this.graph = Raphael(this.el[0], 200, 200);
+    this.render_pie(total);
+    return this;
+  };
+
+  CampaignDetails.prototype.render_pie = function(total) {
+    var pie;
+    if (!this.graph) {
+      return;
+    }
+    this.graph.clear();
+    pie = this.pieData(total);
+    this.pie = this.graph.piechart(100, 100, 100, pie.data, {
+      init: 0.1,
+      colors: pie.colors
+    });
+    if (pie.rotation) {
+      this.pie.rotate(pie.rotation);
+    }
+    this.graph.circle(100, 100, 98).animate({
+      stroke: "#747C7D",
+      "stroke-width": 2
+    }).blur();
+    this.graph.circle(100, 100, 99).animate({
+      stroke: "#aaa",
+      "stroke-width": 1
+    });
+    this.graph.circle(100, 100, 70).animate({
+      stroke: "#747C7D",
+      "stroke-width": 2
+    });
+    this.graph.circle(100, 100, 72).animate({
+      stroke: "#747C7D",
+      "stroke-width": 2
+    }).blur();
+    this.graph.circle(100, 100, 70).animate({
+      stroke: "#aaa",
+      "stroke-width": 1,
+      fill: "#fff"
+    });
+    return this;
   };
 
   return CampaignDetails;
