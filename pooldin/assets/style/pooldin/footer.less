@@ -1,0 +1,28 @@
+footer {
+  ul,
+  ol {
+    margin: 0px;
+
+    li {
+      .inline-block;
+      border-left: solid 1px @dark-gray;
+      margin-right: 10px;
+      padding-left: 10px;
+      line-height: 1em;
+      text-transform: uppercase;
+
+      &:first-child {
+        border-left: 0;
+        padding-left: 0px;
+      }
+
+      a {
+        text-decoration: none;
+
+        &, &:hover {
+          color: @dark-gray;
+        }
+      }
+    }
+  }
+}

@@ -49,7 +49,117 @@
     }
   }
 
+  #campaign-status {
+    .media {
+      a,
+      .primary {
+        padding: 4px;
+        background-color: @white;
+      }
+
+      .secondary {
+        padding: 10px 0px;
+
+        a {
+          .inline-block;
+          vertical-align: top;
+          margin: 0px 15px 0px 0px;
+
+          img {
+            max-width: 130px;
+            max-height: 130px;
+          }
+        }
+      }
+    }
+    .status {
+      hr {
+        border-top-color: @gray;
+        border-bottom-color: @gray;
+        margin: 15px 0px;
+      }
+
+      h2 {
+        font-size: 5.2em;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        line-height: 0.8em;
+      }
+
+      h3 {
+        font-family: inherit;
+        font-size: 1.1em;
+        margin: 0px;
+        line-height: 1.4em;
+      }
+      .halo {
+        padding: 20px 30px;
+        background-color: @white;
+      }
+
+      .span2, .span4 {
+        margin-left: 0px;
+      }
+      .metrics {
+        h3 {
+          text-transform: uppercase;
+        }
+
+        .total, .poold {
+          font-weight: bold;
+          font-size: 2.5em;
+          margin-top: 5px;
+          line-height: 1em;
+          font-family: Knockout;
+        }
+      }
+
+      .time {
+        h3 {
+          color: @dark-gray;
+          font-style: italic;
+          font-family: Georgia;
+          font-weight: normal;
+        }
+
+        .days,
+        .hours,
+        .minutes,
+        .seconds {
+          font-family: Knockout;
+          font-weight: bold;
+          font-size: 2.8em;
+          line-height: 1.4em;
+          padding: 5px;
+          text-transform: lowercase;
+        }
+
+        .seconds {
+          padding: 5px 8px;
+        }
+      }
+
+      .call-to-action {
+        text-align: center;
+        padding: 10px;
+        width: 220px;
+
+        .pie {
+        }
+
+        .theme-button {
+          margin-top: 20px;
+        }
+      }
+    }
+  }
+
   #campaign-description {
+    .row {
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+
     p {
       margin-top: 7px;
     }
@@ -95,7 +205,90 @@
       display: block;
     }
     .row {
-        background-color: @light-gray;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+  }
+
+  #campaign-invitees {
+    .invitees {
+      li {
+        .inline-block;
+        height: 120px;
+        margin: 0px 10px 30px;
+
+        .avatar {
+          width: 100px;
+          height: 100px;
+          padding: 5px;
+          background-color: @white;
+          border: solid 1px @dark-gray;
+
+          .overlay,
+          .amount {
+            line-height: 100px;
+            font-size: 4em;
+            color: #fff;
+            font-family: Knockout;
+            letter-spacing: 1px;
+            font-weight: bold;
+          }
+          .overlay {
+            background-color: @teal;
+            .opacity(80);
+          }
+        }
+
+        .name {
+          text-align: center;
+          width: 100px;
+          margin-bottom: 10px;
+        }
+      }
+    }
+
+    .paging {
+      input, a, span {
+        color: @dark-gray;
+
+        &.active {
+          color: @black;
+        }
+      }
+
+      .sep {
+        padding: 0px 2px;
+        margin: 0px 2px;
+      }
+      .next, .prev {
+        font-size: 1.4em;
+      }
+    }
+
+    img {
+      max-width: 100px;
+      max-height: 100px;
+      *width: 100px;
+      *height: 100px;
+    }
+
+    .actions {
+      margin-top: -7px;
+    }
+
+    .filters {
+      a, span {
+        color: @background-header;
+      }
+
+      .active, a.active {
+        font-weight: bold;
+        cursor: default;
+      }
+
+      a, a:hover {
+        text-decoration: none;
+      }
     }
   }
 }

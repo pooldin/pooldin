@@ -21,7 +21,7 @@
     </header>
     {% block body -%}{% endblock -%}
     <footer>
-    {% block footer -%}{% endblock -%}
+    {% block footer -%}{% include "snippets/footer.html" %}{% endblock -%}
     </footer>
     {% block scripts -%}{% include "snippets/scripts.html" %}{% endblock -%}
     {% block init -%}{% endblock -%}

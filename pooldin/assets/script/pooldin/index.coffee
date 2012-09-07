@@ -1,2 +1,1 @@
-$ ->
-  console.log('test29')
+PI = window.PI = window.PI || {}

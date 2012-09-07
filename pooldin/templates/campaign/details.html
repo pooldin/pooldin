@@ -34,10 +34,10 @@
     <div class="row">
       <div class="span12">
         <div class="social">
-          <a href="javascript:void(0)"
-             class="circle circle-16 twitter-white-16 inline-block"></a>
-          <a href="javascript:void(0)"
-             class="circle circle-16 facebook-white-16 inline-block"></a>
+          <input type="button"
+                 class="no-border circle circle-16 twitter-white-16 inline-block" />
+          <input type="button"
+                 class="no-border circle circle-16 twitter-white-16 inline-block" />
         </div>
         <div class="organizer">
             <div>Organized by</div>
@@ -55,7 +55,59 @@
 <section id="campaign-status">
   <div class="container">
     <div class="row">
-      <div class="span12"></div>
+      <div class="span5 media">
+        <div class="primary">
+          <img alt="soccer01" src="{{ url_for('static', filename='img/mock/soccer-01.jpg') }}" />
+        </div>
+        <div class="secondary">
+          <a href="javascript:void(0)">
+            <img alt="soccer01" src="{{ url_for('static', filename='img/mock/soccer-02.jpg') }}" />
+          </a>
+          <a href="javascript:void(0)">
+            <img alt="soccer01" src="{{ url_for('static', filename='img/mock/soccer-03.jpg') }}" />
+          </a>
+          <a href="javascript:void(0)">
+            <img alt="soccer01" src="{{ url_for('static', filename='img/mock/soccer-04.jpg') }}" />
+          </a>
+        </div>
+      </div>
+      <div class="span7 status">
+        <div class="halo">
+          <div class="span4">
+            <div class="goal">
+              <h2>Goal</h2>
+              <h2 class="green">$20,000</h2>
+            </div>
+            <hr />
+            <div class="metrics">
+              <div class="span2">
+                <h3>Current Total</h3>
+                <div class="total teal">$250</div>
+              </div>
+              <div class="span2">
+                <h3>Poold In</h3>
+                <div class="poold">14</div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+            <hr />
+            <div class="time">
+              <h3>Time Left:</h3>
+              <span class="days">0 Days</span>
+              <span class="hours">0 Hours</span>
+              <span class="minutes">0 Min</span>
+              <span class="seconds teal-background white">:24</span>
+            </div>
+          </div>
+          <div class="span2 call-to-action">
+            <div class="pie">
+              <div id="pie-chart"></div>
+            </div>
+            {{ button("Cough it up", inset_class="green-background") }}
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -113,20 +165,67 @@
 </section>
 <section id="campaign-invitees" class="active">
   <div class="container">
-    <div class="row">
+    <div class="row light-gray-background">
       <div class="span12">
-        Invitees
+        <div class="actions pull-right">
+          {{ button("Promote", class="theme-button-small", inset_class="teal-background") }}
+        </div>
+        <div class="filters">
+          <input type="button" class="active clean" value="All (255)" />
+          <span class="sep"></span>
+          <input type="button" class="clean" value="Backers (65)" />
+          <span class="sep"></span>
+          <input type="button" class="clean" value="Not Yet Responded (190)" />
+        </div>
+        <hr />
+        <div class="invitees">
+          <ul>
+            {% for i in range(0, 4) %}
+            <li>
+              <div class="relative avatar">
+                <div class="layer overlay"></div>
+                <div class="layer center amount">$50</div>
+                <img alt="Tux" src="{{ url_for('static', filename='img/mock/tux.png') }}" />
+              </div>
+              <div class="name">Tux</div>
+            </li>
+            {% endfor %}
+            {% for i in range(0, 12) %}
+            <li>
+              <div class="avatar">
+                <img alt="Tux" src="{{ url_for('static', filename='img/mock/tux.png') }}" />
+              </div>
+              <div class="name">Tux</div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <hr />
+        <div class="paging">
+          <input type="button" class="prev clean" value="«" />
+          <input type="button" class="active clean" value="1" />
+          <span class="sep">|</span>
+          <input type="button" class="clean" value="2" />
+          <span class="sep">|</span>
+          <input type="button" class="clean" value="3" />
+          <input type="button" class="next active clean" value="»" />
+        </div>
       </div>
     </div>
   </div>
 </section>
 <section id="campaign-messages">
   <div class="container">
-    <div class="row">
+    <div class="row light-gray-background">
       <div class="span12">
         Messages
       </div>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block init %}
+<script src="{{ url_for('static', filename='script/g.raphael.min.js') }}"></script>
+<script>PI.page = PI.CampaignDetails.render();</script>
 {% endblock %}

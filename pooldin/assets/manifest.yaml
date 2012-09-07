@@ -75,6 +75,15 @@ raphael:
     contents:
         - ../../assets/script/raphael-2.1.0.js
 
+raphael-g:
+    output: script/g.raphael.min.js
+    contents:
+        - ../../assets/script/g.raphael-0.51.min.js
+        - ../../assets/script/g.raphael.bar-0.51.min.js
+        - ../../assets/script/g.raphael.dot-0.51.min.js
+        - ../../assets/script/g.raphael.line-0.51.min.js
+        - ../../assets/script/g.raphael.pie-0.51.min.js
+
 knockout-min:
     output: script/knockout.min.js
     filters: uglifyjs
