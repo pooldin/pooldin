@@ -56,6 +56,8 @@ input.clean {
 }
 
 form {
+  margin: 0px;
+
   label {
     cursor: pointer;
     display: inline-block;
@@ -64,13 +66,36 @@ form {
     font-size: 1.2em;
     line-height: 2.5em;
 
+    &.no-target {
+      cursor: default;
+    }
+
     .add-on {
       font-style: normal;
     }
 
+    &.block {
+      .h3, .h4 {
+        display: block;
+        margin-top: 10px;
+
+        &.inline {
+          display: inline;
+        }
+      }
+    }
+
     .h3,
-    .h4 {
+    .h4,
+    &.h3,
+    &.h4 {
       font-style: normal;
+    }
+
+    .h3,
+    &.h3 {
+      font-size: 16px;
+      font-family: inherit;
     }
 
     &.inline {
@@ -85,14 +110,19 @@ form {
     }
   }
 
-  input {
+  input,
+  textarea {
     &.block {
       display: block;
-      width: 95%;
+      width: 90%;
 
       &.input-indent {
           width: 90%;
       }
     }
+  }
+
+  textarea {
+    height: 120px;
   }
 }

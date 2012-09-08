@@ -3,11 +3,16 @@ class PI.CampaignDetails
   @render: (opts) ->
     page = new this(opts)
     page.render()
-    ko.applyBindings(page);
+    ko.applyBindings(page)
     return page
 
   constructor: (opts) ->
     opts ?= {}
+
+    @manager = new PI.CampaignManager()
+    @promote = new PI.CampaignPromote()
+    @disburse = new PI.CampaignDisburse()
+
     @total = ko.observable(opts.total)
     @total.subscribe(@render_pie, @)
 

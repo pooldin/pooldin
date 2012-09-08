@@ -1,0 +1,101 @@
+{% from 'macros/button.html' import button, button_submit %}
+<form method="PUT" action="" data-bind="submit: submit" class="campaign-manage">
+  <div class="row">
+    <div class="span4 fields left">
+      <h2>Edit the Basics</h2>
+      <label class="block">
+        <span class="h3">Name</span>
+        <input type="text" name="name" class="block" />
+      </label>
+      <label class="block">
+        <span class="h3">Description</span>
+        <textarea name="description" class="block"></textarea>
+      </label>
+      <label class="block">
+        <input type="checkbox" name="private" />
+        <span class="h3 inline">Keep Private</span>
+      </label>
+    </div>
+    <div class="span4 media center">
+      <h2>Edit Customizations</h2>
+      <div class="add-primary">
+        <label class="block h3 no-target">Edit Cover Image</label>
+        <div class="add-media large">
+          <h4>+ Add Cover Photo</h4>
+        </div>
+      </div>
+      <label class="block h3 no-target">Edit Images or Video</label>
+      {% for i in range(1, 7) %}
+      <div class="add-secondary">
+        <div class="add-media">
+          <h4>+ Add</h4>
+        </div>
+        <br />
+        <label>
+          <input type="radio" name="default" value="{{ i }}" />
+          <span>Default</span>
+        </label>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="span4 right">
+      {% include "campaign/snippets/summary.html" %}
+      <h2>Campaign History</h2>
+      <table>
+        <tbody>
+          <tr>
+            <td class="text">Changed cover picture</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Changed name</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Changed description</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Changed photos</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Made private</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Disbursement History</h2>
+      <table>
+        <tbody>
+          <tr>
+            <td class="text">Kevin Burger - $200</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Sung Kim - $210</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Patrick Murck - $100</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Kevin Burger - $200</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+          <tr>
+            <td class="text">Sung Kim - $210</td>
+            <td class="date">07/12/2012</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span11 actions">
+      {{ button_submit("Save", size="small", color="green") }}
+      {{ button("Cancel", size="small", bind="click: cancel") }}
+    </div>
+  </div>
+</form>

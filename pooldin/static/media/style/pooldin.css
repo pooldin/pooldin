@@ -5781,6 +5781,7 @@ h3,
 h4,
 .h4 {
   font-family: Knockout;
+  text-transform: uppercase;
 }
 hr {
   border-top: 1px solid #ccc;
@@ -5860,10 +5861,55 @@ hr.heading {
 .no-background {
   background: none;
 }
+.nav-tabs {
+  margin: 0px;
+}
 .halo {
   -webkit-box-shadow: 0px 0px 10px 2px #dddddd;
   -moz-box-shadow: 0px 0px 10px 2px #dddddd;
   box-shadow: 0px 0px 10px 2px #dddddd;
+}
+.tab-body {
+  display: none;
+}
+.tab-body.active {
+  display: block;
+}
+.add-media {
+  vertical-align: middle;
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+
+  *zoom: 1;
+  background-color: #939393;
+  color: #fff;
+  text-align: center;
+  height: 50px;
+  width: 150px;
+  position: relative;
+}
+.add-media * {
+  line-height: 50px;
+}
+.add-media h4 {
+  margin: 0px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  font-size: 1.85em;
+  letter-spacing: 1px;
+}
+.add-media.large {
+  display: block;
+  height: 169px;
+  width: inherit;
+  line-height: 169px;
+}
+.add-media.large * {
+  line-height: 169px;
 }
 section .container,
 footer .container {
@@ -5939,6 +5985,9 @@ input.clean {
   background: none;
   border: 0;
 }
+form {
+  margin: 0px;
+}
 form label {
   cursor: pointer;
   display: inline-block;
@@ -5947,12 +5996,31 @@ form label {
   font-size: 1.2em;
   line-height: 2.5em;
 }
+form label.no-target {
+  cursor: default;
+}
 form label .add-on {
   font-style: normal;
 }
+form label.block .h3,
+form label.block .h4 {
+  display: block;
+  margin-top: 10px;
+}
+form label.block .h3.inline,
+form label.block .h4.inline {
+  display: inline;
+}
 form label .h3,
-form label .h4 {
+form label .h4,
+form label.h3,
+form label.h4 {
   font-style: normal;
+}
+form label .h3,
+form label.h3 {
+  font-size: 16px;
+  font-family: inherit;
 }
 form label.inline input {
   margin-top: 4px;
@@ -5961,12 +6029,17 @@ form label.inline input {
 form label.inline span {
   margin-right: 20px;
 }
-form input.block {
+form input.block,
+form textarea.block {
   display: block;
-  width: 95%;
-}
-form input.block.input-indent {
   width: 90%;
+}
+form input.block.input-indent,
+form textarea.block.input-indent {
+  width: 90%;
+}
+form textarea {
+  height: 120px;
 }
 .circle {
   font-family: Knockout;
@@ -6282,17 +6355,6 @@ input.circle-16.twitter-white-16 {
   line-height: 1em;
   margin-left: 5px;
 }
-.campaign-create section .campaign-media,
-.campaign-create section .campaign-background {
-  display: block;
-  background-color: #939393;
-  color: #fff;
-  text-align: center;
-}
-.campaign-create section .campaign-media h4,
-.campaign-create section .campaign-background h4 {
-  margin: 0px;
-}
 .campaign-create section .campaign-background {
   height: 169px;
 }
@@ -6403,6 +6465,88 @@ input.circle-16.twitter-white-16 {
   background: #f5f5f5;
   padding: 20px 30px;
   margin-left: -30px;
+}
+.campaign-details #campaign-management .container {
+  border-width: 0px;
+  padding: 15px 0px 30px;
+}
+.campaign-details #campaign-management .container h2,
+.campaign-details #campaign-management .container ul,
+.campaign-details #campaign-management .container ol {
+  margin: 0px;
+}
+.campaign-details #campaign-management .container table {
+  width: 100%;
+}
+.campaign-details #campaign-management .container table td.date {
+  width: 80px;
+  text-align: left;
+  color: #739b9e;
+}
+.campaign-details #campaign-management .container table,
+.campaign-details #campaign-management .container ul,
+.campaign-details #campaign-management .container ol,
+.campaign-details #campaign-management .container p {
+  font-style: italic;
+}
+.campaign-details #campaign-management .container table a,
+.campaign-details #campaign-management .container ul a,
+.campaign-details #campaign-management .container ol a,
+.campaign-details #campaign-management .container p a,
+.campaign-details #campaign-management .container table.nav-tabs,
+.campaign-details #campaign-management .container ul.nav-tabs,
+.campaign-details #campaign-management .container ol.nav-tabs,
+.campaign-details #campaign-management .container p.nav-tabs {
+  font-style: normal;
+}
+.campaign-details #campaign-management .container .row .row {
+  margin: inherit;
+  padding: inherit;
+  padding: 20px 12px;
+}
+.campaign-details #campaign-management .container .row .row .span4,
+.campaign-details #campaign-management .container .row .row .span8 {
+  margin-left: 0px;
+}
+.campaign-details #campaign-management .container .summary table,
+.campaign-details #campaign-management .container .history table,
+.campaign-details #campaign-management .container .summary ul,
+.campaign-details #campaign-management .container .history ul,
+.campaign-details #campaign-management .container .summary ol,
+.campaign-details #campaign-management .container .history ol {
+  font-style: italic;
+}
+.campaign-details #campaign-management .container .actions {
+  margin-top: 20px;
+}
+.campaign-details #campaign-management .container #manage .actions {
+  margin-top: 0px;
+  text-align: right;
+}
+.campaign-details #campaign-management .container .span4.left {
+  margin-right: -5px;
+}
+.campaign-details #campaign-management .container .span4.center {
+  border-left: solid 2px #dddddd;
+  border-right: solid 2px #dddddd;
+  padding-left: 15px;
+  margin-right: 15px;
+}
+.campaign-details #campaign-management .container .span4 h2 {
+  margin-top: 30px;
+}
+.campaign-details #campaign-management .container .span4 h2:first-child {
+  margin-top: 0px;
+}
+.campaign-details #campaign-management .container label {
+  line-height: 1.5em;
+  font-size: 14px;
+}
+.campaign-details #campaign-management .container label.block .h3 {
+  margin-top: 15px;
+}
+.campaign-details #campaign-management .container label input {
+  margin-right: 5px;
 }
 .campaign-details #campaign-meta .social {
   padding: 15px 0px;
@@ -6543,14 +6687,6 @@ input.circle-16.twitter-white-16 {
   color: #000000;
   background: #dddddd;
 }
-.campaign-details #campaign-invitees,
-.campaign-details #campaign-messages {
-  display: none;
-}
-.campaign-details #campaign-invitees.active,
-.campaign-details #campaign-messages.active {
-  display: block;
-}
 .campaign-details #campaign-invitees .row,
 .campaign-details #campaign-messages .row {
   padding-top: 20px;
@@ -6632,6 +6768,54 @@ input.circle-16.twitter-white-16 {
 .campaign-details #campaign-invitees .filters a:hover {
   text-decoration: none;
 }
+.campaign-manage .fields input[type=radio],
+.campaign-manage .fields input[type=checkbox] {
+  margin-right: 5px;
+  margin-left: 2px;
+}
+.campaign-manage .media {
+  border-left: solid 2px #dddddd;
+  border-right: solid 2px #dddddd;
+  padding-left: 15px;
+  margin-right: 15px;
+}
+.campaign-manage .media .add-primary {
+  margin-bottom: 20px;
+}
+.campaign-manage .media .add-secondary {
+  vertical-align: middle;
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+
+  *zoom: 1;
+  text-align: center;
+  margin-bottom: 15px;
+}
+.campaign-manage .media .add-secondary label {
+  font-style: normal;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.1em;
+}
+.campaign-manage .media .add-secondary label span {
+  font-size: 12px;
+}
+.campaign-manage .media .add-secondary input {
+  margin-right: 5px;
+}
+.campaign-manage .media .add-media {
+  width: 130px;
+  margin-bottom: 5px;
+}
+.campaign-manage .media .add-media.large {
+  width: 90%;
+  height: 100px;
+}
+.campaign-manage .media .add-media.large * {
+  line-height: 100px;
+}
 .theme-button {
   margin: 4px 10px;
   text-align: center;
@@ -6660,8 +6844,8 @@ input.circle-16.twitter-white-16 {
   font-style: normal;
   font-weight: normal;
   font-family: Knockout;
-  font-size: 1.7em;
-  line-height: 1.6em;
+  font-size: 24px;
+  line-height: 1.8em;
   letter-spacing: 1px;
   text-transform: uppercase;
   border: 0;
@@ -6794,4 +6978,10 @@ input.circle-16.twitter-white-16 {
 }
 .white-background {
   background-color: #ffffff;
+}
+.facebook-blue {
+  color: #3b5998;
+}
+.facebook-blue-background {
+  background-color: #3b5998;
 }

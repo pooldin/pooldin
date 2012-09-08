@@ -43,6 +43,105 @@
     }
   }
 
+  #campaign-management {
+    .container {
+      border-width: 0px;
+      padding: 15px 0px 30px;
+
+      h2, ul, ol {
+        margin: 0px;
+      }
+
+      table {
+        width: 100%;
+        td {
+          &.date {
+            width: 80px;
+            text-align: left;
+            color: @teal;
+          }
+        }
+      }
+
+      table, ul, ol, p {
+        font-style: italic;
+
+        a,
+        &.nav-tabs {
+          font-style: normal;
+        }
+      }
+
+      .row {
+        .row {
+          margin: inherit;
+          padding: inherit;
+          padding: 20px 12px;
+
+          .span4,
+          .span8 {
+            margin-left: 0px;
+          }
+        }
+      }
+      .summary,
+      .history {
+        table, ul, ol {
+          font-style: italic;
+        }
+      }
+
+      .actions {
+        margin-top: 20px;
+      }
+
+      #manage {
+        .actions {
+          margin-top: 0px;
+          text-align: right;
+        }
+      }
+
+      .span4 {
+        &.left {
+          margin-right: -5px;
+        }
+
+        &.center {
+          border-left: solid 2px @gray;
+          border-right: solid 2px @gray;
+          padding-left: 15px;
+          margin-right: 15px;
+        }
+      }
+
+      .span4 {
+        h2 {
+          margin-top: 30px;
+
+          &:first-child {
+            margin-top: 0px;
+          }
+        }
+      }
+
+      label {
+        line-height: 1.5em;
+        font-size: 14px;
+
+        &.block {
+          .h3 {
+            margin-top: 15px;
+          }
+        }
+
+        input {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+
   #campaign-meta {
     .social {
       padding: 15px 0px;
@@ -218,11 +317,6 @@
 
   #campaign-invitees,
   #campaign-messages {
-    display: none;
-
-    &.active {
-      display: block;
-    }
     .row {
         padding-top: 20px;
         padding-bottom: 20px;

@@ -1,0 +1,78 @@
+{% from 'macros/button.html' import button, button_submit %}
+<div class="row">
+  <div class="span4 meta left">
+    <h2>Campaign Url</h2>
+    <p>Copy and paste this URL then share it!</p>
+    <p class="bold"><a href="http://poold.in/kevin/45380" target="_blank">http://poold.in/kevin/45380</a></p>
+    <h2>Connect to Facebook</h2>
+    <p>Connect to Facebook to invite your friends</p>
+    {{ button("Connect", color="facebook-blue") }}
+  </div>
+  <div class="span4 email center">
+    <form method="POST" action="" data-bind="submit: submit" class="campaign-promote">
+      <h2>Send an Email</h2>
+      <label class="block">
+        <span class="h3">Email contacts</span>
+        <input type="text" name="contacts" class="block" />
+      </label>
+      <br />
+      <label class="block h3 no-target">Poold.in Contacts</label>
+      <label class="block">
+        <input type="radio" name="target" value="all" />
+        <span>Send to all</span>
+      </label>
+      <label class="block">
+        <input type="radio" name="target" value="participants" />
+        <span>Participants only</span>
+      </label>
+      <label class="block">
+        <input type="radio" name="target" value="unknown" />
+        <span>? only</span>
+      </label>
+      <label class="block">
+        <input type="radio" name="target" value="individual" />
+        <span>Individually</span>
+      </label>
+      <br />
+      <label class="block">
+        <span class="h3">Subject</span>
+        <input class="block" type="text" name="subject" />
+      </label>
+      <label class="block">
+        <span class="h3">Message</span>
+        <textarea class="block" name="message"></textarea>
+      </label>
+      <div class="actions">
+        {{ button_submit("Send", size="small", color="green") }}
+      </div>
+    </form>
+  </div>
+  <div class="span4 right">
+    {% include "campaign/snippets/summary.html" %}
+    <h2>Promotion History</h2>
+    <table>
+      <tbody>
+        <tr>
+          <td class="text">Kevin Berger invited</td>
+          <td class="date">07/12/2012</td>
+        </tr>
+        <tr>
+          <td class="text">Sung Kim invited</td>
+          <td class="date">07/12/2012</td>
+        </tr>
+        <tr>
+          <td class="text">John Doe invited</td>
+          <td class="date">07/12/2012</td>
+        </tr>
+        <tr>
+          <td class="text">Sally Smith invited</td>
+          <td class="date">07/12/2012</td>
+        </tr>
+        <tr>
+          <td class="text">Bevin Kurger invited</td>
+          <td class="date">07/12/2012</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

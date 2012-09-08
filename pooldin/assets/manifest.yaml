@@ -63,6 +63,9 @@ pooldin-js:
     contents:
         - ../../assets/script/pooldin/index.coffee
         - ../../assets/script/pooldin/page.coffee
+        - ../../assets/script/pooldin/models.coffee
         - ../../assets/script/pooldin/campaign/create.coffee
         - ../../assets/script/pooldin/campaign/details.coffee
-        - ../../assets/script/pooldin/campaign/dispurse.coffee
+        - ../../assets/script/pooldin/campaign/manage.coffee
+        - ../../assets/script/pooldin/campaign/promote.coffee
+        - ../../assets/script/pooldin/campaign/disburse.coffee

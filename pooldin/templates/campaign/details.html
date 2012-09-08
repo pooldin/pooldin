@@ -8,8 +8,8 @@
 <div class="actions">
   <div class="container">
     <div class="row">
-      <div class="span12">
-        <a class="cog" href="javascript:void(0)">Manage your campaign</a>
+      <div class="span12" data-bind="with: manager">
+        <a class="cog" href="javascript:void(0)" data-bind="click: toggle">Manage your campaign</a>
       </div>
     </div>
   </div>
@@ -17,6 +17,36 @@
 {% endblock %}
 
 {% block body %}
+<section id="campaign-management" data-bind="visible: manager.visible" style="display: none">
+  <div class="container">
+    <div class="row">
+      <div class="span12">
+        <ul class="nav nav-tabs manage upper bold">
+          <li class="active">
+            <a href="#manage" data-toggle="tab">Manage</a>
+          </li>
+          <li>
+            <a href="#promote" data-toggle="tab">Promote</a>
+          </li>
+          <li>
+            <a href="#disburse" data-toggle="tab">Disburse</a>
+          </li>
+        </ul>
+        <div class="halo white-background">
+          <div id="manage" class="tab-body active" data-bind="with: manager">
+            {% include "campaign/snippets/manage.html" %}
+          </div>
+          <div id="promote" class="tab-body" data-bind="with: promote">
+            {% include "campaign/snippets/promote.html" %}
+          </div>
+          <div id="disburse" class="tab-body" data-bind="with: disburse">
+            {% include "campaign/snippets/disburse.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="campaign-header">
   <div class="container">
     <div class="img"></div>
@@ -108,7 +138,7 @@
                 </div>
               </div>
             </div>
-            {{ button("Cough it up", inset_class="green-background") }}
+            {{ button("Cough it up", color="green") }}
           </div>
           <div class="clearfix"></div>
         </div>
@@ -168,12 +198,12 @@
     </div>
   </div>
 </section>
-<section id="campaign-invitees" class="active">
+<section id="campaign-invitees" class="tab-body active">
   <div class="container">
     <div class="row light-gray-background">
       <div class="span12">
         <div class="actions pull-right">
-          {{ button("Promote", class="theme-button-small", inset_class="teal-background") }}
+          {{ button("Promote", size="small", color="teal") }}
         </div>
         <div class="filters">
           <input type="button" class="active clean" value="All (255)" />
@@ -219,7 +249,7 @@
     </div>
   </div>
 </section>
-<section id="campaign-messages">
+<section id="campaign-messages" class="tab-body">
   <div class="container">
     <div class="row light-gray-background">
       <div class="span12">

@@ -16,6 +16,9 @@ PI.CampaignDetails = (function() {
     if (opts == null) {
       opts = {};
     }
+    this.manager = new PI.CampaignManager();
+    this.promote = new PI.CampaignPromote();
+    this.disburse = new PI.CampaignDisburse();
     this.total = ko.observable(opts.total);
     this.total.subscribe(this.render_pie, this);
   }
@@ -115,5 +118,94 @@ PI.CampaignDetails = (function() {
   };
 
   return CampaignDetails;
+
+})();
+
+PI.CampaignManager = (function() {
+
+  function CampaignManager() {
+    var _this = this;
+    this.tab = ko.observable();
+    this.tab.subscribe(this.onTab, this);
+    this.navigate(location.hash);
+    this.visible = ko.observable(!!this.tab());
+    jQuery('.nav-tabs.manage a[data-toggle="tab"]').on('shown', function(e) {
+      return _this.navigate(jQuery(e != null ? e.target : void 0).attr('href'));
+    });
+  }
+
+  CampaignManager.prototype.show = function() {
+    return this.visible(true);
+  };
+
+  CampaignManager.prototype.hide = function() {
+    return this.visible(false);
+  };
+
+  CampaignManager.prototype.toggle = function() {
+    return this.visible(!this.visible());
+  };
+
+  CampaignManager.prototype.navigate = function(tab) {
+    tab = (tab != null ? tab : '').replace(/^#/g, '');
+    if (tab === 'manage' || tab === 'promote' || tab === 'disburse') {
+      this.tab(tab);
+    }
+    return this;
+  };
+
+  CampaignManager.prototype.onTab = function() {
+    var tab;
+    tab = this.tab();
+    if (!tab) {
+      return;
+    }
+    return jQuery(".nav-tabs li a[href=#" + tab + "]").tab('show');
+  };
+
+  CampaignManager.prototype.cancel = function() {
+    this.reset();
+    return this.hide();
+  };
+
+  CampaignManager.prototype.reset = function() {};
+
+  CampaignManager.prototype.submit = function() {};
+
+  return CampaignManager;
+
+})();
+
+PI.CampaignPromote = (function() {
+
+  function CampaignPromote() {}
+
+  CampaignPromote.prototype.cancel = function() {
+    this.reset();
+    return this.hide();
+  };
+
+  CampaignPromote.prototype.reset = function() {};
+
+  CampaignPromote.prototype.submit = function() {};
+
+  return CampaignPromote;
+
+})();
+
+PI.CampaignDisburse = (function() {
+
+  function CampaignDisburse() {}
+
+  CampaignDisburse.prototype.cancel = function() {
+    this.reset();
+    return this.hide();
+  };
+
+  CampaignDisburse.prototype.reset = function() {};
+
+  CampaignDisburse.prototype.submit = function() {};
+
+  return CampaignDisburse;
 
 })();
