@@ -72,6 +72,29 @@
         }
       }
 
+      .nav,
+      .nav-tabs {
+        li {
+          a {
+            border: 0;
+            margin: 0px;
+            color: @dark-gray;
+
+            &:hover {
+              background: transparent;
+              border: 0;
+            }
+          }
+          &.active {
+            .halo-up;
+
+            a:hover {
+              background-color: @white;
+            }
+          }
+        }
+      }
+
       .row {
         .row {
           margin: inherit;

@@ -9,7 +9,8 @@ class PI.CampaignDetails
   constructor: (opts) ->
     opts ?= {}
 
-    @manager = new PI.CampaignManager()
+    @uploader = new PI.Uploader()
+    @manager = new PI.CampaignManager(@uploader)
     @promote = new PI.CampaignPromote()
     @disburse = new PI.CampaignDisburse()
 

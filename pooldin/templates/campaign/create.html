@@ -183,7 +183,7 @@
   <section id="no-2" class="theme-background-darker">
     <div class="container">
       <div class="row">
-        <div class="header">
+        <div class="header section-break">
           <div class="divider"></div>
           <div class="circle circle-30 red-background">
             <h1 class="content">No. 2</h1>
@@ -203,7 +203,7 @@
           </div>
           <div class="row description">
             <div class="span12">
-              <div class="add-media campaign-background large">
+              <div class="add-media campaign-background large" data-bind="click: uploader.open">
                 <h4>+ Add Cover Photo</h4>
               </div>
             </div>
@@ -215,42 +215,11 @@
                 Add Images or Videos
                 <span class="help"></span>
               </h4>
-              <div class="row">
-                <div class="span2">
-                  <div class="add-media campaign-media">
-                    <h4>+ Add</h4>
-                  </div>
-                </div>
-                <div class="span2">
-                  <div class="add-media campaign-media">
-                    <h4>+ Add</h4>
-                  </div>
-                </div>
+              {% for i in range(0, 6) %}
+              <div class="add-media campaign-media" data-bind="click: uploader.open">
+                <h4>+ Add</h4>
               </div>
-              <div class="row">
-                <div class="span2">
-                  <div class="add-media campaign-media">
-                    <h4>+ Add</h4>
-                  </div>
-                </div>
-                <div class="span2">
-                  <div class="add-media campaign-media">
-                    <h4>+ Add</h4>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="span2">
-                  <div class="add-media campaign-media">
-                    <h4>+ Add</h4>
-                  </div>
-                </div>
-                <div class="span2">
-                  <div class="add-media campaign-media">
-                    <h4>+ Add</h4>
-                  </div>
-                </div>
-              </div>
+              {% endfor %}
             </div>
             <div class="span6">
               <h4>
@@ -398,7 +367,16 @@
     </div>
   </section>
 </form>
+{% include "snippets/upload.html" %}
 {% endblock %}
 
 {% block footer %}
+{% endblock %}
+
+{% block init %}
+<script>
+  PI.page = PI.CampaignCreate.render({
+    total: 65
+  });
+</script>
 {% endblock %}

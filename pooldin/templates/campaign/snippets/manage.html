@@ -20,14 +20,14 @@
       <h2>Edit Customizations</h2>
       <div class="add-primary">
         <label class="block h3 no-target">Edit Cover Image</label>
-        <div class="add-media large">
+        <div class="add-media large" data-bind="click: uploader.open">
           <h4>+ Add Cover Photo</h4>
         </div>
       </div>
       <label class="block h3 no-target">Edit Images or Video</label>
       {% for i in range(1, 7) %}
       <div class="add-secondary">
-        <div class="add-media">
+        <div class="add-media" data-bind="click: uploader.open">
           <h4>+ Add</h4>
         </div>
         <br />

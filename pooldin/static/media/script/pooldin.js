@@ -1,6 +1,84 @@
-var PI;
+var PI,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 PI = window.PI = window.PI || {};
+
+PI.Uploader = (function() {
+
+  function Uploader() {
+    this.cancel = __bind(this.cancel, this);
+
+    this.open = __bind(this.open, this);
+    this.visible = ko.observable(false);
+    this.el = jQuery('#uploader').modal({
+      show: false,
+      backdrop: 'static',
+      keyboard: true
+    });
+    this.visible.subscribe(this.onVisible, this);
+  }
+
+  Uploader.prototype.show = function() {
+    return this.visible(true);
+  };
+
+  Uploader.prototype.hide = function() {
+    return this.visible(false);
+  };
+
+  Uploader.prototype.toggle = function() {
+    return this.visible(!this.visible());
+  };
+
+  Uploader.prototype.open = function() {
+    this.reset();
+    return this.show();
+  };
+
+  Uploader.prototype.cancel = function() {
+    this.reset();
+    return this.hide();
+  };
+
+  Uploader.prototype.reset = function() {};
+
+  Uploader.prototype.submit = function() {};
+
+  Uploader.prototype.onVisible = function(visible) {
+    if (visible) {
+      this.el.modal('show');
+    }
+    if (!visible) {
+      return this.el.modal('hide');
+    }
+  };
+
+  return Uploader;
+
+})();
+
+PI.CampaignCreate = (function() {
+
+  CampaignCreate.render = function(opts) {
+    var page;
+    page = new this(opts);
+    page.render();
+    ko.applyBindings(page);
+    return page;
+  };
+
+  function CampaignCreate(opts) {
+    if (opts == null) {
+      opts = {};
+    }
+    this.uploader = new PI.Uploader();
+  }
+
+  CampaignCreate.prototype.render = function() {};
+
+  return CampaignCreate;
+
+})();
 
 PI.CampaignDetails = (function() {
 
@@ -16,7 +94,8 @@ PI.CampaignDetails = (function() {
     if (opts == null) {
       opts = {};
     }
-    this.manager = new PI.CampaignManager();
+    this.uploader = new PI.Uploader();
+    this.manager = new PI.CampaignManager(this.uploader);
     this.promote = new PI.CampaignPromote();
     this.disburse = new PI.CampaignDisburse();
     this.total = ko.observable(opts.total);
@@ -123,8 +202,9 @@ PI.CampaignDetails = (function() {
 
 PI.CampaignManager = (function() {
 
-  function CampaignManager() {
+  function CampaignManager(uploader) {
     var _this = this;
+    this.uploader = uploader;
     this.tab = ko.observable();
     this.tab.subscribe(this.onTab, this);
     this.navigate(location.hash);

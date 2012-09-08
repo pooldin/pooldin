@@ -1,5 +1,6 @@
 class PI.CampaignManager
-  constructor: ->
+  constructor: (uploader) ->
+    @uploader = uploader
     @tab = ko.observable()
     @tab.subscribe(@onTab, this)
     @navigate(location.hash)

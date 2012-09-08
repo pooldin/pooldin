@@ -258,13 +258,14 @@
     </div>
   </div>
 </section>
+{% include "snippets/upload.html" %}
 {% endblock %}
 
 {% block init %}
 <script src="{{ url_for('static', filename='script/graph.js') }}"></script>
 <script>
   PI.page = PI.CampaignDetails.render({
-    total: 60
+    total: 65
   });
 </script>
 {% endblock %}
