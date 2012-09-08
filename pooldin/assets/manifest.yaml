@@ -2,71 +2,73 @@
 # folder 'static/media', as required by flask-assets.
 
 lib-js:
-    output: script/lib.js
+    output: ../static/media/script/lib.js
     contents:
-        - ../../assets/script/jquery-1.8.0.js
-        - ../../assets/script/bootstrap-2.1.0.js
-        - ../../assets/script/knockout-2.1.0.js
+        - lib/jquery-1.8.0.js
+        - lib/knockout-2.1.0.js
+        - lib/bootstrap/bootstrap-2.1.0.js
 
 lib-min-js:
-    output: script/lib.min.js
+    output: ../static/media/script/lib.min.js
     filters: uglifyjs
     debug: False
     contents:
         - lib-js
 
 graph-js:
-    output: script/graph.js
+    output: ../static/media/script/graph.js
     contents:
-        - ../../assets/script/d3-2.0.0.js
-        - ../../assets/script/raphael-2.1.0.js
-        - ../../assets/script/g.raphael-0.51.min.js
-        - ../../assets/script/g.raphael.pie-0.51.min.js
+        - lib/d3-2.0.0.js
+        - lib/raphael/raphael-2.1.0.js
+        - lib/raphael/g.raphael-0.51.min.js
+        - lib/raphael/g.raphael.pie-0.51.min.js
 
 graph-min-js:
-    output: script/graph.min.js
+    output: ../static/media/script/graph.min.js
     filters: uglifyjs
     debug: False
     contents:
         - graph-js
 
 pooldin-css-min:
-    output: style/pooldin.min.css
+    output: ../static/media/style/pooldin.min.css
     filters: yui_css
     debug: False
     contents:
         - pooldin-css
 
 pooldin-css:
-    output: style/pooldin.css
+    output: ../static/media/style/pooldin.css
     filters: less
     debug: False
     contents:
-        - ../../assets/style/bootstrap-2.1.0.css
-        - ../../assets/style/bootstrap-responsive-2.1.0.css
+        - lib/bootstrap/bootstrap-2.1.0.css
+        - lib/bootstrap/bootstrap-responsive-2.1.0.css
         - filters: less
           debug: false
           contents:
-            - ../../assets/style/pooldin/index.less
+            - style/index.less
 
 pooldin-js-min:
-    output: script/pooldin.min.js
+    output: ../static/media/script/pooldin.min.js
     filters: uglifyjs
     debug: False
     contents:
         - pooldin-js
 
 pooldin-js:
-    output: script/pooldin.js
+    output: ../static/media/script/pooldin.js
     filters: coffeescript
     debug: False
     contents:
-        - ../../assets/script/pooldin/index.coffee
-        - ../../assets/script/pooldin/page.coffee
-        - ../../assets/script/pooldin/upload.coffee
-        - ../../assets/script/pooldin/models.coffee
-        - ../../assets/script/pooldin/campaign/create.coffee
-        - ../../assets/script/pooldin/campaign/details.coffee
-        - ../../assets/script/pooldin/campaign/manage.coffee
-        - ../../assets/script/pooldin/campaign/promote.coffee
-        - ../../assets/script/pooldin/campaign/disburse.coffee
+        - script/index.coffee
+        - script/page.coffee
+        - script/upload.coffee
+        - script/models.coffee
+        - script/user/login.coffee
+        - script/user/signup.coffee
+        - script/campaign/create.coffee
+        - script/campaign/details.coffee
+        - script/campaign/manage.coffee
+        - script/campaign/promote.coffee
+        - script/campaign/disburse.coffee

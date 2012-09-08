@@ -1,8 +1,11 @@
+import os
+
 from werkzeug.wsgi import SharedDataMiddleware
 
 from flask import Flask
 from flask.ext.assets import Environment
 
+from .. import path
 from ..database import db
 
 from . import settings
@@ -57,3 +60,5 @@ class BaseApp(Flask, RulesMixin, EnvMixin, InitMixin):
     def init_extensions(self):
         db.init_app(self)
         self.assets = Environment(self)
+        self.assets.directory = os.path.join(path, 'assets')
+        self.assets.url = '/media'
