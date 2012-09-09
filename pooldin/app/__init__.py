@@ -11,11 +11,7 @@ class App(BaseApp):
     name = __name__
     prefix = 'POOLDIN'
 
-    views = [
-        views.ViewHomeIndex,
-        views.ViewCampaignCreate,
-        views.ViewCampaignDetails
-    ]
+    views = views.all
 
     def init_middleware(self):
         self.after_request(self.inject_response_headers)

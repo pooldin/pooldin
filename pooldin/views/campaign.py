@@ -15,9 +15,9 @@ class ViewCampaignCreate(BaseView):
     def get(self):
         return render_template('campaign/create.html')
 
-    @supports('application/json')
+    @supports('application/json', 'application/x-www-form-urlencoded')
     def post(self):
-        abort(405)
+        abort(503)
 
 
 class ViewCampaignDetails(BaseView):
