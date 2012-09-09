@@ -1,21 +1,56 @@
-class PI.CampaignDetails
+class PI.CampaignDetails extends PI.Page
 
-  @render: (opts) ->
-    page = new this(opts)
-    page.render()
-    ko.applyBindings(page)
-    return page
+  constructor: (campaign) ->
+    @campaign = ko.observable(campaign)
+    @progress = ko.computed(@getProgress, this)
+    @progress.subscribe(@renderPie, this)
 
-  constructor: (opts) ->
-    opts ?= {}
+    @remaining = ko.computed(@getRemaining, this)
+    @deadlineUI = ko.computed(@getDeadlineUI, this)
+    @daysUI = ko.computed(@getDaysUI, this)
+    @hoursUI = ko.computed(@getHoursUI, this)
+    @minutesUI = ko.computed(@getMinutesUI, this)
+    @secondsUI = ko.computed(@getSecondsUI, this)
+    @remaining.subscribe(@onRefreshRemaining, this)
+    @onRefreshRemaining(@remaining())
 
-    @uploader = new PI.Uploader()
+    @uploader = new PI.UploadModal()
     @manager = new PI.CampaignManager(@uploader)
     @promote = new PI.CampaignPromote()
     @disburse = new PI.CampaignDisburse()
 
-    @total = ko.observable(opts.total)
-    @total.subscribe(@render_pie, @)
+  getProgress: ->
+    return @campaign().progress()
+
+  getDeadlineUI: ->
+    deadline = @campaign().deadline()
+    month = deadline.format('MMM').toUpperCase()
+    day = deadline.format('Do')
+    year = deadline.format('YYYY')
+    return "#{month} #{day} #{year}"
+
+  getDaysUI: ->
+    days = @campaign().days()
+    return days + ' day' if days is 1
+    return days + ' days'
+
+  getHoursUI: ->
+    hours = @campaign().hours()
+    return hours + ' hour' if hours is 1
+    return hours + ' hours'
+
+  getMinutesUI: ->
+    mins = @campaign().minutes()
+    return mins + ' min' if mins is 1
+    return mins + ' mins'
+
+  getSecondsUI: ->
+    secs = @remaining()
+    return ':' + secs if secs > 9
+    return ':0' + secs
+
+  getRemaining: ->
+    return @campaign().remaining()
 
   pieData: (total) ->
     total = 0 unless total and total > 0
@@ -44,20 +79,19 @@ class PI.CampaignDetails
       colors: colors
     }
 
-  render: (opts) ->
-    opts ?= {}
-    el = opts.el or jQuery('#pie-chart')
-    total = opts.total or @total()
+  render: ->
+    super()
 
+    el = jQuery('#pie-chart')
     return unless el and el.length > 0
 
     @el = el
     @graph = Raphael(@el[0], 200, 200)
-    @render_pie(total)
+    @renderPie(@progress())
 
     return this
 
-  render_pie: (total) ->
+  renderPie: (total) ->
     return unless @graph
 
     @graph.clear()
@@ -97,3 +131,19 @@ class PI.CampaignDetails
     })
 
     return this
+
+  delayRefresh: (ms) ->
+    clearTimeout(@timeout) if @timeout
+
+    delay = =>
+      clearTimeout(@timeout) if @timeout
+      @campaign().refreshTimes()
+
+    @timeout = setTimeout(delay, ms)
+
+  onRefreshRemaining: (remaining) ->
+    return if remaining <= 0
+
+    factor = 60
+    factor = 1 if remaining < 61
+    @delayRefresh(1000 * factor)

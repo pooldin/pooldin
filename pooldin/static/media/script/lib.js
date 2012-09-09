@@ -9226,6 +9226,1113 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 })( window );
 
+// moment.js
+// version : 1.7.0
+// author : Tim Wood
+// license : MIT
+// momentjs.com
+
+(function (Date, undefined) {
+
+    /************************************
+        Constants
+    ************************************/
+
+    var moment,
+        VERSION = "1.7.0",
+        round = Math.round, i,
+        // internal storage for language config files
+        languages = {},
+        currentLanguage = 'en',
+
+        // check for nodeJS
+        hasModule = (typeof module !== 'undefined' && module.exports),
+
+        // Parameters to check for on the lang config.  This list of properties
+        // will be inherited from English if not provided in a language
+        // definition.  monthsParse is also a lang config property, but it
+        // cannot be inherited and as such cannot be enumerated here.
+        langConfigProperties = 'months|monthsShort|weekdays|weekdaysShort|weekdaysMin|longDateFormat|calendar|relativeTime|ordinal|meridiem'.split('|'),
+
+        // ASP.NET json date format regex
+        aspNetJsonRegex = /^\/?Date\((\-?\d+)/i,
+
+        // format tokens
+        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|YYYY|YY|a|A|hh?|HH?|mm?|ss?|SS?S?|zz?|ZZ?)/g,
+        localFormattingTokens = /(LT|LL?L?L?)/g,
+        formattingRemoveEscapes = /(^\[)|(\\)|\]$/g,
+
+        // parsing tokens
+        parseMultipleFormatChunker = /([0-9a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)/gi,
+
+        // parsing token regexes
+        parseTokenOneOrTwoDigits = /\d\d?/, // 0 - 99
+        parseTokenOneToThreeDigits = /\d{1,3}/, // 0 - 999
+        parseTokenThreeDigits = /\d{3}/, // 000 - 999
+        parseTokenFourDigits = /\d{1,4}/, // 0 - 9999
+        parseTokenWord = /[0-9a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+/i, // any word characters or numbers
+        parseTokenTimezone = /Z|[\+\-]\d\d:?\d\d/i, // +00:00 -00:00 +0000 -0000 or Z
+        parseTokenT = /T/i, // T (ISO seperator)
+
+        // preliminary iso regex 
+        // 0000-00-00 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000
+        isoRegex = /^\s*\d{4}-\d\d-\d\d(T(\d\d(:\d\d(:\d\d(\.\d\d?\d?)?)?)?)?([\+\-]\d\d:?\d\d)?)?/,
+        isoFormat = 'YYYY-MM-DDTHH:mm:ssZ',
+
+        // iso time formats and regexes
+        isoTimes = [
+            ['HH:mm:ss.S', /T\d\d:\d\d:\d\d\.\d{1,3}/],
+            ['HH:mm:ss', /T\d\d:\d\d:\d\d/],
+            ['HH:mm', /T\d\d:\d\d/],
+            ['HH', /T\d\d/]
+        ],
+
+        // timezone chunker "+10:00" > ["10", "00"] or "-1530" > ["-15", "30"]
+        parseTimezoneChunker = /([\+\-]|\d\d)/gi,
+
+        // getter and setter names
+        proxyGettersAndSetters = 'Month|Date|Hours|Minutes|Seconds|Milliseconds'.split('|'),
+        unitMillisecondFactors = {
+            'Milliseconds' : 1,
+            'Seconds' : 1e3,
+            'Minutes' : 6e4,
+            'Hours' : 36e5,
+            'Days' : 864e5,
+            'Months' : 2592e6,
+            'Years' : 31536e6
+        },
+
+        // format function strings
+        formatFunctions = {},
+
+        /*
+         * moment.fn.format uses new Function() to create an inlined formatting function.
+         * Results are a 3x speed boost
+         * http://jsperf.com/momentjs-cached-format-functions
+         *
+         * These strings are appended into a function using replaceFormatTokens and makeFormatFunction
+         */
+        formatFunctionStrings = {
+            // a = placeholder
+            // b = placeholder
+            // t = the current moment being formatted
+            // v = getValueAtKey function
+            // o = language.ordinal function
+            // p = leftZeroFill function
+            // m = language.meridiem value or function
+            M    : '(a=t.month()+1)',
+            MMM  : 'v("monthsShort",t.month())',
+            MMMM : 'v("months",t.month())',
+            D    : '(a=t.date())',
+            DDD  : '(a=new Date(t.year(),t.month(),t.date()),b=new Date(t.year(),0,1),a=~~(((a-b)/864e5)+1.5))',
+            d    : '(a=t.day())',
+            dd   : 'v("weekdaysMin",t.day())',
+            ddd  : 'v("weekdaysShort",t.day())',
+            dddd : 'v("weekdays",t.day())',
+            w    : '(a=new Date(t.year(),t.month(),t.date()-t.day()+5),b=new Date(a.getFullYear(),0,4),a=~~((a-b)/864e5/7+1.5))',
+            YY   : 'p(t.year()%100,2)',
+            YYYY : 'p(t.year(),4)',
+            a    : 'm(t.hours(),t.minutes(),!0)',
+            A    : 'm(t.hours(),t.minutes(),!1)',
+            H    : 't.hours()',
+            h    : 't.hours()%12||12',
+            m    : 't.minutes()',
+            s    : 't.seconds()',
+            S    : '~~(t.milliseconds()/100)',
+            SS   : 'p(~~(t.milliseconds()/10),2)',
+            SSS  : 'p(t.milliseconds(),3)',
+            Z    : '((a=-t.zone())<0?((a=-a),"-"):"+")+p(~~(a/60),2)+":"+p(~~a%60,2)',
+            ZZ   : '((a=-t.zone())<0?((a=-a),"-"):"+")+p(~~(10*a/6),4)'
+        },
+
+        ordinalizeTokens = 'DDD w M D d'.split(' '),
+        paddedTokens = 'M D H h m s w'.split(' ');
+
+    while (ordinalizeTokens.length) {
+        i = ordinalizeTokens.pop();
+        formatFunctionStrings[i + 'o'] = formatFunctionStrings[i] + '+o(a)';
+    }
+    while (paddedTokens.length) {
+        i = paddedTokens.pop();
+        formatFunctionStrings[i + i] = 'p(' + formatFunctionStrings[i] + ',2)';
+    }
+    formatFunctionStrings.DDDD = 'p(' + formatFunctionStrings.DDD + ',3)';
+
+
+    /************************************
+        Constructors
+    ************************************/
+
+
+    // Moment prototype object
+    function Moment(date, isUTC, lang) {
+        this._d = date;
+        this._isUTC = !!isUTC;
+        this._a = date._a || null;
+        date._a = null;
+        this._lang = lang || false;
+    }
+
+    // Duration Constructor
+    function Duration(duration) {
+        var data = this._data = {},
+            years = duration.years || duration.y || 0,
+            months = duration.months || duration.M || 0, 
+            weeks = duration.weeks || duration.w || 0,
+            days = duration.days || duration.d || 0,
+            hours = duration.hours || duration.h || 0,
+            minutes = duration.minutes || duration.m || 0,
+            seconds = duration.seconds || duration.s || 0,
+            milliseconds = duration.milliseconds || duration.ms || 0;
+
+        // representation for dateAddRemove
+        this._milliseconds = milliseconds +
+            seconds * 1e3 + // 1000
+            minutes * 6e4 + // 1000 * 60
+            hours * 36e5; // 1000 * 60 * 60
+        // Because of dateAddRemove treats 24 hours as different from a
+        // day when working around DST, we need to store them separately
+        this._days = days +
+            weeks * 7;
+        // It is impossible translate months into days without knowing
+        // which months you are are talking about, so we have to store
+        // it separately.
+        this._months = months +
+            years * 12;
+            
+        // The following code bubbles up values, see the tests for
+        // examples of what that means.
+        data.milliseconds = milliseconds % 1000;
+        seconds += absRound(milliseconds / 1000);
+
+        data.seconds = seconds % 60;
+        minutes += absRound(seconds / 60);
+
+        data.minutes = minutes % 60;
+        hours += absRound(minutes / 60);
+
+        data.hours = hours % 24;
+        days += absRound(hours / 24);
+
+        days += weeks * 7;
+        data.days = days % 30;
+        
+        months += absRound(days / 30);
+
+        data.months = months % 12;
+        years += absRound(months / 12);
+
+        data.years = years;
+
+        this._lang = false;
+    }
+
+
+    /************************************
+        Helpers
+    ************************************/
+
+
+    function absRound(number) {
+        if (number < 0) {
+            return Math.ceil(number);
+        } else {
+            return Math.floor(number);
+        }
+    }
+
+    // left zero fill a number
+    // see http://jsperf.com/left-zero-filling for performance comparison
+    function leftZeroFill(number, targetLength) {
+        var output = number + '';
+        while (output.length < targetLength) {
+            output = '0' + output;
+        }
+        return output;
+    }
+
+    // helper function for _.addTime and _.subtractTime
+    function addOrSubtractDurationFromMoment(mom, duration, isAdding) {
+        var ms = duration._milliseconds,
+            d = duration._days,
+            M = duration._months,
+            currentDate;
+
+        if (ms) {
+            mom._d.setTime(+mom + ms * isAdding);
+        }
+        if (d) {
+            mom.date(mom.date() + d * isAdding);
+        }
+        if (M) {
+            currentDate = mom.date();
+            mom.date(1)
+                .month(mom.month() + M * isAdding)
+                .date(Math.min(currentDate, mom.daysInMonth()));
+        }
+    }
+
+    // check if is an array
+    function isArray(input) {
+        return Object.prototype.toString.call(input) === '[object Array]';
+    }
+
+    // compare two arrays, return the number of differences
+    function compareArrays(array1, array2) {
+        var len = Math.min(array1.length, array2.length),
+            lengthDiff = Math.abs(array1.length - array2.length),
+            diffs = 0,
+            i;
+        for (i = 0; i < len; i++) {
+            if (~~array1[i] !== ~~array2[i]) {
+                diffs++;
+            }
+        }
+        return diffs + lengthDiff;
+    }
+
+    // convert an array to a date.
+    // the array should mirror the parameters below
+    // note: all values past the year are optional and will default to the lowest possible value.
+    // [year, month, day , hour, minute, second, millisecond]
+    function dateFromArray(input, asUTC) {
+        var i, date;
+        for (i = 1; i < 7; i++) {
+            input[i] = (input[i] == null) ? (i === 2 ? 1 : 0) : input[i];
+        }
+        // we store whether we used utc or not in the input array
+        input[7] = asUTC;
+        date = new Date(0);
+        if (asUTC) {
+            date.setUTCFullYear(input[0], input[1], input[2]);
+            date.setUTCHours(input[3], input[4], input[5], input[6]);
+        } else {
+            date.setFullYear(input[0], input[1], input[2]);
+            date.setHours(input[3], input[4], input[5], input[6]);
+        }
+        date._a = input;
+        return date;
+    }
+
+    // Loads a language definition into the `languages` cache.  The function
+    // takes a key and optionally values.  If not in the browser and no values
+    // are provided, it will load the language file module.  As a convenience,
+    // this function also returns the language values.
+    function loadLang(key, values) {
+        var i, m,
+            parse = [];
+
+        if (!values && hasModule) {
+            values = require('./lang/' + key);
+        }
+        
+        for (i = 0; i < langConfigProperties.length; i++) {
+            // If a language definition does not provide a value, inherit
+            // from English
+            values[langConfigProperties[i]] = values[langConfigProperties[i]] ||
+              languages.en[langConfigProperties[i]];
+        }
+
+        for (i = 0; i < 12; i++) {
+            m = moment([2000, i]);
+            parse[i] = new RegExp('^' + (values.months[i] || values.months(m, '')) + 
+                '|^' + (values.monthsShort[i] || values.monthsShort(m, '')).replace('.', ''), 'i');
+        }
+        values.monthsParse = values.monthsParse || parse;
+
+        languages[key] = values;
+        
+        return values;
+    }
+
+    // Determines which language definition to use and returns it.
+    //
+    // With no parameters, it will return the global language.  If you
+    // pass in a language key, such as 'en', it will return the
+    // definition for 'en', so long as 'en' has already been loaded using
+    // moment.lang.  If you pass in a moment or duration instance, it
+    // will decide the language based on that, or default to the global
+    // language.
+    function getLangDefinition(m) {
+        var langKey = (typeof m === 'string') && m ||
+                      m && m._lang ||
+                      null;
+
+        return langKey ? (languages[langKey] || loadLang(langKey)) : moment;
+    }
+
+
+    /************************************
+        Formatting
+    ************************************/
+
+
+    // helper for building inline formatting functions
+    function replaceFormatTokens(token) {
+        return formatFunctionStrings[token] ? 
+            ("'+(" + formatFunctionStrings[token] + ")+'") :
+            token.replace(formattingRemoveEscapes, "").replace(/\\?'/g, "\\'");
+    }
+
+    // helper for recursing long date formatting tokens
+    function replaceLongDateFormatTokens(input) {
+        return getLangDefinition().longDateFormat[input] || input;
+    }
+
+    function makeFormatFunction(format) {
+        var output = "var a,b;return '" +
+            format.replace(formattingTokens, replaceFormatTokens) + "';",
+            Fn = Function; // get around jshint
+        // t = the current moment being formatted
+        // v = getValueAtKey function
+        // o = language.ordinal function
+        // p = leftZeroFill function
+        // m = language.meridiem value or function
+        return new Fn('t', 'v', 'o', 'p', 'm', output);
+    }
+
+    function makeOrGetFormatFunction(format) {
+        if (!formatFunctions[format]) {
+            formatFunctions[format] = makeFormatFunction(format);
+        }
+        return formatFunctions[format];
+    }
+
+    // format date using native date object
+    function formatMoment(m, format) {
+        var lang = getLangDefinition(m);
+
+        function getValueFromArray(key, index) {
+            return lang[key].call ? lang[key](m, format) : lang[key][index];
+        }
+
+        while (localFormattingTokens.test(format)) {
+            format = format.replace(localFormattingTokens, replaceLongDateFormatTokens);
+        }
+
+        if (!formatFunctions[format]) {
+            formatFunctions[format] = makeFormatFunction(format);
+        }
+
+        return formatFunctions[format](m, getValueFromArray, lang.ordinal, leftZeroFill, lang.meridiem);
+    }
+
+
+    /************************************
+        Parsing
+    ************************************/
+
+
+    // get the regex to find the next token
+    function getParseRegexForToken(token) {
+        switch (token) {
+        case 'DDDD':
+            return parseTokenThreeDigits;
+        case 'YYYY':
+            return parseTokenFourDigits;
+        case 'S':
+        case 'SS':
+        case 'SSS':
+        case 'DDD':
+            return parseTokenOneToThreeDigits;
+        case 'MMM':
+        case 'MMMM':
+        case 'dd':
+        case 'ddd':
+        case 'dddd':
+        case 'a':
+        case 'A':
+            return parseTokenWord;
+        case 'Z':
+        case 'ZZ':
+            return parseTokenTimezone;
+        case 'T':
+            return parseTokenT;
+        case 'MM':
+        case 'DD':
+        case 'YY':
+        case 'HH':
+        case 'hh':
+        case 'mm':
+        case 'ss':
+        case 'M':
+        case 'D':
+        case 'd':
+        case 'H':
+        case 'h':
+        case 'm':
+        case 's':
+            return parseTokenOneOrTwoDigits;
+        default :
+            return new RegExp(token.replace('\\', ''));
+        }
+    }
+
+    // function to convert string input to date
+    function addTimeToArrayFromToken(token, input, datePartArray, config) {
+        var a;
+        //console.log('addTime', format, input);
+        switch (token) {
+        // MONTH
+        case 'M' : // fall through to MM
+        case 'MM' :
+            datePartArray[1] = (input == null) ? 0 : ~~input - 1;
+            break;
+        case 'MMM' : // fall through to MMMM
+        case 'MMMM' :
+            for (a = 0; a < 12; a++) {
+                if (getLangDefinition().monthsParse[a].test(input)) {
+                    datePartArray[1] = a;
+                    break;
+                }
+            }
+            break;
+        // DAY OF MONTH
+        case 'D' : // fall through to DDDD
+        case 'DD' : // fall through to DDDD
+        case 'DDD' : // fall through to DDDD
+        case 'DDDD' :
+            if (input != null) {
+                datePartArray[2] = ~~input;
+            }
+            break;
+        // YEAR
+        case 'YY' :
+            input = ~~input;
+            datePartArray[0] = input + (input > 70 ? 1900 : 2000);
+            break;
+        case 'YYYY' :
+            datePartArray[0] = ~~Math.abs(input);
+            break;
+        // AM / PM
+        case 'a' : // fall through to A
+        case 'A' :
+            config.isPm = ((input + '').toLowerCase() === 'pm');
+            break;
+        // 24 HOUR
+        case 'H' : // fall through to hh
+        case 'HH' : // fall through to hh
+        case 'h' : // fall through to hh
+        case 'hh' :
+            datePartArray[3] = ~~input;
+            break;
+        // MINUTE
+        case 'm' : // fall through to mm
+        case 'mm' :
+            datePartArray[4] = ~~input;
+            break;
+        // SECOND
+        case 's' : // fall through to ss
+        case 'ss' :
+            datePartArray[5] = ~~input;
+            break;
+        // MILLISECOND
+        case 'S' :
+        case 'SS' :
+        case 'SSS' :
+            datePartArray[6] = ~~ (('0.' + input) * 1000);
+            break;
+        // TIMEZONE
+        case 'Z' : // fall through to ZZ
+        case 'ZZ' :
+            config.isUTC = true;
+            a = (input + '').match(parseTimezoneChunker);
+            if (a && a[1]) {
+                config.tzh = ~~a[1];
+            }
+            if (a && a[2]) {
+                config.tzm = ~~a[2];
+            }
+            // reverse offsets
+            if (a && a[0] === '+') {
+                config.tzh = -config.tzh;
+                config.tzm = -config.tzm;
+            }
+            break;
+        }
+    }
+
+    // date from string and format string
+    function makeDateFromStringAndFormat(string, format) {
+        var datePartArray = [0, 0, 1, 0, 0, 0, 0],
+            config = {
+                tzh : 0, // timezone hour offset
+                tzm : 0  // timezone minute offset
+            },
+            tokens = format.match(formattingTokens),
+            i, parsedInput;
+
+        for (i = 0; i < tokens.length; i++) {
+            parsedInput = (getParseRegexForToken(tokens[i]).exec(string) || [])[0];
+            string = string.replace(getParseRegexForToken(tokens[i]), '');
+            addTimeToArrayFromToken(tokens[i], parsedInput, datePartArray, config);
+        }
+        // handle am pm
+        if (config.isPm && datePartArray[3] < 12) {
+            datePartArray[3] += 12;
+        }
+        // if is 12 am, change hours to 0
+        if (config.isPm === false && datePartArray[3] === 12) {
+            datePartArray[3] = 0;
+        }
+        // handle timezone
+        datePartArray[3] += config.tzh;
+        datePartArray[4] += config.tzm;
+        // return
+        return dateFromArray(datePartArray, config.isUTC);
+    }
+
+    // date from string and array of format strings
+    function makeDateFromStringAndArray(string, formats) {
+        var output,
+            inputParts = string.match(parseMultipleFormatChunker) || [],
+            formattedInputParts,
+            scoreToBeat = 99,
+            i,
+            currentDate,
+            currentScore;
+        for (i = 0; i < formats.length; i++) {
+            currentDate = makeDateFromStringAndFormat(string, formats[i]);
+            formattedInputParts = formatMoment(new Moment(currentDate), formats[i]).match(parseMultipleFormatChunker) || [];
+            currentScore = compareArrays(inputParts, formattedInputParts);
+            if (currentScore < scoreToBeat) {
+                scoreToBeat = currentScore;
+                output = currentDate;
+            }
+        }
+        return output;
+    }
+
+    // date from iso format
+    function makeDateFromString(string) {
+        var format = 'YYYY-MM-DDT',
+            i;
+        if (isoRegex.exec(string)) {
+            for (i = 0; i < 4; i++) {
+                if (isoTimes[i][1].exec(string)) {
+                    format += isoTimes[i][0];
+                    break;
+                }
+            }
+            return parseTokenTimezone.exec(string) ? 
+                makeDateFromStringAndFormat(string, format + ' Z') :
+                makeDateFromStringAndFormat(string, format);
+        }
+        return new Date(string);
+    }
+
+
+    /************************************
+        Relative Time
+    ************************************/
+
+
+    // helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
+    function substituteTimeAgo(string, number, withoutSuffix, isFuture, lang) {
+        var rt = lang.relativeTime[string];
+        return (typeof rt === 'function') ?
+            rt(number || 1, !!withoutSuffix, string, isFuture) :
+            rt.replace(/%d/i, number || 1);
+    }
+
+    function relativeTime(milliseconds, withoutSuffix, lang) {
+        var seconds = round(Math.abs(milliseconds) / 1000),
+            minutes = round(seconds / 60),
+            hours = round(minutes / 60),
+            days = round(hours / 24),
+            years = round(days / 365),
+            args = seconds < 45 && ['s', seconds] ||
+                minutes === 1 && ['m'] ||
+                minutes < 45 && ['mm', minutes] ||
+                hours === 1 && ['h'] ||
+                hours < 22 && ['hh', hours] ||
+                days === 1 && ['d'] ||
+                days <= 25 && ['dd', days] ||
+                days <= 45 && ['M'] ||
+                days < 345 && ['MM', round(days / 30)] ||
+                years === 1 && ['y'] || ['yy', years];
+        args[2] = withoutSuffix;
+        args[3] = milliseconds > 0;
+        args[4] = lang;
+        return substituteTimeAgo.apply({}, args);
+    }
+
+
+    /************************************
+        Top Level Functions
+    ************************************/
+
+
+    moment = function (input, format) {
+        if (input === null || input === '') {
+            return null;
+        }
+        var date,
+            matched;
+        // parse Moment object
+        if (moment.isMoment(input)) {
+            return new Moment(new Date(+input._d), input._isUTC, input._lang);
+        // parse string and format
+        } else if (format) {
+            if (isArray(format)) {
+                date = makeDateFromStringAndArray(input, format);
+            } else {
+                date = makeDateFromStringAndFormat(input, format);
+            }
+        // evaluate it as a JSON-encoded date
+        } else {
+            matched = aspNetJsonRegex.exec(input);
+            date = input === undefined ? new Date() :
+                matched ? new Date(+matched[1]) :
+                input instanceof Date ? input :
+                isArray(input) ? dateFromArray(input) :
+                typeof input === 'string' ? makeDateFromString(input) :
+                new Date(input);
+        }
+
+        return new Moment(date);
+    };
+
+    // creating with utc
+    moment.utc = function (input, format) {
+        if (isArray(input)) {
+            return new Moment(dateFromArray(input, true), true);
+        }
+        // if we don't have a timezone, we need to add one to trigger parsing into utc
+        if (typeof input === 'string' && !parseTokenTimezone.exec(input)) {
+            input += ' +0000';
+            if (format) {
+                format += ' Z';
+            }
+        }
+        return moment(input, format).utc();
+    };
+
+    // creating with unix timestamp (in seconds)
+    moment.unix = function (input) {
+        return moment(input * 1000);
+    };
+
+    // duration
+    moment.duration = function (input, key) {
+        var isDuration = moment.isDuration(input),
+            isNumber = (typeof input === 'number'),
+            duration = (isDuration ? input._data : (isNumber ? {} : input)),
+            ret;
+
+        if (isNumber) {
+            if (key) {
+                duration[key] = input;
+            } else {
+                duration.milliseconds = input;
+            }
+        }
+
+        ret = new Duration(duration);
+
+        if (isDuration) {
+            ret._lang = input._lang;
+        }
+
+        return ret;
+    };
+
+    // humanizeDuration
+    // This method is deprecated in favor of the new Duration object.  Please
+    // see the moment.duration method.
+    moment.humanizeDuration = function (num, type, withSuffix) {
+        return moment.duration(num, type === true ? null : type).humanize(type === true ? true : withSuffix);
+    };
+
+    // version number
+    moment.version = VERSION;
+
+    // default format
+    moment.defaultFormat = isoFormat;
+
+    // This function will load languages and then set the global language.  If
+    // no arguments are passed in, it will simply return the current global
+    // language key.
+    moment.lang = function (key, values) {
+        var i;
+
+        if (!key) {
+            return currentLanguage;
+        }
+        if (values || !languages[key]) {
+            loadLang(key, values);
+        }
+        if (languages[key]) {
+            // deprecated, to get the language definition variables, use the
+            // moment.fn.lang method or the getLangDefinition function.
+            for (i = 0; i < langConfigProperties.length; i++) {
+                moment[langConfigProperties[i]] = languages[key][langConfigProperties[i]];
+            }
+            moment.monthsParse = languages[key].monthsParse;
+            currentLanguage = key;
+        }
+    };
+
+    // returns language data
+    moment.langData = getLangDefinition;
+
+    // compare moment object
+    moment.isMoment = function (obj) {
+        return obj instanceof Moment;
+    };
+
+    // for typechecking Duration objects
+    moment.isDuration = function (obj) {
+        return obj instanceof Duration;
+    };
+
+    // Set default language, other languages will inherit from English.
+    moment.lang('en', {
+        months : "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
+        monthsShort : "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
+        weekdays : "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
+        weekdaysShort : "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),
+        weekdaysMin : "Su_Mo_Tu_We_Th_Fr_Sa".split("_"),
+        longDateFormat : {
+            LT : "h:mm A",
+            L : "MM/DD/YYYY",
+            LL : "MMMM D YYYY",
+            LLL : "MMMM D YYYY LT",
+            LLLL : "dddd, MMMM D YYYY LT"
+        },
+        meridiem : function (hours, minutes, isLower) {
+            if (hours > 11) {
+                return isLower ? 'pm' : 'PM';
+            } else {
+                return isLower ? 'am' : 'AM';
+            }
+        },
+        calendar : {
+            sameDay : '[Today at] LT',
+            nextDay : '[Tomorrow at] LT',
+            nextWeek : 'dddd [at] LT',
+            lastDay : '[Yesterday at] LT',
+            lastWeek : '[last] dddd [at] LT',
+            sameElse : 'L'
+        },
+        relativeTime : {
+            future : "in %s",
+            past : "%s ago",
+            s : "a few seconds",
+            m : "a minute",
+            mm : "%d minutes",
+            h : "an hour",
+            hh : "%d hours",
+            d : "a day",
+            dd : "%d days",
+            M : "a month",
+            MM : "%d months",
+            y : "a year",
+            yy : "%d years"
+        },
+        ordinal : function (number) {
+            var b = number % 10;
+            return (~~ (number % 100 / 10) === 1) ? 'th' :
+                (b === 1) ? 'st' :
+                (b === 2) ? 'nd' :
+                (b === 3) ? 'rd' : 'th';
+        }
+    });
+
+
+    /************************************
+        Moment Prototype
+    ************************************/
+
+
+    moment.fn = Moment.prototype = {
+
+        clone : function () {
+            return moment(this);
+        },
+
+        valueOf : function () {
+            return +this._d;
+        },
+
+        unix : function () {
+            return Math.floor(+this._d / 1000);
+        },
+
+        toString : function () {
+            return this._d.toString();
+        },
+
+        toDate : function () {
+            return this._d;
+        },
+
+        toArray : function () {
+            var m = this;
+            return [
+                m.year(),
+                m.month(),
+                m.date(),
+                m.hours(),
+                m.minutes(),
+                m.seconds(),
+                m.milliseconds(),
+                !!this._isUTC
+            ];
+        },
+
+        isValid : function () {
+            if (this._a) {
+                return !compareArrays(this._a, (this._a[7] ? moment.utc(this) : this).toArray());
+            }
+            return !isNaN(this._d.getTime());
+        },
+
+        utc : function () {
+            this._isUTC = true;
+            return this;
+        },
+
+        local : function () {
+            this._isUTC = false;
+            return this;
+        },
+
+        format : function (inputString) {
+            return formatMoment(this, inputString ? inputString : moment.defaultFormat);
+        },
+
+        add : function (input, val) {
+            var dur = val ? moment.duration(+val, input) : moment.duration(input);
+            addOrSubtractDurationFromMoment(this, dur, 1);
+            return this;
+        },
+
+        subtract : function (input, val) {
+            var dur = val ? moment.duration(+val, input) : moment.duration(input);
+            addOrSubtractDurationFromMoment(this, dur, -1);
+            return this;
+        },
+
+        diff : function (input, val, asFloat) {
+            var inputMoment = this._isUTC ? moment(input).utc() : moment(input).local(),
+                zoneDiff = (this.zone() - inputMoment.zone()) * 6e4,
+                diff = this._d - inputMoment._d - zoneDiff,
+                year = this.year() - inputMoment.year(),
+                month = this.month() - inputMoment.month(),
+                date = this.date() - inputMoment.date(),
+                output;
+            if (val === 'months') {
+                output = year * 12 + month + date / 30;
+            } else if (val === 'years') {
+                output = year + (month + date / 30) / 12;
+            } else {
+                output = val === 'seconds' ? diff / 1e3 : // 1000
+                    val === 'minutes' ? diff / 6e4 : // 1000 * 60
+                    val === 'hours' ? diff / 36e5 : // 1000 * 60 * 60
+                    val === 'days' ? diff / 864e5 : // 1000 * 60 * 60 * 24
+                    val === 'weeks' ? diff / 6048e5 : // 1000 * 60 * 60 * 24 * 7
+                    diff;
+            }
+            return asFloat ? output : round(output);
+        },
+
+        from : function (time, withoutSuffix) {
+            return moment.duration(this.diff(time)).lang(this._lang).humanize(!withoutSuffix);
+        },
+
+        fromNow : function (withoutSuffix) {
+            return this.from(moment(), withoutSuffix);
+        },
+
+        calendar : function () {
+            var diff = this.diff(moment().sod(), 'days', true),
+                calendar = this.lang().calendar,
+                allElse = calendar.sameElse,
+                format = diff < -6 ? allElse :
+                diff < -1 ? calendar.lastWeek :
+                diff < 0 ? calendar.lastDay :
+                diff < 1 ? calendar.sameDay :
+                diff < 2 ? calendar.nextDay :
+                diff < 7 ? calendar.nextWeek : allElse;
+            return this.format(typeof format === 'function' ? format.apply(this) : format);
+        },
+
+        isLeapYear : function () {
+            var year = this.year();
+            return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+        },
+
+        isDST : function () {
+            return (this.zone() < moment([this.year()]).zone() || 
+                this.zone() < moment([this.year(), 5]).zone());
+        },
+
+        day : function (input) {
+            var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
+            return input == null ? day :
+                this.add({ d : input - day });
+        },
+
+        startOf: function (val) {
+            // the following switch intentionally omits break keywords
+            // to utilize falling through the cases.
+            switch (val.replace(/s$/, '')) {
+            case 'year':
+                this.month(0);
+                /* falls through */
+            case 'month':
+                this.date(1);
+                /* falls through */
+            case 'day':
+                this.hours(0);
+                /* falls through */
+            case 'hour':
+                this.minutes(0);
+                /* falls through */
+            case 'minute':
+                this.seconds(0);
+                /* falls through */
+            case 'second':
+                this.milliseconds(0);
+                /* falls through */
+            }
+            return this;
+        },
+
+        endOf: function (val) {
+            return this.startOf(val).add(val.replace(/s?$/, 's'), 1).subtract('ms', 1);
+        },
+        
+        sod: function () {
+            return this.clone().startOf('day');
+        },
+
+        eod: function () {
+            // end of day = start of day plus 1 day, minus 1 millisecond
+            return this.clone().endOf('day');
+        },
+
+        zone : function () {
+            return this._isUTC ? 0 : this._d.getTimezoneOffset();
+        },
+
+        daysInMonth : function () {
+            return moment.utc([this.year(), this.month() + 1, 0]).date();
+        },
+
+        // If passed a language key, it will set the language for this
+        // instance.  Otherwise, it will return the language configuration
+        // variables for this instance.
+        lang : function (lang) {
+            if (lang === undefined) {
+                return getLangDefinition(this);
+            } else {
+                this._lang = lang;
+                return this;
+            }
+        }
+    };
+
+    // helper for adding shortcuts
+    function makeGetterAndSetter(name, key) {
+        moment.fn[name] = function (input) {
+            var utc = this._isUTC ? 'UTC' : '';
+            if (input != null) {
+                this._d['set' + utc + key](input);
+                return this;
+            } else {
+                return this._d['get' + utc + key]();
+            }
+        };
+    }
+
+    // loop through and add shortcuts (Month, Date, Hours, Minutes, Seconds, Milliseconds)
+    for (i = 0; i < proxyGettersAndSetters.length; i ++) {
+        makeGetterAndSetter(proxyGettersAndSetters[i].toLowerCase(), proxyGettersAndSetters[i]);
+    }
+
+    // add shortcut for year (uses different syntax than the getter/setter 'year' == 'FullYear')
+    makeGetterAndSetter('year', 'FullYear');
+
+
+    /************************************
+        Duration Prototype
+    ************************************/
+
+
+    moment.duration.fn = Duration.prototype = {
+        weeks : function () {
+            return absRound(this.days() / 7);
+        },
+
+        valueOf : function () {
+            return this._milliseconds +
+              this._days * 864e5 +
+              this._months * 2592e6;
+        },
+
+        humanize : function (withSuffix) {
+            var difference = +this,
+                rel = this.lang().relativeTime,
+                output = relativeTime(difference, !withSuffix, this.lang());
+
+            if (withSuffix) {
+                output = (difference <= 0 ? rel.past : rel.future).replace(/%s/i, output);
+            }
+
+            return output;
+        },
+
+        lang : moment.fn.lang
+    };
+
+    function makeDurationGetter(name) {
+        moment.duration.fn[name] = function () {
+            return this._data[name];
+        };
+    }
+
+    function makeDurationAsGetter(name, factor) {
+        moment.duration.fn['as' + name] = function () {
+            return +this / factor;
+        };
+    }
+
+    for (i in unitMillisecondFactors) {
+        if (unitMillisecondFactors.hasOwnProperty(i)) {
+            makeDurationAsGetter(i, unitMillisecondFactors[i]);
+            makeDurationGetter(i.toLowerCase());
+        }
+    }
+
+    makeDurationAsGetter('Weeks', 6048e5);
+
+
+    /************************************
+        Exposing Moment
+    ************************************/
+
+
+    // CommonJS module is defined
+    if (hasModule) {
+        module.exports = moment;
+    }
+    /*global ender:false */
+    if (typeof ender === 'undefined') {
+        // here, `this` means `window` in the browser, or `global` on the server
+        // add `moment` as a global object via a string identifier,
+        // for Closure Compiler "advanced" mode
+        this['moment'] = moment;
+    }
+    /*global define:false */
+    if (typeof define === "function" && define.amd) {
+        define("moment", [], function () {
+            return moment;
+        });
+    }
+}).call(this, Date);
+
 // Knockout JavaScript library v2.1.0
 // (c) Steven Sanderson - http://knockoutjs.com/
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -12670,6 +13777,780 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 });
 })(window,document,navigator);
 
+/// Knockout Mapping plugin v2.3.2
+/// (c) 2012 Steven Sanderson, Roy Jacobs - http://knockoutjs.com/
+/// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+(function (factory) {
+	// Module systems magic dance.
+
+	if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
+		// CommonJS or Node: hard-coded dependency on "knockout"
+		factory(require("knockout"), exports);
+	} else if (typeof define === "function" && define["amd"]) {
+		// AMD anonymous module with hard-coded dependency on "knockout"
+		define(["knockout", "exports"], factory);
+	} else {
+		// <script> tag: use the global `ko` object, attaching a `mapping` property
+		factory(ko, ko.mapping = {});
+	}
+}(function (ko, exports) {
+	var DEBUG=true;
+	var mappingProperty = "__ko_mapping__";
+	var realKoDependentObservable = ko.dependentObservable;
+	var mappingNesting = 0;
+	var dependentObservables;
+	var visitedObjects;
+	var recognizedRootProperties = ["create", "update", "key", "arrayChanged"];
+	var emptyReturn = {};
+
+	var _defaultOptions = {
+		include: ["_destroy"],
+		ignore: [],
+		copy: []
+	};
+	var defaultOptions = _defaultOptions;
+
+	// Author: KennyTM @ StackOverflow
+	function unionArrays (x, y) {
+		var obj = {};
+		for (var i = x.length - 1; i >= 0; -- i) obj[x[i]] = x[i];
+		for (var i = y.length - 1; i >= 0; -- i) obj[y[i]] = y[i];
+		var res = [];
+
+		for (var k in obj) {
+			res.push(obj[k]);
+		};
+
+		return res;
+	}
+
+	function extendObject(destination, source) {
+		for (var key in source) {
+			if (source.hasOwnProperty(key) && source[key]) {
+				if (key && destination[key] && !(exports.getType(destination[key]) === "array")) {
+					extendObject(destination[key], source[key]);
+				} else {
+					var bothArrays = exports.getType(destination[key]) === "array" && exports.getType(source[key]) === "array";
+					if (bothArrays) {
+						destination[key] = unionArrays(destination[key], source[key]);
+					} else {
+						destination[key] = source[key];
+					}
+				}
+			}
+		}
+	}
+
+	function merge(obj1, obj2) {
+		var merged = {};
+		extendObject(merged, obj1);
+		extendObject(merged, obj2);
+
+		return merged;
+	}
+
+	exports.isMapped = function (viewModel) {
+		var unwrapped = ko.utils.unwrapObservable(viewModel);
+		return unwrapped && unwrapped[mappingProperty];
+	}
+
+	exports.fromJS = function (jsObject /*, inputOptions, target*/ ) {
+		if (arguments.length == 0) throw new Error("When calling ko.fromJS, pass the object you want to convert.");
+
+		// When mapping is completed, even with an exception, reset the nesting level
+		window.setTimeout(function () {
+			mappingNesting = 0;
+		}, 0);
+
+		if (!mappingNesting++) {
+			dependentObservables = [];
+			visitedObjects = new objectLookup();
+		}
+
+		var options;
+		var target;
+
+		if (arguments.length == 2) {
+			if (arguments[1][mappingProperty]) {
+				target = arguments[1];
+			} else {
+				options = arguments[1];
+			}
+		}
+		if (arguments.length == 3) {
+			options = arguments[1];
+			target = arguments[2];
+		}
+
+		if (target) {
+			options = merge(options, target[mappingProperty]);
+		}
+		options = fillOptions(options);
+
+		var result = updateViewModel(target, jsObject, options);
+		if (target) {
+			result = target;
+		}
+
+		// Evaluate any dependent observables that were proxied.
+		// Do this in a timeout to defer execution. Basically, any user code that explicitly looks up the DO will perform the first evaluation. Otherwise,
+		// it will be done by this code.
+		if (!--mappingNesting) {
+			window.setTimeout(function () {
+				while (dependentObservables.length) {
+					var DO = dependentObservables.pop();
+					if (DO) DO();
+				}
+			}, 0);
+		}
+
+		// Save any new mapping options in the view model, so that updateFromJS can use them later.
+		result[mappingProperty] = merge(result[mappingProperty], options);
+
+		return result;
+	};
+
+	exports.fromJSON = function (jsonString /*, options, target*/ ) {
+		var parsed = ko.utils.parseJson(jsonString);
+		arguments[0] = parsed;
+		return exports.fromJS.apply(this, arguments);
+	};
+
+	exports.updateFromJS = function (viewModel) {
+		throw new Error("ko.mapping.updateFromJS, use ko.mapping.fromJS instead. Please note that the order of parameters is different!");
+	};
+
+	exports.updateFromJSON = function (viewModel) {
+		throw new Error("ko.mapping.updateFromJSON, use ko.mapping.fromJSON instead. Please note that the order of parameters is different!");
+	};
+
+	exports.toJS = function (rootObject, options) {
+		if (!defaultOptions) exports.resetDefaultOptions();
+
+		if (arguments.length == 0) throw new Error("When calling ko.mapping.toJS, pass the object you want to convert.");
+		if (exports.getType(defaultOptions.ignore) !== "array") throw new Error("ko.mapping.defaultOptions().ignore should be an array.");
+		if (exports.getType(defaultOptions.include) !== "array") throw new Error("ko.mapping.defaultOptions().include should be an array.");
+		if (exports.getType(defaultOptions.copy) !== "array") throw new Error("ko.mapping.defaultOptions().copy should be an array.");
+
+		// Merge in the options used in fromJS
+		options = fillOptions(options, rootObject[mappingProperty]);
+
+		// We just unwrap everything at every level in the object graph
+		return exports.visitModel(rootObject, function (x) {
+			return ko.utils.unwrapObservable(x)
+		}, options);
+	};
+
+	exports.toJSON = function (rootObject, options) {
+		var plainJavaScriptObject = exports.toJS(rootObject, options);
+		return ko.utils.stringifyJson(plainJavaScriptObject);
+	};
+
+	exports.defaultOptions = function () {
+		if (arguments.length > 0) {
+			defaultOptions = arguments[0];
+		} else {
+			return defaultOptions;
+		}
+	};
+
+	exports.resetDefaultOptions = function () {
+		defaultOptions = {
+			include: _defaultOptions.include.slice(0),
+			ignore: _defaultOptions.ignore.slice(0),
+			copy: _defaultOptions.copy.slice(0)
+		};
+	};
+
+	exports.getType = function(x) {
+		if ((x) && (typeof (x) === "object")) {
+			if (x.constructor == (new Date).constructor) return "date";
+			if (Object.prototype.toString.call(x) === "[object Array]") return "array";
+		}
+		return typeof x;
+	}
+
+	function fillOptions(rawOptions, otherOptions) {
+		var options = merge({}, rawOptions);
+
+		// Move recognized root-level properties into a root namespace
+		for (var i = recognizedRootProperties.length - 1; i >= 0; i--) {
+			var property = recognizedRootProperties[i];
+			
+			// Carry on, unless this property is present
+			if (!options[property]) continue;
+			
+			// Move the property into the root namespace
+			if (!(options[""] instanceof Object)) options[""] = {};
+			options[""][property] = options[property];
+			delete options[property];
+		}
+
+		if (otherOptions) {
+			options.ignore = mergeArrays(otherOptions.ignore, options.ignore);
+			options.include = mergeArrays(otherOptions.include, options.include);
+			options.copy = mergeArrays(otherOptions.copy, options.copy);
+		}
+		options.ignore = mergeArrays(options.ignore, defaultOptions.ignore);
+		options.include = mergeArrays(options.include, defaultOptions.include);
+		options.copy = mergeArrays(options.copy, defaultOptions.copy);
+
+		options.mappedProperties = options.mappedProperties || {};
+		return options;
+	}
+
+	function mergeArrays(a, b) {
+		if (exports.getType(a) !== "array") {
+			if (exports.getType(a) === "undefined") a = [];
+			else a = [a];
+		}
+		if (exports.getType(b) !== "array") {
+			if (exports.getType(b) === "undefined") b = [];
+			else b = [b];
+		}
+
+		return ko.utils.arrayGetDistinctValues(a.concat(b));
+	}
+
+	// When using a 'create' callback, we proxy the dependent observable so that it doesn't immediately evaluate on creation.
+	// The reason is that the dependent observables in the user-specified callback may contain references to properties that have not been mapped yet.
+	function withProxyDependentObservable(dependentObservables, callback) {
+		var localDO = ko.dependentObservable;
+		ko.dependentObservable = function (read, owner, options) {
+			options = options || {};
+
+			if (read && typeof read == "object") { // mirrors condition in knockout implementation of DO's
+				options = read;
+			}
+
+			var realDeferEvaluation = options.deferEvaluation;
+
+			var isRemoved = false;
+
+			// We wrap the original dependent observable so that we can remove it from the 'dependentObservables' list we need to evaluate after mapping has
+			// completed if the user already evaluated the DO themselves in the meantime.
+			var wrap = function (DO) {
+				// Temporarily revert ko.dependentObservable, since it is used in ko.isWriteableObservable
+				var tmp = ko.dependentObservable;
+				ko.dependentObservable = realKoDependentObservable;
+				var isWriteable = ko.isWriteableObservable(DO);
+				ko.dependentObservable = tmp;
+
+				var wrapped = realKoDependentObservable({
+					read: function () {
+						if (!isRemoved) {
+							ko.utils.arrayRemoveItem(dependentObservables, DO);
+							isRemoved = true;
+						}
+						return DO.apply(DO, arguments);
+					},
+					write: isWriteable && function (val) {
+						return DO(val);
+					},
+					deferEvaluation: true
+				});
+				if (DEBUG) wrapped._wrapper = true;
+				return wrapped;
+			};
+			
+			options.deferEvaluation = true; // will either set for just options, or both read/options.
+			var realDependentObservable = new realKoDependentObservable(read, owner, options);
+
+			if (!realDeferEvaluation) {
+				realDependentObservable = wrap(realDependentObservable);
+				dependentObservables.push(realDependentObservable);
+			}
+
+			return realDependentObservable;
+		}
+		ko.dependentObservable.fn = realKoDependentObservable.fn;
+		ko.computed = ko.dependentObservable;
+		var result = callback();
+		ko.dependentObservable = localDO;
+		ko.computed = ko.dependentObservable;
+		return result;
+	}
+
+	function updateViewModel(mappedRootObject, rootObject, options, parentName, parent, parentPropertyName, mappedParent) {
+		var isArray = exports.getType(ko.utils.unwrapObservable(rootObject)) === "array";
+
+		parentPropertyName = parentPropertyName || "";
+
+		// If this object was already mapped previously, take the options from there and merge them with our existing ones.
+		if (exports.isMapped(mappedRootObject)) {
+			var previousMapping = ko.utils.unwrapObservable(mappedRootObject)[mappingProperty];
+			options = merge(previousMapping, options);
+		}
+
+		var callbackParams = {
+			data: rootObject,
+			parent: mappedParent
+		};
+
+		var hasCreateCallback = function () {
+			return options[parentName] && options[parentName].create instanceof Function;
+		};
+
+		var createCallback = function (data) {
+			return withProxyDependentObservable(dependentObservables, function () {
+				
+				if (ko.utils.unwrapObservable(parent) instanceof Array) {
+					return options[parentName].create({
+						data: data || callbackParams.data,
+						parent: callbackParams.parent,
+						skip: emptyReturn
+					});
+				} else {
+					return options[parentName].create({
+						data: data || callbackParams.data,
+						parent: callbackParams.parent
+					});
+				}				
+			});
+		};
+
+		var hasUpdateCallback = function () {
+			return options[parentName] && options[parentName].update instanceof Function;
+		};
+
+		var updateCallback = function (obj, data) {
+			var params = {
+				data: data || callbackParams.data,
+				parent: callbackParams.parent,
+				target: ko.utils.unwrapObservable(obj)
+			};
+
+			if (ko.isWriteableObservable(obj)) {
+				params.observable = obj;
+			}
+
+			return options[parentName].update(params);
+		}
+
+		var alreadyMapped = visitedObjects.get(rootObject);
+		if (alreadyMapped) {
+			return alreadyMapped;
+		}
+
+		parentName = parentName || "";
+
+		if (!isArray) {
+			// For atomic types, do a direct update on the observable
+			if (!canHaveProperties(rootObject)) {
+				switch (exports.getType(rootObject)) {
+				case "function":
+					if (hasUpdateCallback()) {
+						if (ko.isWriteableObservable(rootObject)) {
+							rootObject(updateCallback(rootObject));
+							mappedRootObject = rootObject;
+						} else {
+							mappedRootObject = updateCallback(rootObject);
+						}
+					} else {
+						mappedRootObject = rootObject;
+					}
+					break;
+				default:
+					if (ko.isWriteableObservable(mappedRootObject)) {
+						if (hasUpdateCallback()) {
+							var valueToWrite = updateCallback(mappedRootObject);
+							mappedRootObject(valueToWrite);
+							return valueToWrite;
+						} else {
+							var valueToWrite = ko.utils.unwrapObservable(rootObject);
+							mappedRootObject(valueToWrite);
+							return valueToWrite;
+						}
+					} else {
+						if (hasCreateCallback()) {
+							mappedRootObject = createCallback();
+							return mappedRootObject;
+						} else {
+							mappedRootObject = ko.observable(ko.utils.unwrapObservable(rootObject));
+							return mappedRootObject;
+						}
+
+						if (hasUpdateCallback()) {
+							mappedRootObject(updateCallback(mappedRootObject));
+							return mappedRootObject;
+						}
+					}
+				}
+
+			} else {
+				mappedRootObject = ko.utils.unwrapObservable(mappedRootObject);
+				if (!mappedRootObject) {
+					if (hasCreateCallback()) {
+						var result = createCallback();
+
+						if (hasUpdateCallback()) {
+							result = updateCallback(result);
+						}
+
+						return result;
+					} else {
+						if (hasUpdateCallback()) {
+							return updateCallback(result);
+						}
+
+						mappedRootObject = {};
+					}
+				}
+
+				if (hasUpdateCallback()) {
+					mappedRootObject = updateCallback(mappedRootObject);
+				}
+
+				visitedObjects.save(rootObject, mappedRootObject);
+				if (hasUpdateCallback()) return mappedRootObject;
+
+				// For non-atomic types, visit all properties and update recursively
+				visitPropertiesOrArrayEntries(rootObject, function (indexer) {
+					var fullPropertyName = parentPropertyName.length ? parentPropertyName + "." + indexer : indexer;
+
+					if (ko.utils.arrayIndexOf(options.ignore, fullPropertyName) != -1) {
+						return;
+					}
+
+					if (ko.utils.arrayIndexOf(options.copy, fullPropertyName) != -1) {
+						mappedRootObject[indexer] = rootObject[indexer];
+						return;
+					}
+
+					// In case we are adding an already mapped property, fill it with the previously mapped property value to prevent recursion.
+					// If this is a property that was generated by fromJS, we should use the options specified there
+					var prevMappedProperty = visitedObjects.get(rootObject[indexer]);
+					var retval = updateViewModel(mappedRootObject[indexer], rootObject[indexer], options, indexer, mappedRootObject, fullPropertyName, mappedRootObject);
+					var value = prevMappedProperty || retval;
+
+					if (ko.isWriteableObservable(mappedRootObject[indexer])) {
+						mappedRootObject[indexer](ko.utils.unwrapObservable(value));
+					} else {
+						mappedRootObject[indexer] = value;
+					}
+
+					options.mappedProperties[fullPropertyName] = true;
+				});
+			}
+		} else { //mappedRootObject is an array
+			var changes = [];
+
+			var hasKeyCallback = false;
+			var keyCallback = function (x) {
+				return x;
+			}
+			if (options[parentName] && options[parentName].key) {
+				keyCallback = options[parentName].key;
+				hasKeyCallback = true;
+			}
+
+			if (!ko.isObservable(mappedRootObject)) {
+				// When creating the new observable array, also add a bunch of utility functions that take the 'key' of the array items into account.
+				mappedRootObject = ko.observableArray([]);
+
+				mappedRootObject.mappedRemove = function (valueOrPredicate) {
+					var predicate = typeof valueOrPredicate == "function" ? valueOrPredicate : function (value) {
+							return value === keyCallback(valueOrPredicate);
+						};
+					return mappedRootObject.remove(function (item) {
+						return predicate(keyCallback(item));
+					});
+				}
+
+				mappedRootObject.mappedRemoveAll = function (arrayOfValues) {
+					var arrayOfKeys = filterArrayByKey(arrayOfValues, keyCallback);
+					return mappedRootObject.remove(function (item) {
+						return ko.utils.arrayIndexOf(arrayOfKeys, keyCallback(item)) != -1;
+					});
+				}
+
+				mappedRootObject.mappedDestroy = function (valueOrPredicate) {
+					var predicate = typeof valueOrPredicate == "function" ? valueOrPredicate : function (value) {
+							return value === keyCallback(valueOrPredicate);
+						};
+					return mappedRootObject.destroy(function (item) {
+						return predicate(keyCallback(item));
+					});
+				}
+
+				mappedRootObject.mappedDestroyAll = function (arrayOfValues) {
+					var arrayOfKeys = filterArrayByKey(arrayOfValues, keyCallback);
+					return mappedRootObject.destroy(function (item) {
+						return ko.utils.arrayIndexOf(arrayOfKeys, keyCallback(item)) != -1;
+					});
+				}
+
+				mappedRootObject.mappedIndexOf = function (item) {
+					var keys = filterArrayByKey(mappedRootObject(), keyCallback);
+					var key = keyCallback(item);
+					return ko.utils.arrayIndexOf(keys, key);
+				}
+
+				mappedRootObject.mappedCreate = function (value) {
+					if (mappedRootObject.mappedIndexOf(value) !== -1) {
+						throw new Error("There already is an object with the key that you specified.");
+					}
+
+					var item = hasCreateCallback() ? createCallback(value) : value;
+					if (hasUpdateCallback()) {
+						var newValue = updateCallback(item, value);
+						if (ko.isWriteableObservable(item)) {
+							item(newValue);
+						} else {
+							item = newValue;
+						}
+					}
+					mappedRootObject.push(item);
+					return item;
+				}
+			}
+
+			var currentArrayKeys = filterArrayByKey(ko.utils.unwrapObservable(mappedRootObject), keyCallback).sort();
+			var newArrayKeys = filterArrayByKey(rootObject, keyCallback);
+			if (hasKeyCallback) newArrayKeys.sort();
+			var editScript = ko.utils.compareArrays(currentArrayKeys, newArrayKeys);
+
+			var ignoreIndexOf = {};
+			
+			var i, j;
+
+			var unwrappedRootObject = ko.utils.unwrapObservable(rootObject);
+			var itemsByKey = {};
+			var optimizedKeys = true;
+			for (i = 0, j = unwrappedRootObject.length; i < j; i++) {
+				var key = keyCallback(unwrappedRootObject[i]);
+				if (key === undefined || key instanceof Object) {
+					optimizedKeys = false;
+					break;
+				}
+				itemsByKey[key] = unwrappedRootObject[i];
+			}
+
+			var newContents = [];
+			var passedOver = 0;
+			for (i = 0, j = editScript.length; i < j; i++) {
+				var key = editScript[i];
+				var mappedItem;
+				var fullPropertyName = parentPropertyName + "[" + i + "]";
+				switch (key.status) {
+				case "added":
+					var item = optimizedKeys ? itemsByKey[key.value] : getItemByKey(ko.utils.unwrapObservable(rootObject), key.value, keyCallback);
+					mappedItem = updateViewModel(undefined, item, options, parentName, mappedRootObject, fullPropertyName, parent);
+					if(!hasCreateCallback()) {
+						mappedItem = ko.utils.unwrapObservable(mappedItem);
+					}
+
+					var index = ignorableIndexOf(ko.utils.unwrapObservable(rootObject), item, ignoreIndexOf);
+					
+					if (mappedItem === emptyReturn) {
+						passedOver++;
+					} else {
+						newContents[index - passedOver] = mappedItem;
+					}
+						
+					ignoreIndexOf[index] = true;
+					break;
+				case "retained":
+					var item = optimizedKeys ? itemsByKey[key.value] : getItemByKey(ko.utils.unwrapObservable(rootObject), key.value, keyCallback);
+					mappedItem = getItemByKey(mappedRootObject, key.value, keyCallback);
+					updateViewModel(mappedItem, item, options, parentName, mappedRootObject, fullPropertyName, parent);
+
+					var index = ignorableIndexOf(ko.utils.unwrapObservable(rootObject), item, ignoreIndexOf);
+					newContents[index] = mappedItem;
+					ignoreIndexOf[index] = true;
+					break;
+				case "deleted":
+					mappedItem = getItemByKey(mappedRootObject, key.value, keyCallback);
+					break;
+				}
+
+				changes.push({
+					event: key.status,
+					item: mappedItem
+				});
+			}
+
+			mappedRootObject(newContents);
+
+			if (options[parentName] && options[parentName].arrayChanged) {
+				ko.utils.arrayForEach(changes, function (change) {
+					options[parentName].arrayChanged(change.event, change.item);
+				});
+			}
+		}
+
+		return mappedRootObject;
+	}
+
+	function ignorableIndexOf(array, item, ignoreIndices) {
+		for (var i = 0, j = array.length; i < j; i++) {
+			if (ignoreIndices[i] === true) continue;
+			if (array[i] === item) return i;
+		}
+		return null;
+	}
+
+	function mapKey(item, callback) {
+		var mappedItem;
+		if (callback) mappedItem = callback(item);
+		if (exports.getType(mappedItem) === "undefined") mappedItem = item;
+
+		return ko.utils.unwrapObservable(mappedItem);
+	}
+
+	function getItemByKey(array, key, callback) {
+		array = ko.utils.unwrapObservable(array);
+		for (var i = 0, j = array.length; i < j; i++) {
+			var item = array[i];
+			if (mapKey(item, callback) === key) return item;
+		}
+
+		throw new Error("When calling ko.update*, the key '" + key + "' was not found!");
+	}
+
+	function filterArrayByKey(array, callback) {
+		return ko.utils.arrayMap(ko.utils.unwrapObservable(array), function (item) {
+			if (callback) {
+				return mapKey(item, callback);
+			} else {
+				return item;
+			}
+		});
+	}
+
+	function visitPropertiesOrArrayEntries(rootObject, visitorCallback) {
+		if (exports.getType(rootObject) === "array") {
+			for (var i = 0; i < rootObject.length; i++)
+			visitorCallback(i);
+		} else {
+			for (var propertyName in rootObject)
+			visitorCallback(propertyName);
+		}
+	};
+
+	function canHaveProperties(object) {
+		var type = exports.getType(object);
+		return ((type === "object") || (type === "array")) && (object !== null);
+	}
+
+	// Based on the parentName, this creates a fully classified name of a property
+
+	function getPropertyName(parentName, parent, indexer) {
+		var propertyName = parentName || "";
+		if (exports.getType(parent) === "array") {
+			if (parentName) {
+				propertyName += "[" + indexer + "]";
+			}
+		} else {
+			if (parentName) {
+				propertyName += ".";
+			}
+			propertyName += indexer;
+		}
+		return propertyName;
+	}
+
+	exports.visitModel = function (rootObject, callback, options) {
+		options = options || {};
+		options.visitedObjects = options.visitedObjects || new objectLookup();
+
+		var mappedRootObject;
+		var unwrappedRootObject = ko.utils.unwrapObservable(rootObject);
+
+		if (!canHaveProperties(unwrappedRootObject)) {
+			return callback(rootObject, options.parentName);
+		} else {
+			options = fillOptions(options, unwrappedRootObject[mappingProperty]);
+
+			// Only do a callback, but ignore the results
+			callback(rootObject, options.parentName);
+			mappedRootObject = exports.getType(unwrappedRootObject) === "array" ? [] : {};
+		}
+
+		options.visitedObjects.save(rootObject, mappedRootObject);
+
+		var parentName = options.parentName;
+		visitPropertiesOrArrayEntries(unwrappedRootObject, function (indexer) {
+			if (options.ignore && ko.utils.arrayIndexOf(options.ignore, indexer) != -1) return;
+
+			var propertyValue = unwrappedRootObject[indexer];
+			options.parentName = getPropertyName(parentName, unwrappedRootObject, indexer);
+
+			// If we don't want to explicitly copy the unmapped property...
+			if (ko.utils.arrayIndexOf(options.copy, indexer) === -1) {
+				// ...find out if it's a property we want to explicitly include
+				if (ko.utils.arrayIndexOf(options.include, indexer) === -1) {
+					// The mapped properties object contains all the properties that were part of the original object.
+					// If a property does not exist, and it is not because it is part of an array (e.g. "myProp[3]"), then it should not be unmapped.
+					if (unwrappedRootObject[mappingProperty] && unwrappedRootObject[mappingProperty].mappedProperties && !unwrappedRootObject[mappingProperty].mappedProperties[indexer] && !(exports.getType(unwrappedRootObject) === "array")) {
+						return;
+					}
+				}
+			}
+
+			var outputProperty;
+			switch (exports.getType(ko.utils.unwrapObservable(propertyValue))) {
+			case "object":
+			case "array":
+			case "undefined":
+				var previouslyMappedValue = options.visitedObjects.get(propertyValue);
+				mappedRootObject[indexer] = (exports.getType(previouslyMappedValue) !== "undefined") ? previouslyMappedValue : exports.visitModel(propertyValue, callback, options);
+				break;
+			default:
+				mappedRootObject[indexer] = callback(propertyValue, options.parentName);
+			}
+		});
+
+		return mappedRootObject;
+	}
+
+	function simpleObjectLookup() {
+		var keys = [];
+		var values = [];
+		this.save = function (key, value) {
+			var existingIndex = ko.utils.arrayIndexOf(keys, key);
+			if (existingIndex >= 0) values[existingIndex] = value;
+			else {
+				keys.push(key);
+				values.push(value);
+			}
+		};
+		this.get = function (key) {
+			var existingIndex = ko.utils.arrayIndexOf(keys, key);
+			var value = (existingIndex >= 0) ? values[existingIndex] : undefined;
+			return value;
+		};
+	};
+	
+	function objectLookup() {
+		var buckets = {};
+		
+		var findBucket = function(key) {
+			var bucketKey;
+			try {
+				bucketKey = key;//JSON.stringify(key);
+			}
+			catch (e) {
+				bucketKey = "$$$";
+			}
+
+			var bucket = buckets[bucketKey];
+			if (bucket === undefined) {
+				bucket = new simpleObjectLookup();
+				buckets[bucketKey] = bucket;
+			}
+			return bucket;
+		};
+		
+		this.save = function (key, value) {
+			findBucket(key).save(key, value);
+		};
+		this.get = function (key) {
+			return findBucket(key).get(key);
+		};
+	};
+}));
+
 /* ===================================================
  * bootstrap-transition.js v2.1.0
  * http://twitter.github.com/bootstrap/javascript.html#transitions
@@ -14697,3 +16578,1483 @@ ko.exportSymbol('nativeTemplateEngine', ko.nativeTemplateEngine);
 
 
 }(window.jQuery);
+
+/*jslint onevar:true, undef:true, newcap:true, regexp:true, bitwise:true, maxerr:50, indent:4, white:false, nomen:false, plusplus:false */
+/*global define:false, require:false, exports:false, module:false, signals:false */
+
+/** @license
+ * JS Signals <http://millermedeiros.github.com/js-signals/>
+ * Released under the MIT license
+ * Author: Miller Medeiros
+ * Version: 0.8.1 - Build: 266 (2012/07/31 03:33 PM)
+ */
+
+(function(global){
+
+    // SignalBinding -------------------------------------------------
+    //================================================================
+
+    /**
+     * Object that represents a binding between a Signal and a listener function.
+     * <br />- <strong>This is an internal constructor and shouldn't be called by regular users.</strong>
+     * <br />- inspired by Joa Ebert AS3 SignalBinding and Robert Penner's Slot classes.
+     * @author Miller Medeiros
+     * @constructor
+     * @internal
+     * @name SignalBinding
+     * @param {Signal} signal Reference to Signal object that listener is currently bound to.
+     * @param {Function} listener Handler function bound to the signal.
+     * @param {boolean} isOnce If binding should be executed just once.
+     * @param {Object} [listenerContext] Context on which listener will be executed (object that should represent the `this` variable inside listener function).
+     * @param {Number} [priority] The priority level of the event listener. (default = 0).
+     */
+    function SignalBinding(signal, listener, isOnce, listenerContext, priority) {
+
+        /**
+         * Handler function bound to the signal.
+         * @type Function
+         * @private
+         */
+        this._listener = listener;
+
+        /**
+         * If binding should be executed just once.
+         * @type boolean
+         * @private
+         */
+        this._isOnce = isOnce;
+
+        /**
+         * Context on which listener will be executed (object that should represent the `this` variable inside listener function).
+         * @memberOf SignalBinding.prototype
+         * @name context
+         * @type Object|undefined|null
+         */
+        this.context = listenerContext;
+
+        /**
+         * Reference to Signal object that listener is currently bound to.
+         * @type Signal
+         * @private
+         */
+        this._signal = signal;
+
+        /**
+         * Listener priority
+         * @type Number
+         * @private
+         */
+        this._priority = priority || 0;
+    }
+
+    SignalBinding.prototype = {
+
+        /**
+         * If binding is active and should be executed.
+         * @type boolean
+         */
+        active : true,
+
+        /**
+         * Default parameters passed to listener during `Signal.dispatch` and `SignalBinding.execute`. (curried parameters)
+         * @type Array|null
+         */
+        params : null,
+
+        /**
+         * Call listener passing arbitrary parameters.
+         * <p>If binding was added using `Signal.addOnce()` it will be automatically removed from signal dispatch queue, this method is used internally for the signal dispatch.</p>
+         * @param {Array} [paramsArr] Array of parameters that should be passed to the listener
+         * @return {*} Value returned by the listener.
+         */
+        execute : function (paramsArr) {
+            var handlerReturn, params;
+            if (this.active && !!this._listener) {
+                params = this.params? this.params.concat(paramsArr) : paramsArr;
+                handlerReturn = this._listener.apply(this.context, params);
+                if (this._isOnce) {
+                    this.detach();
+                }
+            }
+            return handlerReturn;
+        },
+
+        /**
+         * Detach binding from signal.
+         * - alias to: mySignal.remove(myBinding.getListener());
+         * @return {Function|null} Handler function bound to the signal or `null` if binding was previously detached.
+         */
+        detach : function () {
+            return this.isBound()? this._signal.remove(this._listener, this.context) : null;
+        },
+
+        /**
+         * @return {Boolean} `true` if binding is still bound to the signal and have a listener.
+         */
+        isBound : function () {
+            return (!!this._signal && !!this._listener);
+        },
+
+        /**
+         * @return {Function} Handler function bound to the signal.
+         */
+        getListener : function () {
+            return this._listener;
+        },
+
+        /**
+         * Delete instance properties
+         * @private
+         */
+        _destroy : function () {
+            delete this._signal;
+            delete this._listener;
+            delete this.context;
+        },
+
+        /**
+         * @return {boolean} If SignalBinding will only be executed once.
+         */
+        isOnce : function () {
+            return this._isOnce;
+        },
+
+        /**
+         * @return {string} String representation of the object.
+         */
+        toString : function () {
+            return '[SignalBinding isOnce:' + this._isOnce +', isBound:'+ this.isBound() +', active:' + this.active + ']';
+        }
+
+    };
+
+
+/*global SignalBinding:false*/
+
+    // Signal --------------------------------------------------------
+    //================================================================
+
+    function validateListener(listener, fnName) {
+        if (typeof listener !== 'function') {
+            throw new Error( 'listener is a required param of {fn}() and should be a Function.'.replace('{fn}', fnName) );
+        }
+    }
+
+    /**
+     * Custom event broadcaster
+     * <br />- inspired by Robert Penner's AS3 Signals.
+     * @name Signal
+     * @author Miller Medeiros
+     * @constructor
+     */
+    function Signal() {
+        /**
+         * @type Array.<SignalBinding>
+         * @private
+         */
+        this._bindings = [];
+        this._prevParams = null;
+    }
+
+    Signal.prototype = {
+
+        /**
+         * Signals Version Number
+         * @type String
+         * @const
+         */
+        VERSION : '0.8.1',
+
+        /**
+         * If Signal should keep record of previously dispatched parameters and
+         * automatically execute listener during `add()`/`addOnce()` if Signal was
+         * already dispatched before.
+         * @type boolean
+         */
+        memorize : false,
+
+        /**
+         * @type boolean
+         * @private
+         */
+        _shouldPropagate : true,
+
+        /**
+         * If Signal is active and should broadcast events.
+         * <p><strong>IMPORTANT:</strong> Setting this property during a dispatch will only affect the next dispatch, if you want to stop the propagation of a signal use `halt()` instead.</p>
+         * @type boolean
+         */
+        active : true,
+
+        /**
+         * @param {Function} listener
+         * @param {boolean} isOnce
+         * @param {Object} [listenerContext]
+         * @param {Number} [priority]
+         * @return {SignalBinding}
+         * @private
+         */
+        _registerListener : function (listener, isOnce, listenerContext, priority) {
+
+            var prevIndex = this._indexOfListener(listener, listenerContext),
+                binding;
+
+            if (prevIndex !== -1) {
+                binding = this._bindings[prevIndex];
+                if (binding.isOnce() !== isOnce) {
+                    throw new Error('You cannot add'+ (isOnce? '' : 'Once') +'() then add'+ (!isOnce? '' : 'Once') +'() the same listener without removing the relationship first.');
+                }
+            } else {
+                binding = new SignalBinding(this, listener, isOnce, listenerContext, priority);
+                this._addBinding(binding);
+            }
+
+            if(this.memorize && this._prevParams){
+                binding.execute(this._prevParams);
+            }
+
+            return binding;
+        },
+
+        /**
+         * @param {SignalBinding} binding
+         * @private
+         */
+        _addBinding : function (binding) {
+            //simplified insertion sort
+            var n = this._bindings.length;
+            do { --n; } while (this._bindings[n] && binding._priority <= this._bindings[n]._priority);
+            this._bindings.splice(n + 1, 0, binding);
+        },
+
+        /**
+         * @param {Function} listener
+         * @return {number}
+         * @private
+         */
+        _indexOfListener : function (listener, context) {
+            var n = this._bindings.length,
+                cur;
+            while (n--) {
+                cur = this._bindings[n];
+                if (cur._listener === listener && cur.context === context) {
+                    return n;
+                }
+            }
+            return -1;
+        },
+
+        /**
+         * Check if listener was attached to Signal.
+         * @param {Function} listener
+         * @param {Object} [context]
+         * @return {boolean} if Signal has the specified listener.
+         */
+        has : function (listener, context) {
+            return this._indexOfListener(listener, context) !== -1;
+        },
+
+        /**
+         * Add a listener to the signal.
+         * @param {Function} listener Signal handler function.
+         * @param {Object} [listenerContext] Context on which listener will be executed (object that should represent the `this` variable inside listener function).
+         * @param {Number} [priority] The priority level of the event listener. Listeners with higher priority will be executed before listeners with lower priority. Listeners with same priority level will be executed at the same order as they were added. (default = 0)
+         * @return {SignalBinding} An Object representing the binding between the Signal and listener.
+         */
+        add : function (listener, listenerContext, priority) {
+            validateListener(listener, 'add');
+            return this._registerListener(listener, false, listenerContext, priority);
+        },
+
+        /**
+         * Add listener to the signal that should be removed after first execution (will be executed only once).
+         * @param {Function} listener Signal handler function.
+         * @param {Object} [listenerContext] Context on which listener will be executed (object that should represent the `this` variable inside listener function).
+         * @param {Number} [priority] The priority level of the event listener. Listeners with higher priority will be executed before listeners with lower priority. Listeners with same priority level will be executed at the same order as they were added. (default = 0)
+         * @return {SignalBinding} An Object representing the binding between the Signal and listener.
+         */
+        addOnce : function (listener, listenerContext, priority) {
+            validateListener(listener, 'addOnce');
+            return this._registerListener(listener, true, listenerContext, priority);
+        },
+
+        /**
+         * Remove a single listener from the dispatch queue.
+         * @param {Function} listener Handler function that should be removed.
+         * @param {Object} [context] Execution context (since you can add the same handler multiple times if executing in a different context).
+         * @return {Function} Listener handler function.
+         */
+        remove : function (listener, context) {
+            validateListener(listener, 'remove');
+
+            var i = this._indexOfListener(listener, context);
+            if (i !== -1) {
+                this._bindings[i]._destroy(); //no reason to a SignalBinding exist if it isn't attached to a signal
+                this._bindings.splice(i, 1);
+            }
+            return listener;
+        },
+
+        /**
+         * Remove all listeners from the Signal.
+         */
+        removeAll : function () {
+            var n = this._bindings.length;
+            while (n--) {
+                this._bindings[n]._destroy();
+            }
+            this._bindings.length = 0;
+        },
+
+        /**
+         * @return {number} Number of listeners attached to the Signal.
+         */
+        getNumListeners : function () {
+            return this._bindings.length;
+        },
+
+        /**
+         * Stop propagation of the event, blocking the dispatch to next listeners on the queue.
+         * <p><strong>IMPORTANT:</strong> should be called only during signal dispatch, calling it before/after dispatch won't affect signal broadcast.</p>
+         * @see Signal.prototype.disable
+         */
+        halt : function () {
+            this._shouldPropagate = false;
+        },
+
+        /**
+         * Dispatch/Broadcast Signal to all listeners added to the queue.
+         * @param {...*} [params] Parameters that should be passed to each handler.
+         */
+        dispatch : function (params) {
+            if (! this.active) {
+                return;
+            }
+
+            var paramsArr = Array.prototype.slice.call(arguments),
+                n = this._bindings.length,
+                bindings;
+
+            if (this.memorize) {
+                this._prevParams = paramsArr;
+            }
+
+            if (! n) {
+                //should come after memorize
+                return;
+            }
+
+            bindings = this._bindings.slice(); //clone array in case add/remove items during dispatch
+            this._shouldPropagate = true; //in case `halt` was called before dispatch or during the previous dispatch.
+
+            //execute all callbacks until end of the list or until a callback returns `false` or stops propagation
+            //reverse loop since listeners with higher priority will be added at the end of the list
+            do { n--; } while (bindings[n] && this._shouldPropagate && bindings[n].execute(paramsArr) !== false);
+        },
+
+        /**
+         * Forget memorized arguments.
+         * @see Signal.memorize
+         */
+        forget : function(){
+            this._prevParams = null;
+        },
+
+        /**
+         * Remove all bindings from signal and destroy any reference to external objects (destroy Signal object).
+         * <p><strong>IMPORTANT:</strong> calling any method on the signal instance after calling dispose will throw errors.</p>
+         */
+        dispose : function () {
+            this.removeAll();
+            delete this._bindings;
+            delete this._prevParams;
+        },
+
+        /**
+         * @return {string} String representation of the object.
+         */
+        toString : function () {
+            return '[Signal active:'+ this.active +' numListeners:'+ this.getNumListeners() +']';
+        }
+
+    };
+
+
+    // Namespace -----------------------------------------------------
+    //================================================================
+
+    /**
+     * Signals namespace
+     * @namespace
+     * @name signals
+     */
+    var signals = Signal;
+
+    /**
+     * Custom event broadcaster
+     * @see Signal
+     */
+    // alias for backwards compatibility (see #gh-44)
+    signals.Signal = Signal;
+
+
+
+    //exports to multiple environments
+    if(typeof define === 'function' && define.amd){ //AMD
+        define(function () { return signals; });
+    } else if (typeof module !== 'undefined' && module.exports){ //node
+        module.exports = signals;
+    } else { //browser
+        //use string because of Google closure compiler ADVANCED_MODE
+        /*jslint sub:true */
+        global['signals'] = signals;
+    }
+
+}(this));
+
+/** @license
+ * crossroads <http://millermedeiros.github.com/crossroads.js/>
+ * License: MIT
+ * Author: Miller Medeiros
+ * Version: 0.10.0 (2012/08/12 03:41)
+ */
+
+(function (define) {
+define(['signals'], function (signals) {
+
+    var crossroads,
+        _hasOptionalGroupBug,
+        UNDEF;
+
+    // Helpers -----------
+    //====================
+
+    // IE 7-8 capture optional groups as empty strings while other browsers
+    // capture as `undefined`
+    _hasOptionalGroupBug = (/t(.+)?/).exec('t')[1] === '';
+
+    function arrayIndexOf(arr, val) {
+        if (arr.indexOf) {
+            return arr.indexOf(val);
+        } else {
+            //Array.indexOf doesn't work on IE 6-7
+            var n = arr.length;
+            while (n--) {
+                if (arr[n] === val) {
+                    return n;
+                }
+            }
+            return -1;
+        }
+    }
+
+    function isKind(val, kind) {
+        return '[object '+ kind +']' === Object.prototype.toString.call(val);
+    }
+
+    function isRegExp(val) {
+        return isKind(val, 'RegExp');
+    }
+
+    function isArray(val) {
+        return isKind(val, 'Array');
+    }
+
+    function isFunction(val) {
+        return typeof val === 'function';
+    }
+
+    //borrowed from AMD-utils
+    function typecastValue(val) {
+        var r;
+        if (val === null || val === 'null') {
+            r = null;
+        } else if (val === 'true') {
+            r = true;
+        } else if (val === 'false') {
+            r = false;
+        } else if (val === UNDEF || val === 'undefined') {
+            r = UNDEF;
+        } else if (val === '' || isNaN(val)) {
+            //isNaN('') returns false
+            r = val;
+        } else {
+            //parseFloat(null || '') returns NaN
+            r = parseFloat(val);
+        }
+        return r;
+    }
+
+    function typecastArrayValues(values) {
+        var n = values.length,
+            result = [];
+        while (n--) {
+            result[n] = typecastValue(values[n]);
+        }
+        return result;
+    }
+
+    //borrowed from AMD-Utils
+    function decodeQueryString(str) {
+        var queryArr = (str || '').replace('?', '').split('&'),
+            n = queryArr.length,
+            obj = {},
+            item, val;
+        while (n--) {
+            item = queryArr[n].split('=');
+            val = typecastValue(item[1]);
+            obj[item[0]] = (typeof val === 'string')? decodeURIComponent(val) : val;
+        }
+        return obj;
+    }
+
+
+    // Crossroads --------
+    //====================
+
+    /**
+     * @constructor
+     */
+    function Crossroads() {
+        this.bypassed = new signals.Signal();
+        this.routed = new signals.Signal();
+        this._routes = [];
+        this._prevRoutes = [];
+        this.resetState();
+    }
+
+    Crossroads.prototype = {
+
+        resetState : function(){
+            this._prevRoutes.length = 0;
+            this._prevMatchedRequest = null;
+            this._prevBypassedRequest = null;
+        },
+
+        greedy : false,
+
+        greedyEnabled : true,
+
+        normalizeFn : null,
+
+        create : function () {
+            return new Crossroads();
+        },
+
+        shouldTypecast : false,
+
+        addRoute : function (pattern, callback, priority) {
+            var route = new Route(pattern, callback, priority, this);
+            this._sortedInsert(route);
+            return route;
+        },
+
+        removeRoute : function (route) {
+            var i = arrayIndexOf(this._routes, route);
+            if (i !== -1) {
+                this._routes.splice(i, 1);
+            }
+            route._destroy();
+        },
+
+        removeAllRoutes : function () {
+            var n = this.getNumRoutes();
+            while (n--) {
+                this._routes[n]._destroy();
+            }
+            this._routes.length = 0;
+        },
+
+        parse : function (request, defaultArgs) {
+            request = request || '';
+            defaultArgs = defaultArgs || [];
+
+            // should only care about different requests
+            if (request === this._prevMatchedRequest || request === this._prevBypassedRequest) {
+                return;
+            }
+
+            var routes = this._getMatchedRoutes(request),
+                i = 0,
+                n = routes.length,
+                cur;
+
+            if (n) {
+                this._prevMatchedRequest = request;
+
+                this._notifyPrevRoutes(routes, request);
+                this._prevRoutes = routes;
+                //should be incremental loop, execute routes in order
+                while (i < n) {
+                    cur = routes[i];
+                    cur.route.matched.dispatch.apply(cur.route.matched, defaultArgs.concat(cur.params));
+                    cur.isFirst = !i;
+                    this.routed.dispatch.apply(this.routed, defaultArgs.concat([request, cur]));
+                    i += 1;
+                }
+            } else {
+                this._prevBypassedRequest = request;
+                this.bypassed.dispatch.apply(this.bypassed, defaultArgs.concat([request]));
+            }
+
+        },
+
+        _notifyPrevRoutes : function(matchedRoutes, request) {
+            var i = 0, prev;
+            while (prev = this._prevRoutes[i++]) {
+                //check if switched exist since route may be disposed
+                if(prev.route.switched && this._didSwitch(prev.route, matchedRoutes)) {
+                    prev.route.switched.dispatch(request);
+                }
+            }
+        },
+
+        _didSwitch : function (route, matchedRoutes){
+            var matched,
+                i = 0;
+            while (matched = matchedRoutes[i++]) {
+                // only dispatch switched if it is going to a different route
+                if (matched.route === route) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        getNumRoutes : function () {
+            return this._routes.length;
+        },
+
+        _sortedInsert : function (route) {
+            //simplified insertion sort
+            var routes = this._routes,
+                n = routes.length;
+            do { --n; } while (routes[n] && route._priority <= routes[n]._priority);
+            routes.splice(n+1, 0, route);
+        },
+
+        _getMatchedRoutes : function (request) {
+            var res = [],
+                routes = this._routes,
+                n = routes.length,
+                route;
+            //should be decrement loop since higher priorities are added at the end of array
+            while (route = routes[--n]) {
+                if ((!res.length || this.greedy || route.greedy) && route.match(request)) {
+                    res.push({
+                        route : route,
+                        params : route._getParamsArray(request)
+                    });
+                }
+                if (!this.greedyEnabled && res.length) {
+                    break;
+                }
+            }
+            return res;
+        },
+
+        toString : function () {
+            return '[crossroads numRoutes:'+ this.getNumRoutes() +']';
+        }
+    };
+
+    //"static" instance
+    crossroads = new Crossroads();
+    crossroads.VERSION = '0.10.0';
+
+    crossroads.NORM_AS_ARRAY = function (req, vals) {
+        return [vals.vals_];
+    };
+
+    crossroads.NORM_AS_OBJECT = function (req, vals) {
+        return [vals];
+    };
+
+
+    // Route --------------
+    //=====================
+
+    /**
+     * @constructor
+     */
+    function Route(pattern, callback, priority, router) {
+        var isRegexPattern = isRegExp(pattern),
+            patternLexer = crossroads.patternLexer;
+        this._router = router;
+        this._pattern = pattern;
+        this._paramsIds = isRegexPattern? null : patternLexer.getParamIds(pattern);
+        this._optionalParamsIds = isRegexPattern? null : patternLexer.getOptionalParamsIds(pattern);
+        this._matchRegexp = isRegexPattern? pattern : patternLexer.compilePattern(pattern);
+        this.matched = new signals.Signal();
+        this.switched = new signals.Signal();
+        if (callback) {
+            this.matched.add(callback);
+        }
+        this._priority = priority || 0;
+    }
+
+    Route.prototype = {
+
+        greedy : false,
+
+        rules : void(0),
+
+        match : function (request) {
+            request = request || '';
+            return this._matchRegexp.test(request) && this._validateParams(request); //validate params even if regexp because of `request_` rule.
+        },
+
+        _validateParams : function (request) {
+            var rules = this.rules,
+                values = this._getParamsObject(request),
+                key;
+            for (key in rules) {
+                // normalize_ isn't a validation rule... (#39)
+                if(key !== 'normalize_' && rules.hasOwnProperty(key) && ! this._isValidParam(request, key, values)){
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        _isValidParam : function (request, prop, values) {
+            var validationRule = this.rules[prop],
+                val = values[prop],
+                isValid = false,
+                isQuery = (prop.indexOf('?') === 0);
+
+            if (val == null && this._optionalParamsIds && arrayIndexOf(this._optionalParamsIds, prop) !== -1) {
+                isValid = true;
+            }
+            else if (isRegExp(validationRule)) {
+                if (isQuery) {
+                    val = values[prop +'_']; //use raw string
+                }
+                isValid = validationRule.test(val);
+            }
+            else if (isArray(validationRule)) {
+                if (isQuery) {
+                    val = values[prop +'_']; //use raw string
+                }
+                isValid = arrayIndexOf(validationRule, val) !== -1;
+            }
+            else if (isFunction(validationRule)) {
+                isValid = validationRule(val, request, values);
+            }
+
+            return isValid; //fail silently if validationRule is from an unsupported type
+        },
+
+        _getParamsObject : function (request) {
+            var shouldTypecast = this._router.shouldTypecast,
+                values = crossroads.patternLexer.getParamValues(request, this._matchRegexp, shouldTypecast),
+                o = {},
+                n = values.length,
+                param, val;
+            while (n--) {
+                val = values[n];
+                if (this._paramsIds) {
+                    param = this._paramsIds[n];
+                    if (param.indexOf('?') === 0 && val) {
+                        //make a copy of the original string so array and
+                        //RegExp validation can be applied properly
+                        o[param +'_'] = val;
+                        //update vals_ array as well since it will be used
+                        //during dispatch
+                        val = decodeQueryString(val);
+                        values[n] = val;
+                    }
+                    // IE will capture optional groups as empty strings while other
+                    // browsers will capture `undefined` so normalize behavior.
+                    // see: #gh-58, #gh-59, #gh-60
+                    if ( _hasOptionalGroupBug && val === '' && arrayIndexOf(this._optionalParamsIds, param) !== -1 ) {
+                        val = void(0);
+                        values[n] = val;
+                    }
+                    o[param] = val;
+                }
+                //alias to paths and for RegExp pattern
+                o[n] = val;
+            }
+            o.request_ = shouldTypecast? typecastValue(request) : request;
+            o.vals_ = values;
+            return o;
+        },
+
+        _getParamsArray : function (request) {
+            var norm = this.rules? this.rules.normalize_ : null,
+                params;
+            norm = norm || this._router.normalizeFn; // default normalize
+            if (norm && isFunction(norm)) {
+                params = norm(request, this._getParamsObject(request));
+            } else {
+                params = this._getParamsObject(request).vals_;
+            }
+            return params;
+        },
+
+        interpolate : function(replacements) {
+            var str = crossroads.patternLexer.interpolate(this._pattern, replacements);
+            if (! this._validateParams(str) ) {
+                throw new Error('Generated string doesn\'t validate against `Route.rules`.');
+            }
+            return str;
+        },
+
+        dispose : function () {
+            this._router.removeRoute(this);
+        },
+
+        _destroy : function () {
+            this.matched.dispose();
+            this.switched.dispose();
+            this.matched = this.switched = this._pattern = this._matchRegexp = null;
+        },
+
+        toString : function () {
+            return '[Route pattern:"'+ this._pattern +'", numListeners:'+ this.matched.getNumListeners() +']';
+        }
+
+    };
+
+
+
+    // Pattern Lexer ------
+    //=====================
+
+    crossroads.patternLexer = (function () {
+
+        var
+            //match chars that should be escaped on string regexp
+            ESCAPE_CHARS_REGEXP = /[\\.+*?\^$\[\](){}\/'#]/g,
+
+            //trailing slashes (begin/end of string)
+            LOOSE_SLASHES_REGEXP = /^\/|\/$/g,
+            LEGACY_SLASHES_REGEXP = /\/$/g,
+
+            //params - everything between `{ }` or `: :`
+            PARAMS_REGEXP = /(?:\{|:)([^}:]+)(?:\}|:)/g,
+
+            //used to save params during compile (avoid escaping things that
+            //shouldn't be escaped).
+            TOKENS = {
+                'OS' : {
+                    //optional slashes
+                    //slash between `::` or `}:` or `\w:` or `:{?` or `}{?` or `\w{?`
+                    rgx : /([:}]|\w(?=\/))\/?(:|(?:\{\?))/g,
+                    save : '$1{{id}}$2',
+                    res : '\\/?'
+                },
+                'RS' : {
+                    //required slashes
+                    //used to insert slash between `:{` and `}{`
+                    rgx : /([:}])\/?(\{)/g,
+                    save : '$1{{id}}$2',
+                    res : '\\/'
+                },
+                'RQ' : {
+                    //required query string - everything in between `{? }`
+                    rgx : /\{\?([^}]+)\}/g,
+                    //everything from `?` till `#` or end of string
+                    res : '\\?([^#]+)'
+                },
+                'OQ' : {
+                    //optional query string - everything in between `:? :`
+                    rgx : /:\?([^:]+):/g,
+                    //everything from `?` till `#` or end of string
+                    res : '(?:\\?([^#]*))?'
+                },
+                'OR' : {
+                    //optional rest - everything in between `: *:`
+                    rgx : /:([^:]+)\*:/g,
+                    res : '(.*)?' // optional group to avoid passing empty string as captured
+                },
+                'RR' : {
+                    //rest param - everything in between `{ *}`
+                    rgx : /\{([^}]+)\*\}/g,
+                    res : '(.+)'
+                },
+                // required/optional params should come after rest segments
+                'RP' : {
+                    //required params - everything between `{ }`
+                    rgx : /\{([^}]+)\}/g,
+                    res : '([^\\/?]+)'
+                },
+                'OP' : {
+                    //optional params - everything between `: :`
+                    rgx : /:([^:]+):/g,
+                    res : '([^\\/?]+)?\/?'
+                }
+            },
+
+            LOOSE_SLASH = 1,
+            STRICT_SLASH = 2,
+            LEGACY_SLASH = 3,
+
+            _slashMode = LOOSE_SLASH;
+
+
+        function precompileTokens(){
+            var key, cur;
+            for (key in TOKENS) {
+                if (TOKENS.hasOwnProperty(key)) {
+                    cur = TOKENS[key];
+                    cur.id = '__CR_'+ key +'__';
+                    cur.save = ('save' in cur)? cur.save.replace('{{id}}', cur.id) : cur.id;
+                    cur.rRestore = new RegExp(cur.id, 'g');
+                }
+            }
+        }
+        precompileTokens();
+
+
+        function captureVals(regex, pattern) {
+            var vals = [], match;
+            // very important to reset lastIndex since RegExp can have "g" flag
+            // and multiple runs might affect the result, specially if matching
+            // same string multiple times on IE 7-8
+            regex.lastIndex = 0;
+            while (match = regex.exec(pattern)) {
+                vals.push(match[1]);
+            }
+            return vals;
+        }
+
+        function getParamIds(pattern) {
+            return captureVals(PARAMS_REGEXP, pattern);
+        }
+
+        function getOptionalParamsIds(pattern) {
+            return captureVals(TOKENS.OP.rgx, pattern);
+        }
+
+        function compilePattern(pattern) {
+            pattern = pattern || '';
+
+            if(pattern){
+                if (_slashMode === LOOSE_SLASH) {
+                    pattern = pattern.replace(LOOSE_SLASHES_REGEXP, '');
+                }
+                else if (_slashMode === LEGACY_SLASH) {
+                    pattern = pattern.replace(LEGACY_SLASHES_REGEXP, '');
+                }
+
+                //save tokens
+                pattern = replaceTokens(pattern, 'rgx', 'save');
+                //regexp escape
+                pattern = pattern.replace(ESCAPE_CHARS_REGEXP, '\\$&');
+                //restore tokens
+                pattern = replaceTokens(pattern, 'rRestore', 'res');
+
+                if (_slashMode === LOOSE_SLASH) {
+                    pattern = '\\/?'+ pattern;
+                }
+            }
+
+            if (_slashMode !== STRICT_SLASH) {
+                //single slash is treated as empty and end slash is optional
+                pattern += '\\/?';
+            }
+            return new RegExp('^'+ pattern + '$');
+        }
+
+        function replaceTokens(pattern, regexpName, replaceName) {
+            var cur, key;
+            for (key in TOKENS) {
+                if (TOKENS.hasOwnProperty(key)) {
+                    cur = TOKENS[key];
+                    pattern = pattern.replace(cur[regexpName], cur[replaceName]);
+                }
+            }
+            return pattern;
+        }
+
+        function getParamValues(request, regexp, shouldTypecast) {
+            var vals = regexp.exec(request);
+            if (vals) {
+                vals.shift();
+                if (shouldTypecast) {
+                    vals = typecastArrayValues(vals);
+                }
+            }
+            return vals;
+        }
+
+        function interpolate(pattern, replacements) {
+            if (typeof pattern !== 'string') {
+                throw new Error('Route pattern should be a string.');
+            }
+
+            var replaceFn = function(match, prop){
+                    var val;
+                    if (prop in replacements) {
+                        // make sure value is a string see #gh-54
+                        val = String(replacements[prop]);
+                        if (match.indexOf('*') === -1 && val.indexOf('/') !== -1) {
+                            throw new Error('Invalid value "'+ val +'" for segment "'+ match +'".');
+                        }
+                    }
+                    else if (match.indexOf('{') !== -1) {
+                        throw new Error('The segment '+ match +' is required.');
+                    }
+                    else {
+                        val = '';
+                    }
+                    return val;
+                };
+
+            if (! TOKENS.OS.trail) {
+                TOKENS.OS.trail = new RegExp('(?:'+ TOKENS.OS.id +')+$');
+            }
+
+            return pattern
+                        .replace(TOKENS.OS.rgx, TOKENS.OS.save)
+                        .replace(PARAMS_REGEXP, replaceFn)
+                        .replace(TOKENS.OS.trail, '') // remove trailing
+                        .replace(TOKENS.OS.rRestore, '/'); // add slash between segments
+        }
+
+        //API
+        return {
+            strict : function(){
+                _slashMode = STRICT_SLASH;
+            },
+            loose : function(){
+                _slashMode = LOOSE_SLASH;
+            },
+            legacy : function(){
+                _slashMode = LEGACY_SLASH;
+            },
+            getParamIds : getParamIds,
+            getOptionalParamsIds : getOptionalParamsIds,
+            getParamValues : getParamValues,
+            compilePattern : compilePattern,
+            interpolate : interpolate
+        };
+
+    }());
+
+
+    return crossroads;
+});
+}(typeof define === 'function' && define.amd ? define : function (deps, factory) {
+    if (typeof module !== 'undefined' && module.exports) { //Node
+        module.exports = factory(require(deps[0]));
+    } else {
+        /*jshint sub:true */
+        window['crossroads'] = factory(window[deps[0]]);
+    }
+}));
+
+/*!
+ * accounting.js v0.3.2
+ * Copyright 2011, Joss Crowcroft
+ *
+ * Freely distributable under the MIT license.
+ * Portions of accounting.js are inspired or borrowed from underscore.js
+ *
+ * Full details and documentation:
+ * http://josscrowcroft.github.com/accounting.js/
+ */
+
+(function(root, undefined) {
+
+	/* --- Setup --- */
+
+	// Create the local library object, to be exported or referenced globally later
+	var lib = {};
+
+	// Current version
+	lib.version = '0.3.2';
+
+
+	/* --- Exposed settings --- */
+
+	// The library's settings configuration object. Contains default parameters for
+	// currency and number formatting
+	lib.settings = {
+		currency: {
+			symbol : "$",		// default currency symbol is '$'
+			format : "%s%v",	// controls output: %s = symbol, %v = value (can be object, see docs)
+			decimal : ".",		// decimal point separator
+			thousand : ",",		// thousands separator
+			precision : 2,		// decimal places
+			grouping : 3		// digit grouping (not implemented yet)
+		},
+		number: {
+			precision : 0,		// default precision on numbers is 0
+			grouping : 3,		// digit grouping (not implemented yet)
+			thousand : ",",
+			decimal : "."
+		}
+	};
+
+
+	/* --- Internal Helper Methods --- */
+
+	// Store reference to possibly-available ECMAScript 5 methods for later
+	var nativeMap = Array.prototype.map,
+		nativeIsArray = Array.isArray,
+		toString = Object.prototype.toString;
+
+	/**
+	 * Tests whether supplied parameter is a string
+	 * from underscore.js
+	 */
+	function isString(obj) {
+		return !!(obj === '' || (obj && obj.charCodeAt && obj.substr));
+	}
+
+	/**
+	 * Tests whether supplied parameter is a string
+	 * from underscore.js, delegates to ECMA5's native Array.isArray
+	 */
+	function isArray(obj) {
+		return nativeIsArray ? nativeIsArray(obj) : toString.call(obj) === '[object Array]';
+	}
+
+	/**
+	 * Tests whether supplied parameter is a true object
+	 */
+	function isObject(obj) {
+		return obj && toString.call(obj) === '[object Object]';
+	}
+
+	/**
+	 * Extends an object with a defaults object, similar to underscore's _.defaults
+	 *
+	 * Used for abstracting parameter handling from API methods
+	 */
+	function defaults(object, defs) {
+		var key;
+		object = object || {};
+		defs = defs || {};
+		// Iterate over object non-prototype properties:
+		for (key in defs) {
+			if (defs.hasOwnProperty(key)) {
+				// Replace values with defaults only if undefined (allow empty/zero values):
+				if (object[key] == null) object[key] = defs[key];
+			}
+		}
+		return object;
+	}
+
+	/**
+	 * Implementation of `Array.map()` for iteration loops
+	 *
+	 * Returns a new Array as a result of calling `iterator` on each array value.
+	 * Defers to native Array.map if available
+	 */
+	function map(obj, iterator, context) {
+		var results = [], i, j;
+
+		if (!obj) return results;
+
+		// Use native .map method if it exists:
+		if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
+
+		// Fallback for native .map:
+		for (i = 0, j = obj.length; i < j; i++ ) {
+			results[i] = iterator.call(context, obj[i], i, obj);
+		}
+		return results;
+	}
+
+	/**
+	 * Check and normalise the value of precision (must be positive integer)
+	 */
+	function checkPrecision(val, base) {
+		val = Math.round(Math.abs(val));
+		return isNaN(val)? base : val;
+	}
+
+
+	/**
+	 * Parses a format string or object and returns format obj for use in rendering
+	 *
+	 * `format` is either a string with the default (positive) format, or object
+	 * containing `pos` (required), `neg` and `zero` values (or a function returning
+	 * either a string or object)
+	 *
+	 * Either string or format.pos must contain "%v" (value) to be valid
+	 */
+	function checkCurrencyFormat(format) {
+		var defaults = lib.settings.currency.format;
+
+		// Allow function as format parameter (should return string or object):
+		if ( typeof format === "function" ) format = format();
+
+		// Format can be a string, in which case `value` ("%v") must be present:
+		if ( isString( format ) && format.match("%v") ) {
+
+			// Create and return positive, negative and zero formats:
+			return {
+				pos : format,
+				neg : format.replace("-", "").replace("%v", "-%v"),
+				zero : format
+			};
+
+		// If no format, or object is missing valid positive value, use defaults:
+		} else if ( !format || !format.pos || !format.pos.match("%v") ) {
+
+			// If defaults is a string, casts it to an object for faster checking next time:
+			return ( !isString( defaults ) ) ? defaults : lib.settings.currency.format = {
+				pos : defaults,
+				neg : defaults.replace("%v", "-%v"),
+				zero : defaults
+			};
+
+		}
+		// Otherwise, assume format was fine:
+		return format;
+	}
+
+
+	/* --- API Methods --- */
+
+	/**
+	 * Takes a string/array of strings, removes all formatting/cruft and returns the raw float value
+	 * alias: accounting.`parse(string)`
+	 *
+	 * Decimal must be included in the regular expression to match floats (defaults to
+	 * accounting.settings.number.decimal), so if the number uses a non-standard decimal 
+	 * separator, provide it as the second argument.
+	 *
+	 * Also matches bracketed negatives (eg. "$ (1.99)" => -1.99)
+	 *
+	 * Doesn't throw any errors (`NaN`s become 0) but this may change in future
+	 */
+	var unformat = lib.unformat = lib.parse = function(value, decimal) {
+		// Recursively unformat arrays:
+		if (isArray(value)) {
+			return map(value, function(val) {
+				return unformat(val, decimal);
+			});
+		}
+
+		// Fails silently (need decent errors):
+		value = value || 0;
+
+		// Return the value as-is if it's already a number:
+		if (typeof value === "number") return value;
+
+		// Default decimal point comes from settings, but could be set to eg. "," in opts:
+		decimal = decimal || lib.settings.number.decimal;
+
+		 // Build regex to strip out everything except digits, decimal point and minus sign:
+		var regex = new RegExp("[^0-9-" + decimal + "]", ["g"]),
+			unformatted = parseFloat(
+				("" + value)
+				.replace(/\((.*)\)/, "-$1") // replace bracketed values with negatives
+				.replace(regex, '')         // strip out any cruft
+				.replace(decimal, '.')      // make sure decimal point is standard
+			);
+
+		// This will fail silently which may cause trouble, let's wait and see:
+		return !isNaN(unformatted) ? unformatted : 0;
+	};
+
+
+	/**
+	 * Implementation of toFixed() that treats floats more like decimals
+	 *
+	 * Fixes binary rounding issues (eg. (0.615).toFixed(2) === "0.61") that present
+	 * problems for accounting- and finance-related software.
+	 */
+	var toFixed = lib.toFixed = function(value, precision) {
+		precision = checkPrecision(precision, lib.settings.number.precision);
+		var power = Math.pow(10, precision);
+
+		// Multiply up by precision, round accurately, then divide and use native toFixed():
+		return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
+	};
+
+
+	/**
+	 * Format a number, with comma-separated thousands and custom precision/decimal places
+	 *
+	 * Localise by overriding the precision and thousand / decimal separators
+	 * 2nd parameter `precision` can be an object matching `settings.number`
+	 */
+	var formatNumber = lib.formatNumber = function(number, precision, thousand, decimal) {
+		// Resursively format arrays:
+		if (isArray(number)) {
+			return map(number, function(val) {
+				return formatNumber(val, precision, thousand, decimal);
+			});
+		}
+
+		// Clean up number:
+		number = unformat(number);
+
+		// Build options object from second param (if object) or all params, extending defaults:
+		var opts = defaults(
+				(isObject(precision) ? precision : {
+					precision : precision,
+					thousand : thousand,
+					decimal : decimal
+				}),
+				lib.settings.number
+			),
+
+			// Clean up precision
+			usePrecision = checkPrecision(opts.precision),
+
+			// Do some calc:
+			negative = number < 0 ? "-" : "",
+			base = parseInt(toFixed(Math.abs(number || 0), usePrecision), 10) + "",
+			mod = base.length > 3 ? base.length % 3 : 0;
+
+		// Format the number:
+		return negative + (mod ? base.substr(0, mod) + opts.thousand : "") + base.substr(mod).replace(/(\d{3})(?=\d)/g, "$1" + opts.thousand) + (usePrecision ? opts.decimal + toFixed(Math.abs(number), usePrecision).split('.')[1] : "");
+	};
+
+
+	/**
+	 * Format a number into currency
+	 *
+	 * Usage: accounting.formatMoney(number, symbol, precision, thousandsSep, decimalSep, format)
+	 * defaults: (0, "$", 2, ",", ".", "%s%v")
+	 *
+	 * Localise by overriding the symbol, precision, thousand / decimal separators and format
+	 * Second param can be an object matching `settings.currency` which is the easiest way.
+	 *
+	 * To do: tidy up the parameters
+	 */
+	var formatMoney = lib.formatMoney = function(number, symbol, precision, thousand, decimal, format) {
+		// Resursively format arrays:
+		if (isArray(number)) {
+			return map(number, function(val){
+				return formatMoney(val, symbol, precision, thousand, decimal, format);
+			});
+		}
+
+		// Clean up number:
+		number = unformat(number);
+
+		// Build options object from second param (if object) or all params, extending defaults:
+		var opts = defaults(
+				(isObject(symbol) ? symbol : {
+					symbol : symbol,
+					precision : precision,
+					thousand : thousand,
+					decimal : decimal,
+					format : format
+				}),
+				lib.settings.currency
+			),
+
+			// Check format (returns object with pos, neg and zero):
+			formats = checkCurrencyFormat(opts.format),
+
+			// Choose which format to use for this value:
+			useFormat = number > 0 ? formats.pos : number < 0 ? formats.neg : formats.zero;
+
+		// Return with currency symbol added:
+		return useFormat.replace('%s', opts.symbol).replace('%v', formatNumber(Math.abs(number), checkPrecision(opts.precision), opts.thousand, opts.decimal));
+	};
+
+
+	/**
+	 * Format a list of numbers into an accounting column, padding with whitespace
+	 * to line up currency symbols, thousand separators and decimals places
+	 *
+	 * List should be an array of numbers
+	 * Second parameter can be an object containing keys that match the params
+	 *
+	 * Returns array of accouting-formatted number strings of same length
+	 *
+	 * NB: `white-space:pre` CSS rule is required on the list container to prevent
+	 * browsers from collapsing the whitespace in the output strings.
+	 */
+	lib.formatColumn = function(list, symbol, precision, thousand, decimal, format) {
+		if (!list) return [];
+
+		// Build options object from second param (if object) or all params, extending defaults:
+		var opts = defaults(
+				(isObject(symbol) ? symbol : {
+					symbol : symbol,
+					precision : precision,
+					thousand : thousand,
+					decimal : decimal,
+					format : format
+				}),
+				lib.settings.currency
+			),
+
+			// Check format (returns object with pos, neg and zero), only need pos for now:
+			formats = checkCurrencyFormat(opts.format),
+
+			// Whether to pad at start of string or after currency symbol:
+			padAfterSymbol = formats.pos.indexOf("%s") < formats.pos.indexOf("%v") ? true : false,
+
+			// Store value for the length of the longest string in the column:
+			maxLength = 0,
+
+			// Format the list according to options, store the length of the longest string:
+			formatted = map(list, function(val, i) {
+				if (isArray(val)) {
+					// Recursively format columns if list is a multi-dimensional array:
+					return lib.formatColumn(val, opts);
+				} else {
+					// Clean up the value
+					val = unformat(val);
+
+					// Choose which format to use for this value (pos, neg or zero):
+					var useFormat = val > 0 ? formats.pos : val < 0 ? formats.neg : formats.zero,
+
+						// Format this value, push into formatted list and save the length:
+						fVal = useFormat.replace('%s', opts.symbol).replace('%v', formatNumber(Math.abs(val), checkPrecision(opts.precision), opts.thousand, opts.decimal));
+
+					if (fVal.length > maxLength) maxLength = fVal.length;
+					return fVal;
+				}
+			});
+
+		// Pad each number in the list and send back the column of numbers:
+		return map(formatted, function(val, i) {
+			// Only if this is a string (not a nested array, which would have already been padded):
+			if (isString(val) && val.length < maxLength) {
+				// Depending on symbol position, pad after symbol or at index 0:
+				return padAfterSymbol ? val.replace(opts.symbol, opts.symbol+(new Array(maxLength - val.length + 1).join(" "))) : (new Array(maxLength - val.length + 1).join(" ")) + val;
+			}
+			return val;
+		});
+	};
+
+
+	/* --- Module Definition --- */
+
+	// Export accounting for CommonJS. If being loaded as an AMD module, define it as such.
+	// Otherwise, just add `accounting` to the global object
+	if (typeof exports !== 'undefined') {
+		if (typeof module !== 'undefined' && module.exports) {
+			exports = module.exports = lib;
+		}
+		exports.accounting = lib;
+	} else if (typeof define === 'function' && define.amd) {
+		// Return the library as an AMD module:
+		define([], function() {
+			return lib;
+		});
+	} else {
+		// Use accounting.noConflict to restore `accounting` back to its original value.
+		// Returns a reference to the library's `accounting` object;
+		// e.g. `var numbers = accounting.noConflict();`
+		lib.noConflict = (function(oldAccounting) {
+			return function() {
+				// Reset the value of the root's `accounting` variable:
+				root.accounting = oldAccounting;
+				// Delete the noConflict method:
+				lib.noConflict = undefined;
+				// Return reference to the library to re-assign it:
+				return lib;
+			};
+		})(root.accounting);
+
+		// Declare `fx` on the root (global/window) object:
+		root['accounting'] = lib;
+	}
+
+	// Root will be `window` in browser or `global` on the server:
+}(this));

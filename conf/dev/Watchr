@@ -1,9 +1,17 @@
 # vim: ft=ruby
 
-watch('pooldin/assets/style/pooldin/.*\.less$') { |md|
+watch('pooldin/assets/style/.*\.less$') { |md|
     system("make css-debug")
 }
 
-watch('pooldin/assets/script/pooldin/.*\.coffee$') { |md|
+watch('pooldin/assets/script/.*\.coffee$') { |md|
     system("make js-debug")
+}
+
+watch('pooldin/assets/lib/.*\.js$') { |md|
+    system("make js-lib-debug")
+}
+
+watch('pooldin/assets/lib/.*\.css$') { |md|
+    system("make css-debug")
 }

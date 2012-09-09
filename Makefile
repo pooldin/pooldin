@@ -1,6 +1,8 @@
 # Magical make incantations...
-.PHONY := all assets clean css db deps env init js lint npm reset run shell \
-		  sql sql-create sql-drop tests
+.PHONY := all assets clean css db deps env init \
+		  js js-all js-debug js-lib js-lib-debug \
+		  lint npm reset run \
+		  shell sql sql-create sql-drop tests
 
 .DEFAULT_GOAL := deps
 
@@ -86,8 +88,16 @@ init:
 js:
 	@$(MANAGE) assets build --no-cache pooldin-js pooldin-js-min
 
+js-all: js-lib js
+
 js-debug:
 	@$(MANAGE) assets build --no-cache pooldin-js
+
+js-lib:
+	@$(MANAGE) assets build --no-cache lib-js lib-js-min graph-js graph-js-min
+
+js-lib-debug:
+	@$(MANAGE) assets build --no-cache lib-js graph-js
 
 lint:
 	@pep8 .
