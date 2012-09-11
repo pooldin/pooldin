@@ -8,3 +8,6 @@ flask-sqlalchemy==0.16
 flask-script==0.3.3
 flask-login==0.1.3
 flask-wtf==0.8
+-e git://github.com/miracle2k/webassets.git#egg=webassets
+flask-assets==0.7
+yuicompressor==2.4.7
