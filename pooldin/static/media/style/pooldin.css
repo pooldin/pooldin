@@ -5763,6 +5763,34 @@ a.badge:hover {
   }
 }
 
+@font-face {
+  font-family: 'knockout27';
+  src: url('../font/knockout27.eot');
+  src: url('../font/knockout27.eot?iefix') format('embedded-opentype'), url('../font/knockout27.woff') format('woff'), url('../font/knockout27.ttf') format('truetype'), url('../font/knockout27.svg#knockout27') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'knockout30';
+  src: url('../font/knockout30.eot');
+  src: url('../font/knockout30.eot?iefix') format('embedded-opentype'), url('../font/knockout30.woff') format('woff'), url('../font/knockout30.ttf') format('truetype'), url('../font/knockout30.svg#knockout30') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'knockout48';
+  src: url('../font/knockout48.eot');
+  src: url('../font/knockout48.eot?iefix') format('embedded-opentype'), url('../font/knockout48.woff') format('woff'), url('../font/knockout48.ttf') format('truetype'), url('../font/knockout48.svg#knockout48') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'knockout49';
+  src: url('../font/knockout49.eot');
+  src: url('../font/knockout49.eot?iefix') format('embedded-opentype'), url('../font/knockout49.woff') format('woff'), url('../font/knockout49.ttf') format('truetype'), url('../font/knockout49.svg#knockout49') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 body {
   background-color: #f5f5f5;
 }
@@ -5780,7 +5808,7 @@ h3,
 .h3,
 h4,
 .h4 {
-  font-family: Knockout;
+  font-family: 'knockout48';
   text-transform: uppercase;
 }
 hr {
@@ -5975,7 +6003,7 @@ ol.inline-block li {
   margin: 0px auto;
 }
 .section-break .content {
-  font-family: Knockout;
+  font-family: 'knockout49';
   text-transform: uppercase;
   top: -10px;
   font-size: 2.2em;
@@ -5998,7 +6026,7 @@ ol.inline-block li {
 .avatar .layer {
   position: absolute;
   color: #fff;
-  font-family: Knockout;
+  font-family: 'knockout49';
   font-weight: bold;
 }
 .avatar .overlay {
@@ -6692,7 +6720,7 @@ footer ol li a:hover {
 }
 .campaign-details #campaign-management .container .disburse table,
 .campaign-details #campaign-management .container .disburse-receipt table {
-  font-family: Knockout;
+  font-family: 'knockout49';
   text-transform: uppercase;
 }
 .campaign-details #campaign-management .container .disburse table td,
@@ -6819,7 +6847,7 @@ footer ol li a:hover {
   font-size: 2.5em;
   margin-top: 5px;
   line-height: 1em;
-  font-family: Knockout;
+  font-family: 'knockout49';
 }
 .campaign-details #campaign-status .status .time h3 {
   color: #999999;
@@ -6831,7 +6859,7 @@ footer ol li a:hover {
 .campaign-details #campaign-status .status .time .hours,
 .campaign-details #campaign-status .status .time .minutes,
 .campaign-details #campaign-status .status .time .seconds {
-  font-family: Knockout;
+  font-family: 'knockout49';
   font-weight: bold;
   font-size: 2.8em;
   line-height: 1.4em;
@@ -6851,7 +6879,7 @@ footer ol li a:hover {
   margin-top: 20px;
 }
 .campaign-details #campaign-status .status .call-to-action .pie .layer h3 {
-  font-family: Knockout;
+  font-family: 'knockout49';
   font-weight: bold;
   margin-top: 65px;
   font-size: 3.8em;
@@ -7000,7 +7028,7 @@ footer ol li a:hover {
 .theme-button {
   margin: 4px 10px;
   text-align: center;
-  font-family: Knockout;
+  font-family: 'knockout49';
   position: relative;
   display: inline-block;
   *display: inline;
@@ -7024,7 +7052,7 @@ footer ol li a:hover {
   text-decoration: none;
   font-style: normal;
   font-weight: normal;
-  font-family: Knockout;
+  font-family: 'knockout49';
   font-size: 24px;
   line-height: 1.8em;
   letter-spacing: 1px;

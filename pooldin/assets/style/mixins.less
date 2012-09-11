@@ -182,3 +182,15 @@
   opacity: @opacity / 100;
   filter: ~"alpha(opacity=@{opacity})";
 }
+
+// Font families
+.font(@name) {
+  font-family: '@{name}';
+  src:  url('../font/@{name}.eot');
+  src:  url('../font/@{name}.eot?iefix') format('embedded-opentype'),
+        url('../font/@{name}.woff') format('woff'),
+        url('../font/@{name}.ttf') format('truetype'),
+        url('../font/@{name}.svg#@{name}') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
