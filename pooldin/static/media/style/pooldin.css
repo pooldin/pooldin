@@ -5803,6 +5803,19 @@ hr.heading {
 
   *zoom: 1;
 }
+ul.inline-block,
+ol.inline-block {
+  display: block;
+}
+ul.inline-block li,
+ol.inline-block li {
+  vertical-align: middle;
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+
+  *zoom: 1;
+}
 .bold {
   font-weight: bold;
 }
@@ -5811,6 +5824,9 @@ hr.heading {
 }
 .lower {
   text-transform: lowercase;
+}
+.italic {
+  font-style: italic;
 }
 .relative {
   position: relative;
@@ -5965,6 +5981,52 @@ hr.heading {
   font-size: 2.2em;
   color: #ccc;
 }
+.profile {
+  margin-top: 20px;
+  margin-bottom: -20px;
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+  background-color: #f5f5f5;
+}
+.avatar {
+  position: relative;
+  padding: 5px;
+  background-color: #ffffff;
+  border: solid 1px #999999;
+}
+.avatar .layer {
+  position: absolute;
+  color: #fff;
+  font-family: Knockout;
+  font-weight: bold;
+}
+.avatar .overlay {
+  background-color: #739b9e;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+.avatar .content {
+  text-align: center;
+}
+.avatar-65 img {
+  max-width: 65px;
+  max-height: 65px;
+}
+.avatar-65 .content {
+  font-size: 2.8em;
+  letter-spacing: 1px;
+  line-height: 65px;
+}
+.avatar-100 img {
+  max-width: 100px;
+  max-height: 100px;
+}
+.avatar-100 .content {
+  font-size: 4em;
+  letter-spacing: 1px;
+  line-height: 100px;
+}
 section .container,
 footer .container {
   padding-left: 60px;
@@ -6029,6 +6091,12 @@ input[type="color"]:focus,
   -webkit-box-shadow: inset 0px 0px 3px 3px rgba(0, 0, 0, 0.075), 0px 0px 8px rgba(82, 168, 236, 0.6);
   -moz-box-shadow: inset 0px 0px 3px 3px rgba(0, 0, 0, 0.075), 0px 0px 8px rgba(82, 168, 236, 0.6);
   box-shadow: inset 0px 0px 3px 3px rgba(0, 0, 0, 0.075), 0px 0px 8px rgba(82, 168, 236, 0.6);
+}
+.inset-box {
+  padding: 10px;
+  -webkit-box-shadow: inset 0 0px 3px 3px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 0px 3px 3px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 0px 3px 3px rgba(0, 0, 0, 0.075);
 }
 input[type="radio"],
 input[type="checkbox"] {
@@ -6520,22 +6588,6 @@ footer ol li a:hover {
   text-align: left;
   color: #739b9e;
 }
-.campaign-details #campaign-management .container table,
-.campaign-details #campaign-management .container ul,
-.campaign-details #campaign-management .container ol,
-.campaign-details #campaign-management .container p {
-  font-style: italic;
-}
-.campaign-details #campaign-management .container table a,
-.campaign-details #campaign-management .container ul a,
-.campaign-details #campaign-management .container ol a,
-.campaign-details #campaign-management .container p a,
-.campaign-details #campaign-management .container table.nav-tabs,
-.campaign-details #campaign-management .container ul.nav-tabs,
-.campaign-details #campaign-management .container ol.nav-tabs,
-.campaign-details #campaign-management .container p.nav-tabs {
-  font-style: normal;
-}
 .campaign-details #campaign-management .container .nav li a,
 .campaign-details #campaign-management .container .nav-tabs li a {
   border: 0;
@@ -6562,8 +6614,7 @@ footer ol li a:hover {
   padding: inherit;
   padding: 20px 12px;
 }
-.campaign-details #campaign-management .container .row .row .span4,
-.campaign-details #campaign-management .container .row .row .span8 {
+.campaign-details #campaign-management .container .row .row .span4 {
   margin-left: 0px;
 }
 .campaign-details #campaign-management .container .summary table,
@@ -6605,6 +6656,109 @@ footer ol li a:hover {
 }
 .campaign-details #campaign-management .container label input {
   margin-right: 5px;
+}
+.campaign-details #campaign-management .container .disburse h1,
+.campaign-details #campaign-management .container .disburse-receipt h1 {
+  margin-top: 15px;
+  font-size: 5em;
+}
+.campaign-details #campaign-management .container .disburse h1 .total,
+.campaign-details #campaign-management .container .disburse-receipt h1 .total {
+  color: #bbb;
+}
+.campaign-details #campaign-management .container .disburse h3,
+.campaign-details #campaign-management .container .disburse-receipt h3 {
+  margin-bottom: 5px;
+}
+.campaign-details #campaign-management .container .disburse h4,
+.campaign-details #campaign-management .container .disburse-receipt h4 {
+  font-family: Georgia;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 14px;
+  text-transform: capitalize;
+  color: #999999;
+  margin: 0px;
+}
+.campaign-details #campaign-management .container .disburse h1,
+.campaign-details #campaign-management .container .disburse-receipt h1,
+.campaign-details #campaign-management .container .disburse h2,
+.campaign-details #campaign-management .container .disburse-receipt h2,
+.campaign-details #campaign-management .container .disburse h3,
+.campaign-details #campaign-management .container .disburse-receipt h3,
+.campaign-details #campaign-management .container .disburse h4,
+.campaign-details #campaign-management .container .disburse-receipt h4 {
+  line-height: 1em;
+}
+.campaign-details #campaign-management .container .disburse table,
+.campaign-details #campaign-management .container .disburse-receipt table {
+  font-family: Knockout;
+  text-transform: uppercase;
+}
+.campaign-details #campaign-management .container .disburse table td,
+.campaign-details #campaign-management .container .disburse-receipt table td {
+  font-size: 1.5em;
+  line-height: 1.5em;
+  letter-spacing: 1px;
+}
+.campaign-details #campaign-management .container .disburse table td.value,
+.campaign-details #campaign-management .container .disburse-receipt table td.value {
+  text-align: right;
+  color: #999999;
+}
+.campaign-details #campaign-management .container .disburse table.fees,
+.campaign-details #campaign-management .container .disburse-receipt table.fees {
+  margin-top: 10px;
+}
+.campaign-details #campaign-management .container .disburse table.fees td,
+.campaign-details #campaign-management .container .disburse-receipt table.fees td {
+  padding: 0px 10px;
+}
+.campaign-details #campaign-management .container .disburse {
+  border-right: solid 2px #eee;
+}
+.campaign-details #campaign-management .container .disburse.span8 {
+  margin-left: 8px;
+  padding-right: 30px;
+  margin-right: 10px;
+}
+.campaign-details #campaign-management .container .disburse h2 {
+  font-family: inherit;
+  color: #999999;
+  font-size: 1.4em;
+  letter-spacing: 1px;
+  margin: 0px 0px 10px 0px;
+  font-weight: normal;
+}
+.campaign-details #campaign-management .container .disburse ul li {
+  position: relative;
+  min-height: 75px;
+  *height: 75px;
+  padding: 5px 15px 15px 3px;
+}
+.campaign-details #campaign-management .container .disburse ul li .avatar {
+  position: absolute;
+  height: 65px;
+  width: 65px;
+}
+.campaign-details #campaign-management .container .disburse ul li .avatar .content {
+  margin-left: inherit;
+}
+.campaign-details #campaign-management .container .disburse ul li .content {
+  margin-left: 85px;
+}
+.campaign-details #campaign-management .container .disburse ul li .content h3 {
+  margin: 0px;
+}
+.campaign-details #campaign-management .container .disburse ul li .content input {
+  width: 130px;
+}
+.campaign-details #campaign-management .container .disburse .actions {
+  margin-top: 0px;
+  padding: 10px 5px 15px;
+}
+.campaign-details #campaign-management .container .disburse-receipt hr {
+  border-color: #eee;
 }
 .campaign-details #campaign-meta .social {
   padding: 15px 0px;
@@ -6749,37 +6903,6 @@ footer ol li a:hover {
 .campaign-details #campaign-messages .row {
   padding-top: 20px;
   padding-bottom: 20px;
-}
-.campaign-details #campaign-invitees .invitees li {
-  vertical-align: middle;
-  display: inline-block;
-  *display: inline;
-  /* IE7 inline-block hack */
-
-  *zoom: 1;
-  height: 120px;
-  margin: 0px 10px 30px;
-}
-.campaign-details #campaign-invitees .invitees li .avatar {
-  width: 100px;
-  height: 100px;
-  padding: 5px;
-  background-color: #ffffff;
-  border: solid 1px #999999;
-}
-.campaign-details #campaign-invitees .invitees li .avatar .overlay,
-.campaign-details #campaign-invitees .invitees li .avatar .amount {
-  line-height: 100px;
-  font-size: 4em;
-  color: #fff;
-  font-family: Knockout;
-  letter-spacing: 1px;
-  font-weight: bold;
-}
-.campaign-details #campaign-invitees .invitees li .avatar .overlay {
-  background-color: #739b9e;
-  opacity: 0.8;
-  filter: alpha(opacity=80);
 }
 .campaign-details #campaign-invitees .invitees li .name {
   text-align: center;

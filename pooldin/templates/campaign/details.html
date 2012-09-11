@@ -222,12 +222,12 @@
         </div>
         <hr />
         <div class="invitees">
-          <ul>
+          <ul class="inline-block">
             {% for i in range(0, 4) %}
             <li>
-              <div class="relative avatar">
+              <div class="avatar avatar-100">
                 <div class="layer overlay"></div>
-                <div class="layer center amount">$50</div>
+                <div class="layer content">$50</div>
                 <img alt="Tux" src="{{ url_for('static', filename='img/mock/tux.png') }}" />
               </div>
               <div class="name">Tux</div>
@@ -235,7 +235,7 @@
             {% endfor %}
             {% for i in range(0, 12) %}
             <li>
-              <div class="avatar">
+              <div class="avatar avatar-100">
                 <img alt="Tux" src="{{ url_for('static', filename='img/mock/tux.png') }}" />
               </div>
               <div class="name">Tux</div>

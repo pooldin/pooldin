@@ -40,6 +40,14 @@ hr.heading {
   *zoom: 1;
 }
 
+ul.inline-block,
+ol.inline-block {
+  display: block;
+  li {
+    .inline-block;
+  }
+}
+
 .bold {
     font-weight: bold;
 }
@@ -50,6 +58,10 @@ hr.heading {
 
 .lower {
     text-transform: lowercase;
+}
+
+.italic {
+    font-style: italic;
 }
 
 .relative {
@@ -210,6 +222,64 @@ hr.heading {
     top: -10px;
     font-size: 2.2em;
     color: #ccc;
+  }
+}
+
+.profile {
+  margin-top: 20px;
+  margin-bottom: -20px;
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+  background-color: @background;
+}
+
+.avatar {
+  position: relative;
+  padding: 5px;
+  background-color: @white;
+  border: solid 1px @dark-gray;
+
+  .layer {
+    position: absolute;
+    color: #fff;
+    font-family: Knockout;
+    font-weight: bold;
+  }
+
+  .overlay {
+    background-color: @teal;
+    .opacity(80);
+  }
+
+  .content {
+    text-align: center;
+  }
+}
+
+.avatar-65 {
+  img {
+    max-width: 65px;
+    max-height: 65px;
+  }
+
+  .content {
+    font-size: 2.8em;
+    letter-spacing: 1px;
+    line-height: 65px;
+  }
+}
+
+.avatar-100 {
+  img {
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  .content {
+    font-size: 4em;
+    letter-spacing: 1px;
+    line-height: 100px;
   }
 }
 

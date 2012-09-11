@@ -63,15 +63,6 @@
         }
       }
 
-      table, ul, ol, p {
-        font-style: italic;
-
-        a,
-        &.nav-tabs {
-          font-style: normal;
-        }
-      }
-
       .nav,
       .nav-tabs {
         li {
@@ -101,8 +92,7 @@
           padding: inherit;
           padding: 20px 12px;
 
-          .span4,
-          .span8 {
+          .span4 {
             margin-left: 0px;
           }
         }
@@ -160,6 +150,110 @@
 
         input {
           margin-right: 5px;
+        }
+      }
+
+      .disburse,
+      .disburse-receipt {
+        h1 {
+          margin-top: 15px;
+          font-size: 5em;
+          .total {
+            color: #bbb;
+          }
+        }
+        h3 {
+          margin-bottom: 5px;
+        }
+        h4 {
+          font-family: Georgia;
+          font-style: italic;
+          font-weight: normal;
+          font-size: 14px;
+          text-transform: capitalize;
+          color: @dark-gray;
+          margin: 0px;
+        }
+        h1, h2, h3, h4 {
+          line-height: 1em;
+        }
+        table {
+          font-family: Knockout;
+          text-transform: uppercase;
+
+          td {
+            font-size: 1.5em;
+            line-height: 1.5em;
+            letter-spacing: 1px;
+
+            &.value {
+              text-align: right;
+              color: @dark-gray;
+            }
+          }
+          &.fees {
+            margin-top: 10px;
+
+            td {
+              padding: 0px 10px;
+            }
+          }
+        }
+      }
+
+      .disburse {
+        border-right: solid 2px #eee;
+
+        &.span8 {
+          margin-left: 8px;
+          padding-right: 30px;
+          margin-right: 10px;
+        }
+
+        h2 {
+          font-family: inherit;
+          color: @dark-gray;
+          font-size: 1.4em;
+          letter-spacing: 1px;
+          margin: 0px 0px 10px 0px;
+          font-weight: normal;
+        }
+
+        ul {
+          li {
+            position: relative;
+            min-height: 75px;
+            *height: 75px;
+            padding: 5px 15px 15px 3px;
+
+            .avatar {
+              position: absolute;
+              height: 65px;
+              width: 65px;
+
+              .content { margin-left: inherit; }
+            }
+
+            .content {
+              margin-left: 85px;
+              h3 {
+                margin: 0px;
+              }
+              input {
+                width: 130px;
+              }
+            }
+          }
+        }
+        .actions {
+          margin-top: 0px;
+          padding: 10px 5px 15px;
+        }
+      }
+
+      .disburse-receipt {
+        hr {
+          border-color: #eee;
         }
       }
     }
@@ -349,32 +443,6 @@
   #campaign-invitees {
     .invitees {
       li {
-        .inline-block;
-        height: 120px;
-        margin: 0px 10px 30px;
-
-        .avatar {
-          width: 100px;
-          height: 100px;
-          padding: 5px;
-          background-color: @white;
-          border: solid 1px @dark-gray;
-
-          .overlay,
-          .amount {
-            line-height: 100px;
-            font-size: 4em;
-            color: #fff;
-            font-family: Knockout;
-            letter-spacing: 1px;
-            font-weight: bold;
-          }
-          .overlay {
-            background-color: @teal;
-            .opacity(80);
-          }
-        }
-
         .name {
           text-align: center;
           width: 100px;
