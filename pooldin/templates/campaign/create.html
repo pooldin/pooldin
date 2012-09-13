@@ -220,31 +220,20 @@
                 Choose a button style to appear on your campaign page
                 <span class="help"></span>
               </h4>
-              <label>
+              <label class="pay-button">
                 <input type="radio" name="button_type" value="pay" />
                 {{ button("Pay") }}
               </label>
               <br />
-              <label>
+              <label class="pay-button">
                 <input type="radio" name="button_type" value="give" />
                 {{ button("Give") }}
               </label>
               <br />
-              <label>
+              <label class="pay-button">
                 <input type="radio" name="button_type" value="pool" />
                 {{ button("Pool") }}
               </label>
-              <br />
-              <label>
-                <input type="radio" name="button_type" value="custom" />
-                {{ button("Custom") }}
-              </label>
-              <input type="text"
-                     name="button_type_custom"
-                     style="width: 100px;"
-                     maxlength="15"
-                     placeholder="Custom" />
-              <span class="info">(max 15 characters)</span>
             </div>
           </div>
         </div>
