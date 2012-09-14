@@ -474,9 +474,13 @@ PI.CampaignCreate = (function(_super) {
     this.uploader = new PI.UploadModal();
     this.campaignType = ko.observable();
     this.campaignType.subscribe(this.onCampaignType, this);
+    this.requiredAmount = ko.observable();
+    this.paymentAmountType = ko.observable();
+    this.paymentAmountType.subscribe(this.onPaymentAmountType, this);
     this.campaignContract = ko.observable(false);
     this.amazonPurchase = ko.observable(false);
     this.typeDependentVisible = ko.observable(false);
+    this.paymentTypeDependentVisible = ko.observable(false);
   }
 
   CampaignCreate.prototype.onCampaignType = function(type) {
@@ -485,11 +489,23 @@ PI.CampaignCreate = (function(_super) {
     return this.toggleTypeDependents(visible);
   };
 
+  CampaignCreate.prototype.onPaymentAmountType = function(type) {
+    var visible;
+    visible = type === 'specific';
+    console.log(visible);
+    return this.togglePaymentTypeDependents(visible);
+  };
+
   CampaignCreate.prototype.toggleTypeDependents = function(visible) {
     this.typeDependentVisible(visible);
     if (!visible) {
       return this.campaignContract(visible);
     }
+  };
+
+  CampaignCreate.prototype.togglePaymentTypeDependents = function(visible) {
+    this.paymentTypeDependentVisible(visible);
+    return this.requiredAmount(0);
   };
 
   return CampaignCreate;

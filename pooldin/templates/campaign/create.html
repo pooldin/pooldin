@@ -271,22 +271,24 @@
                 THEY WISH:
               </h4>
               <label class="radio inline">
-                <input type="radio" name="payment" value="specific" />
+                <input type="radio" name="payment" value="specific" data-bind="checked: paymentAmountType" />
                 <span>Specific amount</span>
               </label>
               <label class="radio inline">
-                <input type="radio" name="payment" value="any" />
+                <input type="radio" name="payment" value="any" data-bind="checked: paymentAmountType" />
                 <span>Any amount</span>
               </label>
               <hr />
-              <h3>Enter Required Amount</h3>
-              <div class="input-prepend">
-                <label>
-                  <span class="add-on">$</span>
-                  <input type="number" min="1" />
-                </label>
+              <div class="required-amount" data-bind="visible: paymentTypeDependentVisible">
+                <h3>Enter Required Amount</h3>
+                <div class="input-prepend">
+                  <label>
+                    <span class="add-on">$</span>
+                    <input type="number" min="1" name="required-amount" data-bind="value: requiredAmount" />
+                  </label>
+                </div>
+                <hr />
               </div>
-              <hr />
               <h4>
                 3. IF YOUR CAMPAIGN SUCCESSFULLY HITS YOUR TARGET
                 GOAL, THEN:
