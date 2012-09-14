@@ -18,22 +18,18 @@
       <br />
       <label class="block h3 no-target">Poold.in Contacts</label>
       <label class="block">
-        <input type="radio" name="target" value="all" />
-        <span>Send to all</span>
+        <input type="checkbox" name="target-participants" />
+        <span>Campaign Participants</span>
       </label>
       <label class="block">
-        <input type="radio" name="target" value="participants" />
-        <span>Participants only</span>
-      </label>
-      <label class="block">
-        <input type="radio" name="target" value="unknown" />
-        <span>? only</span>
-      </label>
-      <label class="block">
-        <input type="radio" name="target" value="individual" />
-        <span>Individually</span>
+        <input type="checkbox" name="target-invited" />
+        <span>Invitees Who Have Not Responded</span>
       </label>
       <br />
+      <label class="block">
+        <span class="h3">To</span>
+        <input class="block" type="text" name="to" READONLY />
+      </label>
       <label class="block">
         <span class="h3">Subject</span>
         <input class="block" type="text" name="subject" />
