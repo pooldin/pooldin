@@ -471,8 +471,26 @@ PI.CampaignCreate = (function(_super) {
 
   function CampaignCreate(opts) {
     this.opts = opts != null ? opts : {};
-    this.uploader = new PI.Uploader();
+    this.uploader = new PI.UploadModal();
+    this.campaignType = ko.observable();
+    this.campaignType.subscribe(this.onCampaignType, this);
+    this.campaignContract = ko.observable(false);
+    this.amazonPurchase = ko.observable(false);
+    this.typeDependentVisible = ko.observable(false);
   }
+
+  CampaignCreate.prototype.onCampaignType = function(type) {
+    var visible;
+    visible = type === 'co-own' || type === 'gift';
+    return this.toggleTypeDependents(visible);
+  };
+
+  CampaignCreate.prototype.toggleTypeDependents = function(visible) {
+    this.typeDependentVisible(visible);
+    if (!visible) {
+      return this.campaignContract(visible);
+    }
+  };
 
   return CampaignCreate;
 

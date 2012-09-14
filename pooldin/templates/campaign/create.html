@@ -77,7 +77,7 @@
           <div class="row">
             <div class="span6 cell">
               <label>
-                <input type="radio" name="campaign_type" value="pool" />
+                <input type="radio" name="campaign_type" value="pool" data-bind="checked: campaignType" />
                 <span class="h4">Pooling Money</span>
               </label>
               <p class="input-indent">
@@ -87,7 +87,7 @@
             </div>
             <div class="span6 cell">
               <label>
-                <input type="radio" name="campaign_type" value="gift" />
+                <input type="radio" name="campaign_type" value="gift" data-bind="checked: campaignType" />
                 <span class="h4">Group Gift Purchase</span>
               </label>
               <p class="input-indent">
@@ -99,7 +99,7 @@
           <div class="row">
             <div class="span6 cell">
               <label>
-                <input type="radio" name="campaign_type" value="co-own" />
+                <input type="radio" name="campaign_type" value="co-own" data-bind="checked: campaignType" />
                 <span class="h4">Group Purchase For Co-Ownership</span>
               </label>
               <p class="input-indent">
@@ -109,7 +109,7 @@
             </div>
             <div class="span6 cell">
               <label>
-                <input type="radio" name="campaign_type" value="fund" />
+                <input type="radio" name="campaign_type" value="fund" data-bind="checked: campaignType" />
                 <span class="h4">General Fundraising</span>
               </label>
               <p class="input-indent">
@@ -120,9 +120,9 @@
           </div>
           <hr />
           <div class="row">
-            <div class="span6">
+            <div class="span6 contract" data-bind="visible: typeDependentVisible">
               <label>
-                <input type="checkbox" name="campaign_legal checkbox" />
+                <input type="checkbox" name="campaign_legal checkbox" data-bind="checked: campaignContract" />
                 <span class="h4">Include contract</span>
               </label>
               <p class="input-indent">
@@ -131,43 +131,45 @@
               </p>
             </div>
           </div>
-          <hr />
-          <div class="row description">
-            <div class="span12">
-              <h3>Enter Item  From Amazon</h3>
-              <p>
-                If the item you are planning to purchase is available at
-                Amazon.com, please cut and paste the link to the product’s
-                detail page. We’ll put the image and description, directly
-                from Amazon!
-              </p>
+          <hr data-bind="visible: typeDependentVisible" />
+          <div class="amazon" data-bind="visible: typeDependentVisible">
+            <div class="row description">
+              <div class="span12">
+                <h3>Enter Item  From Amazon</h3>
+                <p>
+                  If the item you are planning to purchase is available at
+                  Amazon.com, please cut and paste the link to the product’s
+                  detail page. We’ll put the image and description, directly
+                  from Amazon!
+                </p>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="span8">
-              <input type="text" class="block" />
+            <div class="row">
+              <div class="span8">
+                <input type="text" class="block" />
+              </div>
             </div>
-          </div>
-          <div class="row product light-text">
-            <div class="span2">
-              <img alt="placeholder" src="holder.js/120x120/industrial" />
+            <div class="row product light-text">
+              <div class="span2">
+                <img alt="placeholder" src="holder.js/120x120/industrial" />
+              </div>
+              <div class="span6">
+                <h4>
+                  KINDLE TOUCH 3G, FREE 3G + WI-FI, 6” E INK DISPLAY - INCLUDES
+                  SPECIAL...
+                </h4>
+                <p>
+                  Top-of-the-line e-reader, with touch and free 3G wireless
+                  Free 3G wireless, no annual contracts or monthly fees -
+                  Download books anywhere, no hunting...
+                  <a href="javascript:void(0)">Read More</a>
+                </p>
+              </div>
             </div>
-            <div class="span6">
-              <h4>
-                KINDLE TOUCH 3G, FREE 3G + WI-FI, 6” E INK DISPLAY - INCLUDES
-                SPECIAL...
-              </h4>
-              <p>
-                Top-of-the-line e-reader, with touch and free 3G wireless
-                Free 3G wireless, no annual contracts or monthly fees -
-                Download books anywhere, no hunting...
-                <a href="javascript:void(0)">Read More</a>
-              </p>
-            </div>
-          </div>
-          <div class="row light-text">
-            <div class="span12">
-              <p>Not the correct item? Just enter a new link.</p>
+            <div class="row light-text">
+              <div class="span12">
+                <p>Not the correct item? Just enter a new link.</p>
+              </div>
             </div>
           </div>
         </div>
