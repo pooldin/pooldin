@@ -2,7 +2,7 @@
 .PHONY := all assets clean css db deps env init \
 		  js js-all js-debug js-lib js-lib-debug \
 		  lint npm reset run \
-		  shell sql sql-create sql-drop tests
+		  shell sql sql-create sql-drop tests user
 
 .DEFAULT_GOAL := deps
 
@@ -126,3 +126,6 @@ sql-drop:
 
 tests:
 	@python test.py
+
+user:
+	@$(MANAGE) adduser

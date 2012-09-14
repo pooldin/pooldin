@@ -1,0 +1,38 @@
+{% from 'macros/button.html' import button, button_submit %}
+{% extends "layout.html" %}
+
+{% block id %}user-login{% endblock %}
+
+{% block body %}
+<form method="POST" action="{{ url_for('user_login') }}">
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="span4">
+          <div class="fields">
+            {{ form.csrf_token }}
+            <label class="block">
+              <span>{{ form.login.label.text }}</span>
+              <input type="text" name="{{ form.login.name }}" value="{{ form.login.value }}" />
+            </label>
+            <label class="block">
+              <span>{{ form.password.label.text }}</span>
+              <input type="password" name="{{ form.password.name }}" />
+            </label>
+          </div>
+          <div class="actions">
+            {{ button_submit("Login", color="green", size="small") }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</form>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block init %}
+<script>PI.UserLogin.init();</script>
+{% endblock %}

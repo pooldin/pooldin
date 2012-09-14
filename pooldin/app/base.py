@@ -4,9 +4,11 @@ from werkzeug.wsgi import SharedDataMiddleware
 
 from flask import Flask
 from flask.ext.assets import Environment
+from flask.ext.login import LoginManager
 
 from .. import path
 from ..database import db
+from ..database.models import User, AnonymousUser
 
 from . import settings
 from .config import EnvMixin
@@ -17,6 +19,11 @@ from .setup import InitMixin
 
 
 class BaseApp(Flask, RulesMixin, EnvMixin, InitMixin):
+
+    login_anonymous = AnonymousUser
+    login_view = 'user_login'
+    login_refresh_view = 'user_login'
+    login_message = 'Please log in to access this page.'
 
     settings = settings
 
@@ -62,3 +69,15 @@ class BaseApp(Flask, RulesMixin, EnvMixin, InitMixin):
         self.assets = Environment(self)
         self.assets.directory = os.path.join(path, 'assets')
         self.assets.url = '/media'
+
+        self.login = LoginManager()
+        self.login.anonymous_user = self.login_anonymous
+        self.login.login_view = self.login_view
+        self.login.login_message = self.login_message
+        self.login.refresh_view = self.login_refresh_view
+        self.login.init_app(self)
+        self.login.user_loader(self.load_user)
+        self.login.init_app(self)
+
+    def load_user(self, id):
+        return User.query.filter_by(id=id).first()

@@ -1,6 +1,8 @@
 import os
 
 from webassets.loaders import YAMLLoader
+from flask import request, url_for
+from flask.ext.login import current_user
 
 from .. import path, views
 from .base import BaseApp
@@ -14,7 +16,18 @@ class App(BaseApp):
     views = views.all
 
     def init_middleware(self):
+        self.before_request(self.restrict_login)
         self.after_request(self.inject_response_headers)
+
+    def restrict_login(self):
+        if current_user.is_authenticated():
+            return
+
+        login_path = url_for(self.login.login_view)
+        if request.path.startswith(login_path):
+            return
+
+        return self.login.unauthorized()
 
     def inject_response_headers(self, resp):
         # Add headers to both force latest IE rendering engine or Chrome Frame.

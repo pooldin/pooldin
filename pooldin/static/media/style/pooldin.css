@@ -6152,14 +6152,28 @@ form label.no-target {
 form label .add-on {
   font-style: normal;
 }
+form label.block input[type="text"],
+form label.block input[type="password"],
+form label.block textarea {
+  width: 100%;
+}
+form label.block input[type="text"],
+form label.block input[type="password"],
+form label.block textarea,
 form label.block .h3,
 form label.block .h4 {
   display: block;
-  margin-top: 10px;
 }
+form label.block input[type="text"].inline,
+form label.block input[type="password"].inline,
+form label.block textarea.inline,
 form label.block .h3.inline,
 form label.block .h4.inline {
   display: inline;
+}
+form label.block .h3,
+form label.block .h4 {
+  margin-top: 10px;
 }
 form label .h3,
 form label .h4,
@@ -6361,6 +6375,37 @@ input .circle-16.twitter-white-16,
 input.circle-16.twitter-white-16 {
   padding: 16px;
   cursor: default;
+}
+.user-login form section {
+  margin-top: 20px;
+}
+.user-login form section .container {
+  border: 0;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.user-login form section .container .row {
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  position: relative;
+}
+.user-login form section .container .row .span4 {
+  margin: 0px auto;
+  position: absolute;
+  top: 50px;
+  left: 0px;
+  right: 0px;
+}
+.user-login form section .container .row .span4 label {
+  font-style: normal;
+  line-height: 1.5em;
+  margin-top: 20px;
+}
+.user-login form section .container .row .span4 .actions {
+  margin-top: 20px;
+  text-align: center;
 }
 .campaign-create {
   font-family: Georgia;

@@ -1,10 +1,12 @@
 from functools import wraps
 
-from flask.ext.script import Manager
+from flask.ext.script import Manager, prompt, prompt_pass
 from flask.ext.assets import ManageAssets
 
 from pooldin import create_app
+from pooldin.database import db
 from pooldin.database.manage import DBManager
+from pooldin.database.models import User, Email
 
 
 manager = Manager(create_app)
@@ -68,6 +70,52 @@ def printdropdb():
 @manager.command
 def printcreatedb():
     db_manager.print_create_all()
+
+
+@manager.command
+@handle_interrupts
+def adduser():
+    address = prompt('Email', default=None)
+    if not address:
+        return
+
+    addressExists = Email.query.filter_by(address=address).first()
+    if addressExists:
+        print 'Email already exists.'
+        return
+
+    username = prompt('Username', default=None)
+    if not username:
+        return
+
+    usernameExists = User.query.filter_by(username=username).first()
+    if usernameExists:
+        print 'Username already exists.'
+        return
+
+    password = prompt_pass('Password', default=None)
+    if not password:
+        return
+
+    password_confirm = prompt_pass('Confirm Password', default=None)
+    if password != password_confirm:
+        print 'Passwords do not match.'
+        return
+
+    user = User()
+    user.username = username
+    user.password = password
+
+    db.session.add(user)
+    db.session.commit()
+
+    email = Email()
+    email.address = address
+    email.primary = True
+    email.user_id = user.id
+
+    db.session.add(email)
+    db.session.commit()
 
 
 if __name__ == "__main__":

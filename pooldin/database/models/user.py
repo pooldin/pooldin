@@ -2,13 +2,13 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from flask.ext.login import UserMixin
+from flask.ext import login
 
 from .. import db
-from ..common import BaseModel, IDMixin, NameMixin, DisabledMixin
+from ..common import BaseModel, IDMixin, NullNameMixin, DisabledMixin
 
 
-class User(BaseModel, IDMixin, NameMixin, DisabledMixin, UserMixin):
+class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin):
 
     username = db.Column(db.String(40), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
@@ -39,3 +39,7 @@ class User(BaseModel, IDMixin, NameMixin, DisabledMixin, UserMixin):
 
     def is_active(self):
         return self.enabled
+
+
+class AnonymousUser(login.AnonymousUser):
+    name = 'Anonymous'
