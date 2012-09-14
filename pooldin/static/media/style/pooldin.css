@@ -6404,7 +6404,7 @@ input.circle-16.twitter-white-16 {
   color: #aaa;
 }
 .campaign-create section {
-  padding: 100px 0px 50px;
+  padding: 50px 0px 50px;
 }
 .campaign-create section hr {
   margin: 35px 0px;
@@ -6434,9 +6434,8 @@ input.circle-16.twitter-white-16 {
 }
 .campaign-create section .header {
   position: relative;
-  border-top: 1px solid #ccc;
+  border-top: 0px solid #ccc;
   text-align: center;
-  padding-top: 30px;
 }
 .campaign-create section .header h1 {
   position: absolute;
