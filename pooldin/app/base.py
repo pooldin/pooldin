@@ -5,6 +5,7 @@ from werkzeug.wsgi import SharedDataMiddleware
 from flask import Flask
 from flask.ext.assets import Environment
 from flask.ext.login import LoginManager
+from flask.ext.gravatar import Gravatar
 
 from .. import path
 from ..database import db
@@ -78,6 +79,12 @@ class BaseApp(Flask, RulesMixin, EnvMixin, InitMixin):
         self.login.init_app(self)
         self.login.user_loader(self.load_user)
         self.login.init_app(self)
+
+        self.gravatar = Gravatar(self,
+                                 size=350,  # Default to header profile image size
+                                 default='retro',  # Options available at gravatar.com
+                                 force_default=False,
+                                 force_lower=False)
 
     def load_user(self, id):
         return User.query.filter_by(id=id).first()

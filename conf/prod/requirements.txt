@@ -7,6 +7,7 @@ Flask==0.9
 flask-sqlalchemy==0.16
 flask-script==0.3.3
 flask-wtf==0.8
+flask-gravatar==0.2.3
 -e git+https://github.com/collinwat/flask-login.git#egg=Flask-Login
 -e git://github.com/miracle2k/webassets.git#egg=webassets
 flask-assets==0.7

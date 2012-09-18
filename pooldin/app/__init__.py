@@ -43,3 +43,13 @@ class App(BaseApp):
 
         for name, bundle in bundles.iteritems():
             self.assets.register(name, bundle)
+
+    def init_processors(self):
+        self.context_processor(self.user_context)
+
+    def user_context(self):
+        try:
+            primary_email = [e.address for e in current_user.emails if e.primary][0]
+        except (IndexError, AttributeError):
+            primary_email = None
+        return dict(user=current_user, primary_email=primary_email)
