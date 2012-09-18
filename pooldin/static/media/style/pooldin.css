@@ -6376,6 +6376,22 @@ input.circle-16.twitter-white-16 {
   padding: 16px;
   cursor: default;
 }
+#flash-message .container {
+  border-width: 0px;
+  padding: 0px;
+}
+#flash-message .container .span4 {
+  margin: auto auto;
+  margin-top: 15px;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+}
+#flash-message .container .span4 .alert {
+  text-align: center;
+  position: relative;
+  margin: 0;
+}
 .user-login form section {
   margin-top: 20px;
 }
