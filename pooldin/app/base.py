@@ -82,7 +82,7 @@ class BaseApp(Flask, RulesMixin, EnvMixin, InitMixin):
 
         self.gravatar = Gravatar(self,
                                  size=350,  # Default to header profile image size
-                                 default='retro',  # Options available at gravatar.com
+                                 default='mm',  # Options available at gravatar.com
                                  force_default=False,
                                  force_lower=False)
 
