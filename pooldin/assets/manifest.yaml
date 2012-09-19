@@ -76,6 +76,7 @@ pooldin-js:
         - script/page.coffee
         - script/modal.coffee
         - script/upload.coffee
+        - script/user/profile.coffee
         - script/campaign/schema.coffee
         - script/campaign/create.coffee
         - script/campaign/details.coffee

@@ -1,5 +1,5 @@
-from flask import render_template, request, redirect, session, flash, url_for
-from flask.ext.login import login_user, logout_user
+from flask import render_template, request, redirect, session, flash, url_for, abort
+from flask.ext.login import login_user, logout_user, current_user
 
 from ..app.negotiate import supports
 from .base import BaseView
@@ -71,7 +71,15 @@ class ViewUserProfile(BaseView):
 
     @classmethod
     def add_routes(cls, app, view):
-        app.add_get_rule('/<string:user_id>', view_func=view)
+        app.add_get_rule('/user/<string:user_id>', view_func=view)
 
     def get(self, user_id):
-        return render_template('user/profile.html')
+        is_user = False
+        user = User.query.filter_by(username=user_id).first()
+        if not user:
+            abort(404)
+        if current_user.username == user_id:
+            is_user = True
+        return render_template('user/profile.html',
+                               profile_user=user,
+                               is_user=is_user)

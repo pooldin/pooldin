@@ -5847,6 +5847,9 @@ ol.inline-block li {
 .bold {
   font-weight: bold;
 }
+.font-normal {
+  font-weight: normal;
+}
 .upper {
   text-transform: uppercase;
 }
@@ -6421,6 +6424,116 @@ input.circle-16.twitter-white-16 {
 .user-login form section .container .row .span4 .actions {
   margin-top: 20px;
   text-align: center;
+}
+.user-profile #user-profile-header .span8 {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.user-profile #user-profile-header .container {
+  margin-top: -10px;
+  padding: 30px 60px;
+}
+.user-profile #user-profile-header h1 {
+  margin: 0px;
+}
+.user-profile #user-profile-header h1:first-child {
+  margin-bottom: -5px;
+}
+.user-profile #user-profile-header .public {
+  cursor: pointer;
+}
+.user-profile #user-profile .container {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+.user-profile #user-profile .span3,
+.user-profile #user-profile .span7 {
+  margin-left: 0px;
+}
+.user-profile #user-profile .details .halo {
+  margin: 0;
+  margin-bottom: 25px;
+  padding: 10px 30px;
+  background-color: #ffffff;
+}
+.user-profile #user-profile .details img {
+  max-width: 220px;
+  max-height: 440px;
+  *width: 220px;
+  *height: 440px;
+}
+.user-profile #user-profile .details h3,
+.user-profile #user-profile .details .h3 {
+  font-family: inherit;
+  font-size: 1.1em;
+  margin: 0px;
+}
+.user-profile #user-profile .details hr {
+  border-top-color: #dddddd;
+  border-bottom-color: #dddddd;
+  margin: 0px 0px;
+}
+.user-profile #user-profile .details .user {
+  margin: 0px;
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+.user-profile #user-profile .details .about {
+  margin: 15px 0px;
+}
+.user-profile #user-profile .details .about .about-text {
+  display: block;
+  margin-top: 15px;
+  -moz-column-count: 2;
+  -moz-column-width: 100px;
+  -moz-column-gap: 2em;
+  -webkit-column-count: 2;
+  -webkit-column-width: 100px;
+  -webkit-column-gap: 25px;
+}
+.user-profile #user-profile .details .about .edit {
+  display: block;
+  color: #dddddd;
+  cursor: pointer;
+}
+.user-profile #user-poold .span12 {
+  margin: 0px;
+}
+.user-profile #user-poold .row {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+.user-profile #user-poold .name,
+.user-profile #user-poold .organizer,
+.user-profile #user-poold .status {
+  display: block;
+}
+.user-profile #user-poold .organizer,
+.user-profile #user-poold .status {
+  font-size: .8em;
+}
+.user-profile #user-poold .inline-block {
+  margin: 0px;
+  margin-bottom: 25px;
+}
+.user-profile #user-poold h5 {
+  margin: 0px;
+  margin-top: 15px;
+}
+.user-profile #user-poold li {
+  width: 135px;
+  height: 212px;
+}
+.user-profile #user-poold hr {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+  margin: 15pxpx 0px;
+}
+.user-profile #user-poold .avatar {
+  border: solid 2px #ffffff;
+  margin: 10px;
+  margin-left: 0px;
+  margin-right: 20px;
 }
 .campaign-create {
   font-family: Georgia;

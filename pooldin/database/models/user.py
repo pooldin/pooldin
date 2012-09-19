@@ -12,6 +12,7 @@ class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin):
 
     username = db.Column(db.String(40), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
+    about = db.Column(db.Text, nullable=True)
 
     @property
     def password(self):
@@ -39,6 +40,14 @@ class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin):
 
     def is_active(self):
         return self.enabled
+
+    @property
+    def primary_email(self):
+        try:
+            email = [e.address for e in self.emails][0]
+        except IndexError:
+            email = None
+        return email
 
 
 class AnonymousUser(login.AnonymousUser):

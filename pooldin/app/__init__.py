@@ -48,8 +48,4 @@ class App(BaseApp):
         self.context_processor(self.user_context)
 
     def user_context(self):
-        try:
-            primary_email = [e.address for e in current_user.emails if e.primary][0]
-        except (IndexError, AttributeError):
-            primary_email = None
-        return dict(user=current_user, primary_email=primary_email)
+        return dict(user=current_user)

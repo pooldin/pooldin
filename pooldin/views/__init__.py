@@ -1,6 +1,6 @@
 from .home import ViewHomeIndex
 from .campaign import ViewCampaignCreate, ViewCampaignDetails
-from .user import ViewUserLogin, ViewUserLogout
+from .user import ViewUserLogin, ViewUserLogout, ViewUserProfile
 
 all = [
     ViewHomeIndex,
@@ -8,4 +8,5 @@ all = [
     ViewUserLogout,
     ViewCampaignCreate,
     ViewCampaignDetails,
+    ViewUserProfile,
 ]

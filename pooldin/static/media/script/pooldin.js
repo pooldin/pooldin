@@ -306,6 +306,32 @@ PI.UploadModal = (function(_super) {
 
 })(PI.Modal);
 
+PI.UserProfile = (function(_super) {
+
+  __extends(UserProfile, _super);
+
+  function UserProfile(user, opts) {
+    this.opts = opts != null ? opts : {};
+    this.publicLabel = ko.observable('public');
+    this.isPublic = ko.observable(true);
+  }
+
+  UserProfile.prototype.setPublic = function() {
+    var publicLabel;
+    this.isPublic(!this.isPublic());
+    if (this.isPublic()) {
+      publicLabel = 'public';
+    }
+    if (!this.isPublic()) {
+      publicLabel = 'private';
+    }
+    return this.publicLabel(publicLabel);
+  };
+
+  return UserProfile;
+
+})(PI.Page);
+
 campaign = new PI.Schema();
 
 campaign.mapMoment('started', 'deadline');

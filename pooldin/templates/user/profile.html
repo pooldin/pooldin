@@ -1,0 +1,96 @@
+{% from 'macros/button.html' import button, button_submit %}
+{% extends "layout.html" %}
+
+{% block id %}user-profile{% endblock %}
+
+{% block body %}
+<section id='user-profile-header'>
+  <div class="container">
+    <div class="span8">
+      <h1>{% if is_user %}{{ profile_user.display_name }}'s{% else %}{{ profile_user.display_name }}'s{% endif %}</h1>
+      <h1 class="font-normal">Profile Page</h1>
+      <span class="teal{% if is_user %} public{% endif %}"{% if is_user %} data-bind="text: publicLabel, click: setPublic, css: { teal: isPublic() == true, red: isPublic() == false }"{% endif %}>public</span>
+    </div>
+  </div>
+</section>
+<section id='user-profile'>
+  <div class="container">
+    <div class="span3">
+      {% if profile_user.primary_email %}
+      <img alt="profile-image" src="{{ profile_user.primary_email | gravatar }}" />
+      {% else %}
+      <img alt="profile-image" src="{{ "anonymous@poold.in" | gravatar }}" />
+      {% endif %}
+    </div>
+    <div class="span9 details">
+      <div class="halo span8">
+        <div class="user">
+          <h3>Name</h3>
+          <hr />
+          <h3 class="teal">{{ profile_user.display_name }}</h3>
+          <span class="italic">Poold.in member since</span>
+          <span class="date italic">{{ profile_user.created.strftime('%m.%d.%Y') }}</span>
+        </div>
+        <div class="about">
+          <h3>About</h3>
+          <hr />
+          <span class="about-text">
+            {% if profile_user.about %}
+            {{ profile_user.about | safe }}
+            {% elif is_user %}
+            Tell us a little about yourself!
+            {% else %}
+            No profile information for {{ profile_user.display_name }} yet...
+            {% endif %}
+            <!--
+            Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+
+            Nulla vitae elit libero, a pharetra augue. Donec id elit non mi porta gravida at eget metus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam quis risus eget urna mollis ornare vel eu leo. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
+            -->
+            {% if is_user %}<span class='edit'>edit</span>{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id='user-poold'>
+  <div class="container">
+    <div class="row light-gray-background">
+      <div class="span12">
+        <h5 class="normal-text upper">Where {% if is_user %}I'm{% else %}{{ profile_user.display_name }}'s{% endif %} poold in.</h5>
+        <hr />
+        <div class="pools">
+          <ul class="inline-block">
+            {% for i in range(0, 3) %}
+            <li>
+              <div class="avatar avatar-100">
+                <img alt="Tux" src="{{ url_for('static', filename='img/mock/tux.png') }}" />
+              </div>
+              <span class="name bold">Kevin's Fantasy Futbol 2012.</span>
+              <span class="organizer dark-gray">(Organizer)</span>
+              <span class="status teal upper">Active</span>
+            </li>
+            {% endfor %}
+            {% for i in range(0, 3) %}
+            <li>
+              <div class="avatar avatar-100">
+                <img alt="Tux" src="{{ url_for('static', filename='img/mock/tux.png') }}" />
+              </div>
+              <span class="name bold">Kevin's Fantasy Futbol 2012</span>
+              <span class="status red upper">funding closed</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block init %}
+<script>PI.UserProfile.init();</script>
+{% endblock %}

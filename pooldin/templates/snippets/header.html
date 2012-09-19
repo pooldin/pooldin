@@ -16,8 +16,8 @@
       {% if not user.is_anonymous() %}
       <div class="span2 profile rounded-top">
         <div class="wrapper rounded-top">
-          {% if primary_email %}
-          <img class="rounded-top" alt="gravatar" src="{{ primary_email | gravatar }}" />
+          {% if user.primary_email %}
+          <a href="/user/{{ user.username }}"><img class="rounded-top" alt="gravatar" src="{{ user.primary_email | gravatar }}" /></a>
           {% else %}
           <img class="rounded-top" alt="gravatar" src="{{ "anonymous@poold.in" | gravatar }}" />
           {% endif %}
