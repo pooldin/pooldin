@@ -43,11 +43,10 @@ class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin):
 
     @property
     def primary_email(self):
-        try:
-            email = [e.address for e in self.emails][0]
-        except IndexError:
-            email = None
-        return email
+        emails = [e.address for e in self.emails if e.primary]
+        if not emails:
+            return
+        return emails[0]
 
 
 class AnonymousUser(login.AnonymousUser):
