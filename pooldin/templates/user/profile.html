@@ -9,7 +9,9 @@
     <div class="span8">
       <h1>{% if is_user %}{{ profile_user.display_name }}'s{% else %}{{ profile_user.display_name }}'s{% endif %}</h1>
       <h1 class="font-normal">Profile Page</h1>
-      <span class="teal{% if is_user %} public{% endif %}"{% if is_user %} data-bind="text: publicLabel, click: setPublic, css: { teal: isPublic() == true, red: isPublic() == false }"{% endif %}>public</span>
+      {% if is_user %}
+      this profile is <span class="teal public" data-bind="text: publicLabel, click: setPublic, css: { teal: isPublic() == true, red: isPublic() == false }">public</span>.
+      {% endif %}
     </div>
   </div>
 </section>
@@ -20,6 +22,9 @@
       <img alt="profile-image" src="{{ profile_user.primary_email | gravatar }}" />
       {% else %}
       <img alt="profile-image" src="{{ "anonymous@poold.in" | gravatar }}" />
+      {% endif %}
+      {% if is_user %}
+      <span class='get-gravatar dark-gray'>We use <a href="http://www.gravatar.com">gravatar</a> for profile images.</span>
       {% endif %}
     </div>
     <div class="span9 details">

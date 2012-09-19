@@ -6496,6 +6496,13 @@ input.circle-16.twitter-white-16 {
   color: #dddddd;
   cursor: pointer;
 }
+.user-profile #user-profile .get-gravatar a {
+  text-decoration: none;
+}
+.user-profile #user-profile .get-gravatar a,
+.user-profile #user-profile .get-gravatar a:hover {
+  color: #739b9e;
+}
 .user-profile #user-poold .span12 {
   margin: 0px;
 }
