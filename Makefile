@@ -1,8 +1,8 @@
 # Magical make incantations...
-.PHONY := all assets clean css db deps env init \
+.PHONY := all assets clean css db dropdb deps env init \
 		  js js-all js-debug js-lib js-lib-debug \
 		  lint npm reset run \
-		  shell sql sql-create sql-drop tests user
+		  shell sql sql-create sql-drop tests user initfixtures
 
 .DEFAULT_GOAL := deps
 
@@ -59,6 +59,9 @@ css-debug:
 
 db:
 	@$(MANAGE) createdb || true
+
+dropdb:
+	@$(MANAGE) dropdb
 
 deps:
 	@$(MAKE) ENV=$(ENV) env
@@ -129,3 +132,6 @@ tests:
 
 user:
 	@$(MANAGE) adduser
+
+loadfixtures:
+	@$(MANAGE) loadfixtures

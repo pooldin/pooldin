@@ -1,9 +1,11 @@
+import os
 from functools import wraps
+import json
 
 from flask.ext.script import Manager, prompt, prompt_pass
 from flask.ext.assets import ManageAssets
 
-from pooldin import create_app
+from pooldin import create_app, path
 from pooldin.database import db
 from pooldin.database.manage import DBManager
 from pooldin.database.models import User, Email
@@ -43,6 +45,7 @@ def shell_context():
 @manager.command
 def createdb():
     db_manager.create_all()
+    loadfixtures()
 
 
 @manager.command
@@ -55,6 +58,7 @@ def dropdb():
 @handle_interrupts
 def resetdb():
     db_manager.reset_all()
+    loadfixtures()
 
 
 @manager.command
@@ -103,6 +107,7 @@ def adduser():
         return
 
     user = User()
+    user.enabled = True
     user.username = username
     user.password = password
 
@@ -116,6 +121,34 @@ def adduser():
 
     db.session.add(email)
     db.session.commit()
+
+
+@manager.command
+def loadfixtures():
+    user_fixture_path = os.path.join(os.path.dirname(path),
+                                     'fixtures',
+                                     'users.json')
+    with open(user_fixture_path) as fs:
+        users = json.load(fs)
+
+    for (username, u) in users.items():
+        user = User()
+        user.enabled = True
+        user.username = username
+        user.password = u['password']
+        user.about = u['about']
+
+        db.session.add(user)
+        db.session.commit()
+
+        email = Email()
+        email.address = u['address']
+        email.enabled = True
+        email.primary = True
+        email.user_id = user.id
+
+        db.session.add(email)
+        db.session.commit()
 
 
 if __name__ == "__main__":
