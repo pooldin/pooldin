@@ -126,16 +126,16 @@
                     data-bind="text: secondsUI, visible: remaining() < 61"></span>
             </div>
           </div>
-          <div class="span2 call-to-action" data-bind="with: campaign">
+          <div class="span2 call-to-action">
             <div class="pie">
               <div id="pie-chart" class="relative">
                 <div class="layer">
-                  <h3><span data-bind="text: progressUI"></span></h3>
+                  <h3><span data-bind="text: campaign().progressUI"></span></h3>
                   <h4 class="upper">Complete</h4>
                 </div>
               </div>
             </div>
-            {{ button("Cough it up", color="green") }}
+            {{ button("Cough it up", color="green", bind="click: payment.open") }}
           </div>
           <div class="clearfix"></div>
         </div>
@@ -256,11 +256,16 @@
   </div>
 </section>
 {% include "snippets/upload.html" %}
+{% include "campaign/snippets/payment.html" %}
 {% endblock %}
 
 {% block init %}
 <script src="{{ url_for('static', filename='script/graph.js') }}"></script>
 <script>
+  function logInUser() {
+    return {% if user.is_anonymous() %}true{% else %}false{% endif %};
+  }
+
   var deadline = moment().add('hours', 5).
                           add('days', 4).
                           add('minutes', 1).

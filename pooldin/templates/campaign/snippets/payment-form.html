@@ -1,0 +1,127 @@
+{% from 'macros/button.html' import button, button_submit %}
+<div class='span8'>
+  <div class='span8'>
+    <div class="organizer">
+      <h3>Kevin's 2012 Fantasy Futbol</h3>
+      <div class="span1">
+        <img src="{{ organizer.primary_email | gravatar(size=50) }}">
+      </div>
+      <div class="span5">
+        <span>Organized By</span>
+        <span class="block teal upper">Kevin Berger</span>
+      </div>
+    </div>
+  </div>
+  <form action="">
+    <div class='span4 left'>
+      <div class="payment-information">
+        <h4>Enter Payment Amount</h4>
+        <h5 class="font-normal lower">(minimum $0.50)</h5>
+        <input type="text" value="$" class="payment-amount" />
+        <div class="name">
+          <h4>Credit Card Information</h4>
+          <input type="text" class="first-name" placeholder="last name" />
+          <input type="text" class="last-name" placeholder="first name" />
+        </div>
+        <div class="cc">
+          <input type="text" autocomplete="off" placeholder="credit card number" class="card-number" />
+        </div>
+        <div class="expiration">
+          <div class="exp-label"><h5>Expiration date</h5></div>
+          <select class="month">
+            <option selected="selected">month</option>
+            {% for m in range(1, 13) %}
+            <option value="{{ m }}">{{ m }}</option>
+            {% endfor %}
+          </select>
+          <select class="year" >
+            <option selected="selected">year</option>
+            {% for y in range(2012, 2042) %}
+            <option value="{{ y }}">{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="ccv">
+          <div class="ccv-label"><h5>Security code</h5></div>
+          <input type="text" autocomplete="off" placeholder="ccv" class="card-ccv" />
+          <div class="ccv-why"><h6 class="font-normal">what's this?</h6></div>
+        </div>
+      </div>
+    </div>
+    <div class='span4 center'>
+      <div class="billing-information">
+        <h4>Billing Information</h4>
+        <div class="address">
+          <div class="address-one">
+          <input type="text" placeholder="address" class="street" />
+          </div>
+          <div class="address-two">
+            <input type="text" placeholder="city" class="city" />
+            <input type="text" placeholder="state/region" class="state-region" />
+          </div>
+          <div class="address-three">
+            <input type="text" placeholder="postal code" class="postal-code" />
+            <input type="text" placeholder="country" class="country" />
+          </div>
+        </div>
+        <div class="submit">
+          <div class="total"><span class="bold upper">Total</span> <span class="italic green">$XX.XX</span></div>
+          {{ button("Send Payment", size="medium", color="green") }}
+        </div>
+        <div class="charge-info dark-gray">
+          <span class="block">There is a 3% transaction fee.</span>
+          <span class="block">Payment will appear on your card as POOLDIN INC.</span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class='span3 right'>
+  <h3>Campaign Summary</h3>
+  <div class="goal">
+    <div data-bind="if: campaign().target, visible: campaign().target">
+      <h2>Goal</h2>
+      <h2 class="green" data-bind="text: campaign().target().valueUI">$20,000</h2>
+    </div>
+    <div data-bind="ifnot: campaign().target, visible: !campaign().target()" style="display: none">
+      <h2>Deadline</h2>
+      <h2 class="green" style="text-transform: none" data-bind="text: deadlineUI"></h2>
+    </div>
+  </div>
+  <hr />
+  <div class="span3">
+    <div class="pie">
+      <div id="modal-pie-chart" class="relative">
+        <div class="layer">
+          <h3><span data-bind="text: campaign().progressUI"></span></h3>
+          <h4 class="upper">Complete</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="metrics">
+    <hr />
+    <div class="span2">
+      <h3>Current Total</h3>
+      <h2 class="total teal" data-bind="text: campaign().balanceUI">$250</h2>
+    </div>
+    <div class="span2">
+      <h3>Poold In</h3>
+      <h2 class="poold" data-bind="text: campaign().participants">5</h2>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="time">
+    <hr />
+    <span class="italic" style="display: block;">Time Left:</span>
+    <h3 class="lower">
+      <span class="days" data-bind="text: daysUI">4 days</span>
+      <span class="hours" data-bind="text: hoursUI">5 hours</span>
+      <span class="minutes" data-bind="text: minutesUI">0 mins</span>
+      <span style="display: none"
+            class="seconds teal-background white"
+            data-bind="text: secondsUI, visible: remaining() < 61"></span>
+    </h3>
+  </div>
+</div>

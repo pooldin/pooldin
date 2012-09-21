@@ -83,3 +83,4 @@ pooldin-js:
         - script/campaign/manage.coffee
         - script/campaign/promote.coffee
         - script/campaign/disburse.coffee
+        - script/campaign/payment.coffee

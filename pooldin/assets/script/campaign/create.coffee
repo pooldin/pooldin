@@ -24,7 +24,6 @@ class PI.CampaignCreate extends PI.Page
 
    onPaymentAmountType: (type) ->
      visible = type is 'specific'
-     console.log(visible)
      @togglePaymentTypeDependents(visible)
 
    toggleTypeDependents: (visible) ->

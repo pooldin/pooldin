@@ -518,7 +518,6 @@ PI.CampaignCreate = (function(_super) {
   CampaignCreate.prototype.onPaymentAmountType = function(type) {
     var visible;
     visible = type === 'specific';
-    console.log(visible);
     return this.togglePaymentTypeDependents(visible);
   };
 
@@ -558,6 +557,7 @@ PI.CampaignDetails = (function(_super) {
     this.manager = new PI.CampaignManager(this.uploader);
     this.promote = new PI.CampaignPromote();
     this.disburse = new PI.CampaignDisburse();
+    this.payment = new PI.PaymentModal(this);
   }
 
   CampaignDetails.prototype.getProgress = function() {
@@ -654,49 +654,70 @@ PI.CampaignDetails = (function(_super) {
   };
 
   CampaignDetails.prototype.render = function() {
-    var el;
     CampaignDetails.__super__.render.call(this);
-    el = jQuery('#pie-chart');
-    if (!(el && el.length > 0)) {
-      return;
-    }
-    this.el = el;
-    this.graph = Raphael(this.el[0], 200, 200);
-    this.renderPie(this.progress());
+    this.renderGraph('#pie-chart');
     return this;
   };
 
-  CampaignDetails.prototype.renderPie = function(total) {
-    var pie;
-    if (!this.graph) {
+  CampaignDetails.prototype.renderGraph = function(el, width, height, x, y, r) {
+    var graph;
+    el = jQuery(el);
+    if (width == null) {
+      width = 200;
+    }
+    if (height == null) {
+      height = 200;
+    }
+    if (x == null) {
+      x = 100;
+    }
+    if (y == null) {
+      y = 100;
+    }
+    if (r == null) {
+      r = 100;
+    }
+    if (!(el && el.length > 0)) {
       return;
     }
-    this.graph.clear();
+    graph = Raphael(el[0], 200, 200);
+    return this.renderPie(this.progress(), graph, x, y, r);
+  };
+
+  CampaignDetails.prototype.renderPie = function(total, graph, x, y, r) {
+    var pie, pieChart;
+    if (graph == null) {
+      graph = this.graph;
+    }
+    if (!graph) {
+      return;
+    }
+    graph.clear();
     pie = this.pieData(total);
-    this.pie = this.graph.piechart(100, 100, 100, pie.data, {
+    pieChart = graph.piechart(x, y, r, pie.data, {
       init: 0.1,
       colors: pie.colors
     });
     if (pie.rotation) {
-      this.pie.rotate(pie.rotation);
+      pieChart.rotate(pie.rotation);
     }
-    this.graph.circle(100, 100, 98).animate({
+    graph.circle(x, y, r * 0.98).animate({
       stroke: "#747C7D",
       "stroke-width": 2
     }).blur();
-    this.graph.circle(100, 100, 99).animate({
+    graph.circle(x, y, r * 0.99).animate({
       stroke: "#aaa",
       "stroke-width": 1
     });
-    this.graph.circle(100, 100, 70).animate({
+    graph.circle(x, y, r * 0.70).animate({
       stroke: "#747C7D",
       "stroke-width": 2
     });
-    this.graph.circle(100, 100, 72).animate({
+    graph.circle(x, y, r * 0.72).animate({
       stroke: "#747C7D",
       "stroke-width": 2
     }).blur();
-    this.graph.circle(100, 100, 70).animate({
+    graph.circle(x, y, r * 0.70).animate({
       stroke: "#aaa",
       "stroke-width": 1,
       fill: "#fff"
@@ -824,3 +845,34 @@ PI.CampaignDisburse = (function() {
   return CampaignDisburse;
 
 })();
+
+PI.PaymentModal = (function(_super) {
+
+  __extends(PaymentModal, _super);
+
+  function PaymentModal(page) {
+    PaymentModal.__super__.constructor.call(this);
+    this.page = page;
+    this.login = ko.observable(logInUser());
+    this.form = ko.observable(!this.login());
+    this.processing = ko.observable(false);
+    this.success = ko.observable(false);
+  }
+
+  PaymentModal.prototype.getElement = function() {
+    return jQuery('#payment').modal({
+      show: false,
+      backdrop: 'static',
+      keyboard: true
+    });
+  };
+
+  PaymentModal.prototype.open = function() {
+    PaymentModal.__super__.open.call(this);
+    this.page.renderGraph('#modal-pie-chart-login', 150, 150, 75, 75, 75);
+    return this.page.renderGraph('#modal-pie-chart', 150, 150, 75, 75, 75);
+  };
+
+  return PaymentModal;
+
+})(PI.Modal);

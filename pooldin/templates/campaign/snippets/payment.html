@@ -1,0 +1,17 @@
+{% from 'macros/button.html' import button, button_submit %}
+<div id="payment" class="span12 modal hide fade" style="display: none">
+  <div class="modal-body">
+    <section id="payment-login" data-bind="visible: payment.login">
+    {% include "campaign/snippets/payment-login.html" %}
+    </section>
+    <section id="payment-form" data-bind="visible: payment.form">
+    {% include "campaign/snippets/payment-form.html" %}
+    </section>
+    <section id="payment-processing" style="display: none;">
+    {% include "campaign/snippets/payment-processing.html" %}
+    </section>
+    <section id="payment-success" style="display: none;">
+    {% include "campaign/snippets/payment-success.html" %}
+    </section>
+  </div>
+</div>

@@ -2,6 +2,7 @@ from flask import abort, render_template
 
 from .base import BaseView
 from ..app.negotiate import supports
+from ..database.models import User
 
 
 class ViewCampaignCreate(BaseView):
@@ -28,4 +29,5 @@ class ViewCampaignDetails(BaseView):
         app.add_get_rule('/campaign/<int:id>', view_func=view)
 
     def get(self, id):
-        return render_template('campaign/details.html')
+        organizer = User.query.filter_by(username='kevin').first()
+        return render_template('campaign/details.html', organizer=organizer)

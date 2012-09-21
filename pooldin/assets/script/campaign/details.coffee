@@ -18,6 +18,7 @@ class PI.CampaignDetails extends PI.Page
     @manager = new PI.CampaignManager(@uploader)
     @promote = new PI.CampaignPromote()
     @disburse = new PI.CampaignDisburse()
+    @payment = new PI.PaymentModal(this)
 
   getProgress: ->
     return @campaign().progress()
@@ -81,50 +82,55 @@ class PI.CampaignDetails extends PI.Page
 
   render: ->
     super()
-
-    el = jQuery('#pie-chart')
-    return unless el and el.length > 0
-
-    @el = el
-    @graph = Raphael(@el[0], 200, 200)
-    @renderPie(@progress())
-
+    @renderGraph('#pie-chart')
     return this
 
-  renderPie: (total) ->
-    return unless @graph
+  renderGraph: (el, width, height, x, y, r) ->
+    el = jQuery(el)
+    width ?= 200
+    height ?= 200
+    x ?= 100
+    y ?= 100
+    r ?= 100
+    return unless el and el.length > 0
+    graph = Raphael(el[0], 200, 200)
+    @renderPie(@progress(), graph, x, y, r)
 
-    @graph.clear()
+  renderPie: (total, graph, x, y, r) ->
+    graph ?= @graph
+    return unless graph
+
+    graph.clear()
     pie = @pieData(total)
 
-    @pie = @graph.piechart(100, 100, 100, pie.data, {
+    pieChart = graph.piechart(x, y, r, pie.data, {
       init: 0.1,
       colors: pie.colors
     })
 
-    @pie.rotate(pie.rotation) if pie.rotation
+    pieChart.rotate(pie.rotation) if pie.rotation
 
-    @graph.circle(100, 100, 98).animate({
+    graph.circle(x, y, r*0.98).animate({
       stroke: "#747C7D",
       "stroke-width": 2
     }).blur()
 
-    @graph.circle(100, 100, 99).animate({
+    graph.circle(x, y, r*0.99).animate({
       stroke: "#aaa",
       "stroke-width": 1
     })
 
-    @graph.circle(100, 100, 70).animate({
+    graph.circle(x, y, r*0.70).animate({
       stroke: "#747C7D",
       "stroke-width": 2
     })
 
-    @graph.circle(100, 100, 72).animate({
+    graph.circle(x, y, r*0.72).animate({
       stroke: "#747C7D",
       "stroke-width": 2
     }).blur()
 
-    @graph.circle(100, 100, 70).animate({
+    graph.circle(x, y, r*0.70).animate({
       stroke: "#aaa",
       "stroke-width": 1,
       fill: "#fff"
