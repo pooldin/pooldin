@@ -6157,11 +6157,6 @@ form label .add-on {
 }
 form label.block input[type="text"],
 form label.block input[type="password"],
-form label.block textarea {
-  width: 100%;
-}
-form label.block input[type="text"],
-form label.block input[type="password"],
 form label.block textarea,
 form label.block .h3,
 form label.block .h4 {
