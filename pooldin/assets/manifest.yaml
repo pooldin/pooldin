@@ -9,6 +9,7 @@ lib-js:
         - lib/signals-0.8.1.js
         - lib/crossroads-0.10.0.js
         - lib/accounting-0.3.2.js
+        - lib/spin-1.2.6.js
 
 lib-js-min:
     output: ../static/media/script/lib.min.js
@@ -23,6 +24,7 @@ lib-js-min:
         - lib/signals-0.8.1.js
         - lib/crossroads-0.10.0.js
         - lib/accounting-0.3.2.js
+        - lib/spin-1.2.6.js
 
 graph-js:
     output: ../static/media/script/graph.js
