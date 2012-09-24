@@ -2,18 +2,23 @@ import os
 from functools import wraps
 import json
 
-from flask.ext.script import Manager, prompt, prompt_pass
+from flask.ext.script import Manager, Server, prompt, prompt_pass
 from flask.ext.assets import ManageAssets
 
 from pooldin import create_app, path
 from pooldin.database import db
 from pooldin.database.manage import DBManager
 from pooldin.database.models import User, Email
-
+from pooldin.app.convert import to_int
 
 manager = Manager(create_app)
 manager.app = manager.create_app()
 manager.add_command("assets", ManageAssets(manager.app.assets))
+
+# Modify debug server to lisen on 0.0.0.0
+port = os.environ.get('PORT')
+port = to_int(port) or 5000
+manager.add_command("runserver", Server(host='0.0.0.0', port=port))
 
 db_manager = DBManager()
 db_manager.add_app(manager.app)
