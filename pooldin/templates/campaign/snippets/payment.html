@@ -1,5 +1,8 @@
 {% from 'macros/button.html' import button, button_submit %}
 <div id="payment" class="span12 modal hide fade" style="display: none">
+  <div class="span12 header">
+    <a class="close" href="#" data-bind="click: payment.cancel">&times;</a>
+  </div>
   <div class="modal-body">
     <section id="payment-login" data-bind="visible: payment.login">
     {% include "campaign/snippets/payment-login.html" %}

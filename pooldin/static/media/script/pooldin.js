@@ -869,8 +869,12 @@ PI.PaymentModal = (function(_super) {
 
   PaymentModal.prototype.open = function() {
     PaymentModal.__super__.open.call(this);
+    if (this.page.renderedPaymentModal) {
+      return;
+    }
     this.page.renderGraph('#modal-pie-chart-login', 150, 150, 75, 75, 75);
-    return this.page.renderGraph('#modal-pie-chart', 150, 150, 75, 75, 75);
+    this.page.renderGraph('#modal-pie-chart', 150, 150, 75, 75, 75);
+    return this.page.renderedPaymentModal = true;
   };
 
   return PaymentModal;

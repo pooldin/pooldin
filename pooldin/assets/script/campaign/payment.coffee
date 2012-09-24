@@ -18,5 +18,7 @@ class PI.PaymentModal extends PI.Modal
 
   open: ->
     super()
+    return if @page.renderedPaymentModal
     @page.renderGraph('#modal-pie-chart-login', 150, 150, 75, 75, 75)
     @page.renderGraph('#modal-pie-chart', 150, 150, 75, 75, 75)
+    @page.renderedPaymentModal = true
