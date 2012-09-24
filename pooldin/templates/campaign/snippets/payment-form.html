@@ -12,31 +12,31 @@
       </div>
     </div>
   </div>
-  <form action="">
+  <form data-bind="submit: payment.submitPayment">
     <div class='span4 left'>
       <div class="payment-information">
         <h4>Enter Payment Amount</h4>
         <h5 class="font-normal lower">(minimum $0.50)</h5>
-        <input type="text" value="$" class="payment-amount" />
+        <input type="text" placeholder="$" data-bind="value: payment.form.paymentAmount" class="payment-amount" />
         <div class="name">
           <h4>Credit Card Information</h4>
-          <input type="text" class="first-name" placeholder="last name" />
-          <input type="text" class="last-name" placeholder="first name" />
+          <input type="text" class="first-name" data-bind="value: payment.form.firstName" placeholder="last name" />
+          <input type="text" class="last-name" data-bind="value: payment.form.lastName" placeholder="first name" />
         </div>
         <div class="cc">
-          <input type="text" autocomplete="off" placeholder="credit card number" class="card-number" />
+          <input type="text" autocomplete="off" data-bind="value: payment.form.ccNumber" placeholder="credit card number" class="card-number" />
           <img alt="Accepted Forms of Payment" src="http://www.fastcharge.com/images/cc/credit_card_logos_5.gif" width="110" border="0">
         </div>
         <div class="expiration">
           <div class="exp-label"><h5>Expiration date</h5></div>
           <select class="month">
-            <option selected="selected">month</option>
+            <option selected="selected" data-bind="value: payment.form.expirationMonth">month</option>
             {% for m in range(1, 13) %}
             <option value="{{ m }}">{{ m }}</option>
             {% endfor %}
           </select>
           <select class="year" >
-            <option selected="selected">year</option>
+            <option selected="selected" data-bind="value: payment.form.expirationMonth">year</option>
             {% for y in range(2012, 2042) %}
             <option value="{{ y }}">{{ y }}</option>
             {% endfor %}
@@ -44,7 +44,7 @@
         </div>
         <div class="ccv">
           <div class="ccv-label"><h5>Security code</h5></div>
-          <input type="text" autocomplete="off" placeholder="ccv" class="card-ccv" />
+          <input type="text" autocomplete="off" data-bind="value: payment.form.ccvNumber" placeholder="ccv" class="card-ccv" />
           <div class="ccv-why"><h6 class="font-normal">what's this?</h6></div>
         </div>
       </div>
@@ -57,17 +57,17 @@
           <input type="text" placeholder="address" class="street" />
           </div>
           <div class="address-two">
-            <input type="text" placeholder="city" class="city" />
-            <input type="text" placeholder="state/region" class="state-region" />
+            <input type="text" data-bind="value: payment.form.city" placeholder="city" class="city" />
+            <input type="text" data-bind="value: payment.form.state" placeholder="state/region" class="state-region" />
           </div>
           <div class="address-three">
-            <input type="text" placeholder="postal code" class="postal-code" />
-            <input type="text" placeholder="country" class="country" />
+            <input type="text" data-bind="value: payment.form.postalCode" placeholder="postal code" class="postal-code" />
+            <input type="text" data-bind="value: payment.form.country" placeholder="country" class="country" />
           </div>
         </div>
         <div class="submit">
-          <div class="total"><span class="bold upper">Total</span> <span class="italic green">$XX.XX</span></div>
-          {{ button("Send Payment", size="medium", color="green") }}
+          <div class="total"><span class="bold upper">Total</span> <span class="italic green" data-bind="text: payment.form.paymentAmount">$0.00</span></div>
+          {{ button("Send Payment", size="medium", color="green", type="submit") }}
         </div>
         <div class="charge-info dark-gray">
           <span class="block">There is a 3% transaction fee.</span>

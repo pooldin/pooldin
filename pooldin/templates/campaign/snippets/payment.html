@@ -4,16 +4,16 @@
     <a class="close" href="#" data-bind="click: payment.cancel">&times;</a>
   </div>
   <div class="modal-body">
-    <section id="payment-login" data-bind="visible: payment.login">
+    <section id="payment-login" data-bind="visible: payment.loginPage">
     {% include "campaign/snippets/payment-login.html" %}
     </section>
-    <section id="payment-form" data-bind="visible: payment.form">
+    <section id="payment-form" data-bind="visible: payment.formPage">
     {% include "campaign/snippets/payment-form.html" %}
     </section>
-    <section id="payment-processing" style="display: none;">
+    <section id="payment-processing" data-bind="visible: payment.processingPage">
     {% include "campaign/snippets/payment-processing.html" %}
     </section>
-    <section id="payment-success" style="display: none;">
+    <section id="payment-success" data-bind="visible: payment.successPage">
     {% include "campaign/snippets/payment-success.html" %}
     </section>
   </div>

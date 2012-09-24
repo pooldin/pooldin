@@ -851,12 +851,16 @@ PI.PaymentModal = (function(_super) {
   __extends(PaymentModal, _super);
 
   function PaymentModal(page) {
+    this.paymentCallback = __bind(this.paymentCallback, this);
+
+    this.submitPayment = __bind(this.submitPayment, this);
     PaymentModal.__super__.constructor.call(this);
     this.page = page;
-    this.login = ko.observable(logInUser());
-    this.form = ko.observable(!this.login());
-    this.processing = ko.observable(false);
-    this.success = ko.observable(false);
+    this.loginPage = ko.observable(logInUser());
+    this.formPage = ko.observable(!this.loginPage());
+    this.processingPage = ko.observable(false);
+    this.successPage = ko.observable(false);
+    this.form = new PI.PaymentForm();
   }
 
   PaymentModal.prototype.getElement = function() {
@@ -877,6 +881,78 @@ PI.PaymentModal = (function(_super) {
     return this.page.renderedPaymentModal = true;
   };
 
+  PaymentModal.prototype.submitPayment = function() {
+    var el;
+    if (!this.form.valid()) {
+      this.displayErrors();
+    }
+    this.processingPage(true);
+    el = jQuery('.processing-spinner')[0];
+    this.spinner = this.buildSpinner();
+    this.spinner.spin();
+    el.appendChild(this.spinner.el);
+    return setTimeout(this.paymentCallback, 2500);
+  };
+
+  PaymentModal.prototype.paymentCallback = function(data) {
+    return this.paymentSuccess();
+  };
+
+  PaymentModal.prototype.paymentSuccess = function() {
+    this.spinner.stop();
+    this.processingPage(false);
+    this.formPage(false);
+    return this.successPage(true);
+  };
+
+  PaymentModal.prototype.displayErrors = function() {};
+
+  PaymentModal.prototype.buildSpinner = function() {
+    var opts;
+    opts = {
+      lines: 8,
+      length: 7,
+      width: 5,
+      radius: 10,
+      corners: 1,
+      rotate: 0,
+      color: "#FFF",
+      speed: 1,
+      trail: 60,
+      shadow: false,
+      hwaccel: false,
+      className: "spinner"
+    };
+    return Spinner(opts);
+  };
+
   return PaymentModal;
 
 })(PI.Modal);
+
+PI.PaymentForm = (function(_super) {
+
+  __extends(PaymentForm, _super);
+
+  function PaymentForm() {
+    this.paymentAmount = ko.observable("$0.00");
+    this.firstName = ko.observable();
+    this.lastName = ko.observable();
+    this.address = ko.observable();
+    this.city = ko.observable();
+    this.state = ko.observable();
+    this.country = ko.observable();
+    this.postalCode = ko.observable();
+    this.ccNumber = ko.observable();
+    this.ccvNumber = ko.observable();
+    this.expirationMonth = ko.observable();
+    this.expirationYear = ko.observable();
+  }
+
+  PaymentForm.prototype.valid = function() {
+    return true;
+  };
+
+  return PaymentForm;
+
+})(PI.Model);
