@@ -7,7 +7,7 @@ class PI.PaymentModal extends PI.Modal
     @loginPage = ko.observable(logInUser())
     @formPage = ko.observable(not @loginPage())
     @processingPage = ko.observable(false)
-    @successPage = ko.observable(true)
+    @successPage = ko.observable(false)
 
     @form = new PI.PaymentForm()
 

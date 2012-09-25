@@ -865,7 +865,7 @@ PI.PaymentModal = (function(_super) {
     this.loginPage = ko.observable(logInUser());
     this.formPage = ko.observable(!this.loginPage());
     this.processingPage = ko.observable(false);
-    this.successPage = ko.observable(true);
+    this.successPage = ko.observable(false);
     this.form = new PI.PaymentForm();
   }
 
