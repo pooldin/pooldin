@@ -851,6 +851,12 @@ PI.PaymentModal = (function(_super) {
   __extends(PaymentModal, _super);
 
   function PaymentModal(page) {
+    this.resetModal = __bind(this.resetModal, this);
+
+    this.finishAndCreate = __bind(this.finishAndCreate, this);
+
+    this.finish = __bind(this.finish, this);
+
     this.paymentCallback = __bind(this.paymentCallback, this);
 
     this.submitPayment = __bind(this.submitPayment, this);
@@ -859,7 +865,7 @@ PI.PaymentModal = (function(_super) {
     this.loginPage = ko.observable(logInUser());
     this.formPage = ko.observable(!this.loginPage());
     this.processingPage = ko.observable(false);
-    this.successPage = ko.observable(false);
+    this.successPage = ko.observable(true);
     this.form = new PI.PaymentForm();
   }
 
@@ -877,6 +883,7 @@ PI.PaymentModal = (function(_super) {
       return;
     }
     this.page.renderGraph('#modal-pie-chart-login', 150, 150, 75, 75, 75);
+    this.page.renderGraph('#modal-pie-chart-success', 150, 150, 75, 75, 75);
     this.page.renderGraph('#modal-pie-chart', 150, 150, 75, 75, 75);
     return this.page.renderedPaymentModal = true;
   };
@@ -924,6 +931,26 @@ PI.PaymentModal = (function(_super) {
       className: "spinner"
     };
     return Spinner(opts);
+  };
+
+  PaymentModal.prototype.finish = function() {
+    this.cancel();
+    return setTimeout(this.resetModal, 1000);
+  };
+
+  PaymentModal.prototype.finishAndCreate = function() {
+    var createCampaign;
+    this.finish();
+    createCampaign = function() {
+      return window.location = '/campaign/new';
+    };
+    return setTimeout(createCampaign, 1000);
+  };
+
+  PaymentModal.prototype.resetModal = function() {
+    this.form.paymentAmount("$0.00");
+    this.successPage(false);
+    return this.formPage(true);
   };
 
   return PaymentModal;

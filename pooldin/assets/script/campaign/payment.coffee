@@ -7,7 +7,7 @@ class PI.PaymentModal extends PI.Modal
     @loginPage = ko.observable(logInUser())
     @formPage = ko.observable(not @loginPage())
     @processingPage = ko.observable(false)
-    @successPage = ko.observable(false)
+    @successPage = ko.observable(true)
 
     @form = new PI.PaymentForm()
 
@@ -22,6 +22,7 @@ class PI.PaymentModal extends PI.Modal
     super()
     return if @page.renderedPaymentModal
     @page.renderGraph('#modal-pie-chart-login', 150, 150, 75, 75, 75)
+    @page.renderGraph('#modal-pie-chart-success', 150, 150, 75, 75, 75)
     @page.renderGraph('#modal-pie-chart', 150, 150, 75, 75, 75)
     @page.renderedPaymentModal = true
 
@@ -61,6 +62,21 @@ class PI.PaymentModal extends PI.Modal
        hwaccel: false
        className: "spinner"
      return Spinner(opts)
+
+   finish: =>
+     @cancel()
+     setTimeout(@resetModal, 1000)
+
+   finishAndCreate: =>
+     @finish()
+     createCampaign = ->
+       window.location = '/campaign/new'
+     setTimeout(createCampaign, 1000)
+
+   resetModal: =>
+     @form.paymentAmount("$0.00")
+     @successPage(false)
+     @formPage(true)
 
 class PI.PaymentForm extends PI.Model
 

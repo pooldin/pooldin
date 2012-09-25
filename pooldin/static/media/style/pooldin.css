@@ -7296,8 +7296,10 @@ input.circle-16.twitter-white-16 {
   font-size: 1.1em;
 }
 #payment #modal-pie-chart,
-#payment #modal-pie-chart-login {
+#payment #modal-pie-chart-login,
+#payment #modal-pie-chart-success {
   height: 150px;
+  width: 150px;
 }
 #payment .metrics hr,
 #payment .time hr {
@@ -7431,6 +7433,37 @@ input.circle-16.twitter-white-16 {
   margin-left: 50%;
   margin-top: 40px;
   height: 40px;
+}
+#payment #payment-success .thanks {
+  font-family: 'knockout49';
+  font-weight: bold;
+  font-size: 2.2em;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+#payment #payment-success .message {
+  margin-left: 30px;
+}
+#payment #payment-success .records {
+  margin-top: 15px;
+  margin-bottom: 40px;
+  width: 250px;
+}
+#payment #payment-success .next {
+  margin-bottom: 15px;
+}
+#payment #payment-success .button {
+  margin-left: -10px;
+  margin-bottom: 10px;
+}
+#payment #payment-success .theme-button-small {
+  width: 220px;
+}
+#payment #payment-success .theme-button-small input {
+  font-size: 1.2em;
+}
+#payment #payment-success .green-background {
+  width: 216px;
 }
 .theme-button {
   margin: 4px 10px;
