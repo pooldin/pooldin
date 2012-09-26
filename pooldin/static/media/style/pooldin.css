@@ -7221,9 +7221,11 @@ input.circle-16.twitter-white-16 {
   line-height: 100px;
 }
 #payment {
-  left: 50%;
-  margin-left: -585px;
-  top: 420px;
+  left: 0;
+  right: 0;
+  top: 20%;
+  margin: 0 auto;
+  width: 1170px;
 }
 #payment h2,
 #payment h3,
@@ -7236,6 +7238,7 @@ input.circle-16.twitter-white-16 {
 }
 #payment .header {
   margin: 0;
+  min-width: 1140px;
 }
 #payment .header a {
   height: 12px;
@@ -7246,6 +7249,7 @@ input.circle-16.twitter-white-16 {
   max-height: 100%;
   padding-top: 40px;
   padding-bottom: 40px;
+  width: 1140px;
 }
 #payment .span2 {
   width: 125px;
