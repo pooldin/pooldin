@@ -5,10 +5,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext import login
 
 from .. import db
-from ..common import BaseModel, IDMixin, NullNameMixin, DisabledMixin
+from ..common import BaseModel, IDMixin, NullNameMixin, DisabledMixin, JSONSerializationMixin
 
 
-class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin):
+class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin, JSONSerializationMixin):
 
     username = db.Column(db.String(40), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
@@ -47,6 +47,13 @@ class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin):
         if not emails:
             return
         return emails[0]
+
+    def to_dict(self, fields=None):
+        fields = fields or ['display_name', 'about', 'created', 'modified', 'enabled']
+        ret = dict()
+        for field in fields:
+            ret[field] = getattr(self, field)
+        return ret
 
 
 class AnonymousUser(login.AnonymousUser):
