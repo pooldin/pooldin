@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import request
 
 from .. import db
+from ..types import DateTimeTZ
 
 
 def remote_ip():
@@ -19,8 +20,8 @@ def remote_ip():
 
 
 class TrackTimeMixin(object):
-    created = db.Column(db.DateTime, default=datetime.utcnow)
-    modified = db.Column(db.DateTime,
+    created = db.Column(DateTimeTZ, default=datetime.utcnow)
+    modified = db.Column(DateTimeTZ,
                          default=datetime.utcnow,
                          onupdate=datetime.utcnow)
 

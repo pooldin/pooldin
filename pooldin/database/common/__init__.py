@@ -4,3 +4,4 @@ from .identity import IDMixin, UUIDMixin
 from .text import NameMixin, NullNameMixin, DescriptionMixin
 from .tracking import TrackTimeMixin, TrackIPMixin
 from .update import FieldUpdateMixin
+from .serialize import JSONSerializationMixin
