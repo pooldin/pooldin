@@ -48,9 +48,9 @@
             No profile information for {{ profile_user.display_name }} yet...
             {% endif %}
           </span>
-          {% if is_user %}<span id='profile-about-edit' data-bind="click: profile.toggleEdit, visible: profile.isEditing() === false">edit</span>{% endif %}
-          {% if is_user %}<span id='profile-about-cancel' data-bind="click: profile.cancel, visible: profile.isEditing">cancel</span>{% endif %}
-          {% if is_user %}<span id='profile-about-save' data-bind="click: profile.save, visible: profile.isEditing">save</span>{% endif %}
+          {% if is_user %}<input type="button" id='profile-about-edit' class="clean" data-bind="click: profile.toggleEdit, visible: profile.isEditing() === false" value="edit" />{% endif %}
+          {% if is_user %}<input type="button" id='profile-about-cancel' class="clean" data-bind="click: profile.cancel, visible: profile.isEditing" value="cancel" />{% endif %}
+          {% if is_user %}<input type="button" id='profile-about-save' class="clean" data-bind="click: profile.save, visible: profile.isEditing" value="save" />{% endif %}
         </div>
       </div>
     </div>

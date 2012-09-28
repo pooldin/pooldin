@@ -6480,20 +6480,21 @@ input.circle-16.twitter-white-16 {
   display: block;
   margin-top: 15px;
 }
-.user-profile #user-profile .details .about #profile-about-edit {
-  display: inline-block;
-  color: #dddddd;
-  cursor: pointer;
-}
-.user-profile #user-profile .details .about #profile-about-save {
-  display: inline-block;
-  color: #aecf6c;
-  cursor: pointer;
-}
+.user-profile #user-profile .details .about #profile-about-edit,
+.user-profile #user-profile .details .about #profile-about-save,
 .user-profile #user-profile .details .about #profile-about-cancel {
   display: inline-block;
-  color: #c75045;
   cursor: pointer;
+  padding: 0px;
+}
+.user-profile #user-profile .details .about #profile-about-edit {
+  color: #dddddd;
+}
+.user-profile #user-profile .details .about #profile-about-save {
+  color: #aecf6c;
+}
+.user-profile #user-profile .details .about #profile-about-cancel {
+  color: #c75045;
 }
 .user-profile #user-profile .get-gravatar a {
   text-decoration: none;
