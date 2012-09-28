@@ -2,10 +2,14 @@ import calendar
 from datetime import datetime
 import json
 
-from flask import current_app
 
+class SerializationMixin(object):
 
-class JSONSerializationMixin(object):
+    def to_dict(self, fields=None):
+        ret = dict()
+        for field in fields:
+            ret[field] = getattr(self, field)
+        return ret
 
     def to_json(self, model_dict=None, fields=None):
         model_dict = model_dict or self.to_dict(fields=fields)
