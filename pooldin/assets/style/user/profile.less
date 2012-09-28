@@ -76,15 +76,21 @@
           margin-top: 15px;
         }
 
-        #edit-profile {
+        #profile-about-edit {
           display: inline-block;
           color: @gray;
           cursor: pointer;
         }
 
-        #save-profile {
+        #profile-about-save {
           display: inline-block;
-          color: @gray;
+          color: @green;
+          cursor: pointer;
+        }
+
+        #profile-about-cancel {
+          display: inline-block;
+          color: @red;
           cursor: pointer;
         }
       }
@@ -146,5 +152,21 @@
       margin-left: 0px;
       margin-right: 20px;
     }
+  }
+
+  #user-update-success, #user-update-error {
+    width: 375px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 30%;
+
+    .profile-updated {
+      padding-top: 30px;
+    }
+  }
+
+  #user-update-error {
+    width: 675px;
   }
 }

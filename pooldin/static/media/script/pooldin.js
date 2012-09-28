@@ -328,7 +328,6 @@ PI.UserProfile = (function(_super) {
     this.publicLabel = ko.observable('public');
     this.isPublic = ko.observable(true);
     this.profile = new PI.UserProfileForm(user);
-    this.profile.update(user);
   }
 
   UserProfile.prototype.setPublic = function() {
@@ -390,12 +389,12 @@ PI.UserProfileForm = (function(_super) {
 
   UserProfileForm.prototype.onSuccess = function(data) {
     var opts;
-    this.about(data.about);
+    this.update(data);
     opts = {
       keyboard: true,
       backdrop: false
     };
-    return jQuery('#user-success').modal(opts);
+    return jQuery('#user-update-success').modal(opts);
   };
 
   UserProfileForm.prototype.onError = function() {
@@ -404,7 +403,7 @@ PI.UserProfileForm = (function(_super) {
       keyboard: true,
       backdrop: false
     };
-    return jQuery('#user-error').modal(opts);
+    return jQuery('#user-update-error').modal(opts);
   };
 
   return UserProfileForm;

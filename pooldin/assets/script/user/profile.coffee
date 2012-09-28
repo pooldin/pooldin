@@ -46,11 +46,11 @@ class PI.UserProfileForm extends PI.Model
     opts =
       keyboard: true
       backdrop: false
-    jQuery('#user-success').modal(opts)
+    jQuery('#user-update-success').modal(opts)
 
   onError: =>
     # display error message
     opts =
       keyboard: true
       backdrop: false
-    jQuery('#user-error').modal(opts)
+    jQuery('#user-update-error').modal(opts)

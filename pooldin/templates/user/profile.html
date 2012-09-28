@@ -48,9 +48,9 @@
             No profile information for {{ profile_user.display_name }} yet...
             {% endif %}
           </span>
-          {% if is_user %}<span id='edit-profile' data-bind="click: profile.toggleEdit, visible: profile.isEditing() === false">edit</span>{% endif %}
-          {% if is_user %}<span id='cancel-profile' data-bind="click: profile.cancel, visible: profile.isEditing">cancel</span>{% endif %}
-          {% if is_user %}<span id='save-profile' data-bind="click: profile.save, visible: profile.isEditing">save</span>{% endif %}
+          {% if is_user %}<span id='profile-about-edit' data-bind="click: profile.toggleEdit, visible: profile.isEditing() === false">edit</span>{% endif %}
+          {% if is_user %}<span id='profile-about-cancel' data-bind="click: profile.cancel, visible: profile.isEditing">cancel</span>{% endif %}
+          {% if is_user %}<span id='profile-about-save' data-bind="click: profile.save, visible: profile.isEditing">save</span>{% endif %}
         </div>
       </div>
     </div>
@@ -90,16 +90,16 @@
   </div>
 </section>
 
-<div id="user-success" class="modal hide fade">
-  <div class="modal-body">
-    Success! Your profile was updated!
+<div id="user-update-success" class="modal hide fade">
+  <div class="profile-updated modal-body">
+    <span class="upper bold"><span class="green">Success!</span> Your profile was updated!</span>
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">OK</button>
   </div>
 </div>
 
-<div id="user-error" class="modal hide fade">
-  <div class="modal-body">
-    An error occoured while updating your profile, please try again later.
+<div id="user-update-error" class="modal hide fade">
+  <div class="profile-updated modal-body">
+    <span class="upper bold"><span class="red">An error occoured</span> while updating your profile, please try again later.</span>
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">OK</button>
   </div>
 </div>

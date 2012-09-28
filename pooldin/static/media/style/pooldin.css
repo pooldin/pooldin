@@ -6480,14 +6480,19 @@ input.circle-16.twitter-white-16 {
   display: block;
   margin-top: 15px;
 }
-.user-profile #user-profile .details .about #edit-profile {
+.user-profile #user-profile .details .about #profile-about-edit {
   display: inline-block;
   color: #dddddd;
   cursor: pointer;
 }
-.user-profile #user-profile .details .about #save-profile {
+.user-profile #user-profile .details .about #profile-about-save {
   display: inline-block;
-  color: #dddddd;
+  color: #aecf6c;
+  cursor: pointer;
+}
+.user-profile #user-profile .details .about #profile-about-cancel {
+  display: inline-block;
+  color: #c75045;
   cursor: pointer;
 }
 .user-profile #user-profile .get-gravatar a {
@@ -6535,6 +6540,21 @@ input.circle-16.twitter-white-16 {
   margin: 10px;
   margin-left: 0px;
   margin-right: 20px;
+}
+.user-profile #user-update-success,
+.user-profile #user-update-error {
+  width: 375px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 30%;
+}
+.user-profile #user-update-success .profile-updated,
+.user-profile #user-update-error .profile-updated {
+  padding-top: 30px;
+}
+.user-profile #user-update-error {
+  width: 675px;
 }
 .campaign-create {
   font-family: Georgia;
