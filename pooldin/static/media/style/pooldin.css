@@ -6479,15 +6479,14 @@ input.circle-16.twitter-white-16 {
 .user-profile #user-profile .details .about .about-text {
   display: block;
   margin-top: 15px;
-  -moz-column-count: 2;
-  -moz-column-width: 100px;
-  -moz-column-gap: 2em;
-  -webkit-column-count: 2;
-  -webkit-column-width: 100px;
-  -webkit-column-gap: 25px;
 }
-.user-profile #user-profile .details .about .edit {
-  display: block;
+.user-profile #user-profile .details .about #edit-profile {
+  display: inline-block;
+  color: #dddddd;
+  cursor: pointer;
+}
+.user-profile #user-profile .details .about #save-profile {
+  display: inline-block;
   color: #dddddd;
   cursor: pointer;
 }

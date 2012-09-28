@@ -39,7 +39,7 @@
         <div class="about">
           <h3>About</h3>
           <hr />
-          <span class="about-text">
+          <span class="content-editable about-text" data-bind="attr: { contentEditable: profile.isEditing }">
             {% if profile_user.about %}
             {{ profile_user.about | safe }}
             {% elif is_user %}
@@ -47,15 +47,10 @@
             {% else %}
             No profile information for {{ profile_user.display_name }} yet...
             {% endif %}
-            <!--
-            Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
-
-            Nulla vitae elit libero, a pharetra augue. Donec id elit non mi porta gravida at eget metus. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-            Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam quis risus eget urna mollis ornare vel eu leo. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.
-            -->
-            {% if is_user %}<span class='edit'>edit</span>{% endif %}
           </span>
+          {% if is_user %}<span id='edit-profile' data-bind="click: profile.toggleEdit, visible: profile.isEditing() === false">edit</span>{% endif %}
+          {% if is_user %}<span id='cancel-profile' data-bind="click: profile.cancel, visible: profile.isEditing">cancel</span>{% endif %}
+          {% if is_user %}<span id='save-profile' data-bind="click: profile.save, visible: profile.isEditing">save</span>{% endif %}
         </div>
       </div>
     </div>
@@ -94,8 +89,22 @@
     </div>
   </div>
 </section>
+
+<div id="user-success" class="modal hide fade">
+  <div class="modal-body">
+    Success! Your profile was updated!
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">OK</button>
+  </div>
+</div>
+
+<div id="user-error" class="modal hide fade">
+  <div class="modal-body">
+    An error occoured while updating your profile, please try again later.
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">OK</button>
+  </div>
+</div>
 {% endblock %}
 
 {% block init %}
-<script>PI.UserProfile.init();</script>
+<script>PI.UserProfile.init({{ profile_user.to_json()|safe }});</script>
 {% endblock %}

@@ -204,6 +204,19 @@ PI.Model = (function() {
     return this;
   };
 
+  Model.prototype.dump = function() {
+    return this.schema.dump(this);
+  };
+
+  Model.prototype.toJSON = function() {
+    return ko.toJSON(this.schema.dump(this));
+  };
+
+  Model.prototype.save = function(url, callback) {
+    var backup;
+    return backup = this.schema.copy();
+  };
+
   return Model;
 
 })();
@@ -314,6 +327,8 @@ PI.UserProfile = (function(_super) {
     this.opts = opts != null ? opts : {};
     this.publicLabel = ko.observable('public');
     this.isPublic = ko.observable(true);
+    this.profile = new PI.UserProfileForm(user);
+    this.profile.update(user);
   }
 
   UserProfile.prototype.setPublic = function() {
@@ -331,6 +346,70 @@ PI.UserProfile = (function(_super) {
   return UserProfile;
 
 })(PI.Page);
+
+PI.UserProfileForm = (function(_super) {
+
+  __extends(UserProfileForm, _super);
+
+  function UserProfileForm(user) {
+    this.onError = __bind(this.onError, this);
+
+    this.onSuccess = __bind(this.onSuccess, this);
+
+    this.save = __bind(this.save, this);
+
+    this.cancel = __bind(this.cancel, this);
+
+    this.toggleEdit = __bind(this.toggleEdit, this);
+    UserProfileForm.__super__.constructor.call(this, user);
+    this.isEditing = ko.observable(false);
+  }
+
+  UserProfileForm.prototype.toggleEdit = function() {
+    this.isEditing(!this.isEditing());
+    if (this.isEditing) {
+      return jQuery('.about-text').focus();
+    }
+  };
+
+  UserProfileForm.prototype.cancel = function() {
+    var text;
+    text = this.about();
+    jQuery('.about-text')[0].textContent = text;
+    return this.toggleEdit();
+  };
+
+  UserProfileForm.prototype.save = function() {
+    var text, toSave;
+    text = jQuery.trim(jQuery('.about-text')[0].textContent);
+    toSave = this.dump();
+    toSave.about = text;
+    jQuery.post("/user/" + (this.username()) + "/about", toSave, void 0, 'json').done(this.onSuccess).fail(this.onError);
+    return this.toggleEdit();
+  };
+
+  UserProfileForm.prototype.onSuccess = function(data) {
+    var opts;
+    this.about(data.about);
+    opts = {
+      keyboard: true,
+      backdrop: false
+    };
+    return jQuery('#user-success').modal(opts);
+  };
+
+  UserProfileForm.prototype.onError = function() {
+    var opts;
+    opts = {
+      keyboard: true,
+      backdrop: false
+    };
+    return jQuery('#user-error').modal(opts);
+  };
+
+  return UserProfileForm;
+
+})(PI.Model);
 
 campaign = new PI.Schema();
 

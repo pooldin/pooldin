@@ -91,3 +91,12 @@ class PI.Model
   update: (data) ->
     @schema.load(data, this)
     return this
+
+  dump: ->
+    return @schema.dump(this)
+
+  toJSON: ->
+    return ko.toJSON(@schema.dump(this))
+
+  save: (url, callback) ->
+    backup = @schema.copy()
