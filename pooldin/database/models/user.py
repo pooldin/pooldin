@@ -49,7 +49,7 @@ class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin, JS
         return emails[0]
 
     def to_dict(self, fields=None):
-        fields = fields or ['display_name', 'about', 'created', 'modified', 'enabled']
+        fields = fields or ['username', 'display_name', 'about', 'created', 'modified', 'enabled']
         ret = dict()
         for field in fields:
             ret[field] = getattr(self, field)
