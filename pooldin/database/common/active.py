@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from .. import db
+from ..types import DateTimeTZ
 
 
 class EnabledMixin(object):
@@ -14,8 +15,8 @@ class DisabledMixin(object):
 
 
 class ActiveMixin(EnabledMixin):
-    active_start = db.Column(db.DateTime, index=True)
-    active_end = db.Column(db.DateTime, index=True)
+    active_start = db.Column(DateTimeTZ, index=True)
+    active_end = db.Column(DateTimeTZ, index=True)
 
     @hybrid_property
     def status(self):
