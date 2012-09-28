@@ -25,11 +25,11 @@ class PI.UserProfileForm extends PI.Model
 
   cancel: =>
     text = @about()
-    jQuery('.about-text')[0].textContent = text
+    jQuery('.about-text').text(text)
     @toggleEdit()
 
   save: =>
-    text = jQuery.trim(jQuery('.about-text')[0].textContent)
+    text = jQuery.trim(jQuery('.about-text').text())
 
     toSave = @dump()
     toSave.about = text

@@ -374,13 +374,13 @@ PI.UserProfileForm = (function(_super) {
   UserProfileForm.prototype.cancel = function() {
     var text;
     text = this.about();
-    jQuery('.about-text')[0].textContent = text;
+    jQuery('.about-text').text(text);
     return this.toggleEdit();
   };
 
   UserProfileForm.prototype.save = function() {
     var text, toSave;
-    text = jQuery.trim(jQuery('.about-text')[0].textContent);
+    text = jQuery.trim(jQuery('.about-text').text());
     toSave = this.dump();
     toSave.about = text;
     jQuery.post("/user/" + (this.username()) + "/about", toSave, void 0, 'json').done(this.onSuccess).fail(this.onError);
