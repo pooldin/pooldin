@@ -1,10 +1,11 @@
 from flask import render_template, request, redirect, session, flash, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user
 
-from ..app.negotiate import supports
+from ..app.negotiate import supports, accepts
 from .base import BaseView
 from ..forms import FormUserLogin
 
+from ..database import db
 from ..database.models import User, Email
 
 
@@ -66,13 +67,41 @@ class ViewUserLogout(BaseView):
         return redirect('/')
 
 
+class ViewUserProfileAbout(BaseView):
+    name = 'user_profile_about'
+
+    @classmethod
+    def add_routes(cls, app, view):
+        app.add_post_rule('/user/<user_id>/about', view_func=view)
+
+    @supports('application/json', 'application/x-www-form-urlencoded')
+    @accepts('application/json')
+    def post(self, user_id):
+        user = User.query.filter_by(username=user_id).first()
+        if request.form:
+            data = request.form.to_dict()
+        else:
+            data = request.json
+
+        if not user or user.id != current_user.id:
+            abort(404)
+        if 'about' not in data.keys():
+            abort(400)
+
+        user.about = data['about']
+        db.session.commit()
+
+        return user.to_json(fields=('username', 'about'))
+
+
 class ViewUserProfile(BaseView):
     name = 'user_profile'
 
     @classmethod
     def add_routes(cls, app, view):
-        app.add_get_rule('/user/<string:user_id>', view_func=view)
+        app.add_get_rule('/user/<user_id>', view_func=view)
 
+    @accepts('text/html', 'application/json')
     def get(self, user_id):
         is_user = False
         user = User.query.filter_by(username=user_id).first()
@@ -80,6 +109,10 @@ class ViewUserProfile(BaseView):
             abort(404)
         if current_user.username == user_id:
             is_user = True
+
+        if request.best_mimetype == 'application/json':
+            return user.to_json()
+
         return render_template('user/profile.html',
                                profile_user=user,
                                is_user=is_user)

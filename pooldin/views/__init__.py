@@ -1,12 +1,13 @@
-from .home import ViewHomeIndex
-from .campaign import ViewCampaignCreate, ViewCampaignDetails
-from .user import ViewUserLogin, ViewUserLogout, ViewUserProfile
+import home
+import campaign
+import user
 
-all = [
-    ViewHomeIndex,
-    ViewUserLogin,
-    ViewUserLogout,
-    ViewCampaignCreate,
-    ViewCampaignDetails,
-    ViewUserProfile,
-]
+all = (
+    home.ViewHomeIndex,
+    campaign.ViewCampaignCreate,
+    campaign.ViewCampaignDetails,
+    user.ViewUserLogin,
+    user.ViewUserLogout,
+    user.ViewUserProfile,
+    user.ViewUserProfileAbout,
+)
