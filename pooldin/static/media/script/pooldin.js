@@ -212,11 +212,6 @@ PI.Model = (function() {
     return ko.toJSON(this.schema.dump(this));
   };
 
-  Model.prototype.save = function(url, callback) {
-    var backup;
-    return backup = this.schema.copy();
-  };
-
   return Model;
 
 })();

@@ -97,6 +97,3 @@ class PI.Model
 
   toJSON: ->
     return ko.toJSON(@schema.dump(this))
-
-  save: (url, callback) ->
-    backup = @schema.copy()
