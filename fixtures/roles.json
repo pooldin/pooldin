@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Organizer",
+        "description": "The user responsible for managing a group.",
+        "slug": "organizer"
+    },
+    {
+        "name": "Participant",
+        "description": "A user who has contributed to a group account.",
+        "slug": "participant"
+    },
+    {
+        "name": "Invitee",
+        "description": "A user who has been invited but has not contributed to the group.",
+        "slug": "invitee"
+    }
+]

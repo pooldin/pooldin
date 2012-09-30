@@ -1,0 +1,41 @@
+[
+    {
+        "title": "Bitcoin",
+        "code": "BTC",
+        "unit": "bitcoin",
+        "unit_plural": "bitcoins"
+    },
+    {
+        "title": "Chinese Yuan",
+        "code": "CNY",
+        "number": 156,
+        "unit": "yuan",
+        "unit_plural": "yuan",
+        "sign": "¥"
+    },
+    {
+        "title": "Euro",
+        "code": "EUR",
+        "number": 978,
+        "unit": "euro",
+        "unit_plural": "euros",
+        "sign": "€"
+    },
+    {
+        "title": "Japanese Yuan",
+        "code": "JPY",
+        "number": 392,
+        "unit": "yen",
+        "unit_plural": "yen",
+        "sign": "¥"
+    },
+    {
+        "title": "United States Dollar",
+        "code": "USD",
+        "number": 840,
+        "unit": "dollar",
+        "unit_plural": "dollars",
+        "sign": "$",
+        "enabled": true
+    }
+]

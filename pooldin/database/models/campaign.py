@@ -1,5 +1,5 @@
-from ..common import BaseConfig
+from .. import common
 
 
-class Campaign(BaseConfig):
+class Campaign(common.ConfigurationModel):
     pass

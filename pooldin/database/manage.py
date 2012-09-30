@@ -1,6 +1,15 @@
+import os
+import json
+
 from sqlalchemy import create_engine
 from flask.ext.script import prompt_bool
+
 from . import db as current_db
+from . import models
+from .. import path
+
+fixture_path = os.path.dirname(path)
+fixture_path = os.path.join(fixture_path, 'fixtures')
 
 
 class DBCompiler(object):
@@ -87,7 +96,72 @@ class DBManager(object):
         self.create_fixtures()
 
     def create_fixtures(self):
-        pass
+        self.create_currencies()
+        self.create_roles()
+        self.create_users()
+
+    def load_fixtures(self, filename):
+        filename = os.path.join(fixture_path, filename)
+        if not os.path.isfile(filename):
+            return
+
+        with open(filename) as fs:
+            fixtures = json.load(fs)
+
+        if not fixtures:
+            return
+
+        if isinstance(fixtures, dict):
+            return [fixtures]
+        return fixtures
+
+    def iter_fixtures(self, filename):
+        fixtures = self.load_fixtures(filename) or []
+
+        for fixture in fixtures:
+            yield fixture
+
+    def create_currencies(self):
+        for fixture in self.iter_fixtures('currencies.json'):
+            currency = models.Currency()
+            currency.update_fields(fixture)
+            current_db.session.add(currency)
+
+        current_db.session.commit()
+
+    def create_roles(self):
+        for fixture in self.iter_fixtures('roles.json'):
+            role = models.Role()
+            role.update_fields(fixture)
+            current_db.session.add(role)
+
+        current_db.session.commit()
+
+    def create_users(self):
+        usd = models.Currency.get('USD')
+
+        for fixture in self.iter_fixtures('users.json'):
+            user = models.User()
+            user.enabled = True
+            user.username = fixture['username']
+            user.password = fixture['password']
+            user.about = fixture['about']
+
+            current_db.session.add(user)
+            current_db.session.commit()
+
+            email = models.Email()
+            email.address = fixture['address']
+            email.enabled = True
+            email.primary = True
+            email.user_id = user.id
+
+            account = models.UserAccount()
+            account.currency_id = usd.id
+            account.user_id = user.id
+
+            current_db.session.add_all([email, account])
+            current_db.session.commit()
 
     def drop_all(self, prompt=None):
         message = prompt

@@ -1,6 +1,7 @@
 pytz==2012d
 PyYAML==3.10
 psycopg2==2.4.5
+cdecimal==2.3
 blinker==1.2
 itsdangerous==0.17
 Flask==0.9

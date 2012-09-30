@@ -9,11 +9,11 @@ from .tracking import TrackTimeMixin, TrackIPMixin
 from .update import FieldUpdateMixin
 
 
-class BaseModel(db.Model,
-                IDMixin,
-                FieldUpdateMixin,
-                TrackTimeMixin,
-                TrackIPMixin):
+class Model(db.Model,
+            IDMixin,
+            FieldUpdateMixin,
+            TrackTimeMixin,
+            TrackIPMixin):
 
     __abstract__ = True
 
@@ -28,14 +28,14 @@ class BaseModel(db.Model,
         return '<%r %r>' % (self.__class__.__name__, self.id)
 
 
-class BaseConfig(EnabledMixin, NameMixin, DescriptionMixin, BaseModel):
+class ConfigurationModel(EnabledMixin, NameMixin, DescriptionMixin, Model):
     __abstract__ = True
 
     def __init__(self, **kw):
-        super(BaseConfig, self).__init__(**kw)
+        super(ConfigurationModel, self).__init__(**kw)
         self.update_field('name', kw.get('name'))
         self.update_field('description', kw.get('description'))
 
 
-class BaseRecord(UUIDMixin, BaseModel):
+class LedgerModel(UUIDMixin, Model):
     __abstract__ = True

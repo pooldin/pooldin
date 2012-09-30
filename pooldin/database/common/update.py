@@ -1,4 +1,11 @@
 class FieldUpdateMixin(object):
+    def update_fields(self, fields, nullable=False):
+        if hasattr(fields, 'items'):
+            fields = fields.items()
+
+        for field, value in fields:
+            self.update_field(field, value, nullable=nullable)
+
     def update_field(self, field, new_value, nullable=False):
         if new_value is None and not nullable:
             return False

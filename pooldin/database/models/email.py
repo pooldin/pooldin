@@ -1,8 +1,7 @@
-from .. import db
-from ..common import DisabledMixin, BaseModel
+from .. import common, db
 
 
-class Email(DisabledMixin, BaseModel):
+class Email(common.DisabledMixin, common.Model):
 
     __table_args__ = (
         db.UniqueConstraint("user_id", "primary"),

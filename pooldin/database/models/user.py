@@ -4,11 +4,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask.ext import login
 
-from .. import db
-from ..common import BaseModel, IDMixin, NullNameMixin, DisabledMixin, SerializationMixin
+from .. import common, db
 
 
-class User(BaseModel, IDMixin, NullNameMixin, DisabledMixin, login.UserMixin, SerializationMixin):
+class User(common.Model,
+           common.IDMixin,
+           common.NullNameMixin,
+           common.DisabledMixin,
+           common.SerializationMixin,
+           login.UserMixin):
 
     username = db.Column(db.String(40), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)

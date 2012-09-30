@@ -11,3 +11,7 @@ class NullNameMixin(object):
 
 class DescriptionMixin(object):
     description = db.Column(db.Text)
+
+
+class SlugMixin(object):
+    slug = db.Column(db.String(255), nullable=False, unique=True, index=True)
