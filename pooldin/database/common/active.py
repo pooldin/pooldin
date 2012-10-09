@@ -14,9 +14,13 @@ class DisabledMixin(object):
     enabled = db.Column(db.Boolean, nullable=False, default=False)
 
 
+class VerifiedMixin(object):
+    verified = db.Column(db.Boolean, nullable=False, default=False)
+
+
 class ActiveMixin(EnabledMixin):
-    active_start = db.Column(DateTimeTZ, index=True)
-    active_end = db.Column(DateTimeTZ, index=True)
+    start = db.Column(DateTimeTZ, index=True)
+    end = db.Column(DateTimeTZ, index=True)
 
     @hybrid_property
     def status(self):

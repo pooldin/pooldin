@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy.databases import postgresql
+
 from flask import request
 
 from .. import db
@@ -29,4 +31,4 @@ class TrackTimeMixin(object):
 class TrackIPMixin(object):
     # For reasoning around the column length, consult stackoverflow.com:
     #   /questions/1076714/max-length-for-client-ip-address
-    remote_ip = db.Column(db.String(45), default=remote_ip, onupdate=remote_ip)
+    remote_ip = db.Column(postgresql.CIDR, default=remote_ip, onupdate=remote_ip)

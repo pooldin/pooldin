@@ -101,6 +101,7 @@ class DBManager(object):
         self.create_users()
 
     def load_fixtures(self, filename):
+        return
         filename = os.path.join(fixture_path, filename)
         if not os.path.isfile(filename):
             return

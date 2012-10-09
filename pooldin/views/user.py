@@ -6,7 +6,7 @@ from .base import BaseView
 from ..forms import FormUserLogin
 
 from ..database import db
-from ..database.models import User, Email
+from ..database.models import User
 
 
 class ViewUserLogin(BaseView):
@@ -40,8 +40,9 @@ class ViewUserLogin(BaseView):
         # Try and retrieve user by username first
         user = User.query.filter_by(username=form.login.data).first()
         if user is None:
-            email = Email.query.filter_by(address=form.login.data).first()
-            user = email.user.first() if email else None
+            pass
+            #email = Email.query.filter_by(address=form.login.data).first()
+            #user = email.user.first() if email else None
 
         if not user or not user.is_password(form.password.data) or not user.enabled:
             flash('Unknown username/password combination.')

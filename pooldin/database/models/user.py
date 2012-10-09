@@ -7,16 +7,23 @@ from flask.ext import login
 from .. import common, db
 
 
+UserPurchase = db.Table('user_purchase', db.metadata,
+                        db.Column('id', db.BigInteger(unsigned=True), primary_key=True),
+                        db.Column('user_id', db.BigInteger(unsigned=True), db.ForeignKey('user.id'), nullable=False),
+                        db.Column('purchase_id', db.BigInteger(unsigned=True), db.ForeignKey('purchase.id'), nullable=False))
+
+
 class User(common.Model,
            common.IDMixin,
            common.NullNameMixin,
            common.DisabledMixin,
+           common.VerifiedMixin,
            common.SerializationMixin,
            login.UserMixin):
 
     username = db.Column(db.String(40), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
-    about = db.Column(db.Text, nullable=True)
+    purchases = db.relationship('Purchase', secondary=UserPurchase, backref='purchasing_user')
 
     @property
     def password(self):
@@ -59,3 +66,14 @@ class User(common.Model,
 
 class AnonymousUser(login.AnonymousUser):
     name = 'Anonymous'
+
+
+class UserMeta(common.Model,
+               common.IDMixin,
+               common.KeyValueMixin):
+    __tablename__ = 'user_meta'
+
+    user = db.relationship('User', backref='metadata', lazy='dynamic')
+    user_id = db.Column(db.BigInteger(unsigned=True),
+                        db.ForeignKey('user.id'),
+                        nullable=False)
