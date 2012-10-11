@@ -1,5 +1,5 @@
-from flask.ext.sqlalchemy import SQLAlchemy
+from . import base
 
-db = SQLAlchemy()
+db = base.Database()
 
 from .models import *
